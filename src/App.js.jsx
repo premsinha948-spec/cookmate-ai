@@ -10,11 +10,11 @@ import { useState, useEffect, useRef, useCallback } from "react";
 const CFG = {
   CLAUDE_MODEL: "claude-sonnet-4-20250514",
   GROQ_MODEL:   "llama-3.3-70b-versatile",
-  ANTHROPIC_KEY: "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",
-  GROQ_KEY:      "sk_MlJ3GUuyzsgHYFNc42HvWGdyb3FYjsGChtm0SOYIr9G8VErUmHqT",
-  SUPABASE_URL:  "https://lvpgzpqjmcrdqjtbsiqx.supabase.co",
-  SUPABASE_KEY:  "sb_publishable_1xANY2OWc-yi8KPt9W-5mw_2sUhPY49",
-  YOUTUBE_KEY:   "",
+  ANTHROPIC_KEY: process.env.REACT_APP_ANTHROPIC_KEY || "",
+  GROQ_KEY:      process.env.REACT_APP_GROQ_KEY || "",
+  SUPABASE_URL:  process.env.REACT_APP_SUPABASE_URL || "",
+  SUPABASE_KEY:  process.env.REACT_APP_SUPABASE_KEY || "",
+  YOUTUBE_KEY:   process.env.REACT_APP_YOUTUBE_KEY || "",
 };
 
 // ── INDIA STATES DATA ─────────────────────────────────────────
