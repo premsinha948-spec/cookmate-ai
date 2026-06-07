@@ -554,18 +554,45 @@ function FloatingChat({lang}){
 function AuthScreen({onLogin}){
   const[mode,setMode]=useState("landing");
   const[email,setEmail]=useState("");
-  const[phone,setPhone]=useState("");
-  const[otp,setOtp]=useState(["","","","","",""]);
   const[loading,setLoading]=useState(false);
   const[err,setErr]=useState("");
-  const otpRefs=useRef([]);
+  const[otpSent,setOtpSent]=useState(false);
 
-  const fakeDelay=ms=>new Promise(r=>setTimeout(r,ms));
-  const googleLogin=async()=>{setLoading(true);await fakeDelay(900);setLoading(false);onLogin({name:"Chef",method:"google",id:"g_"+Date.now()});};
-  const sendOTP=async()=>{if(phone.length<10){setErr("Enter valid 10-digit number");return;}setLoading(true);await fakeDelay(1200);setLoading(false);setMode("otp");setErr("");};
-  const verifyOTP=async()=>{setLoading(true);await fakeDelay(800);setLoading(false);onLogin({name:"User",method:"phone",phone,id:"p_"+phone});};
-  const emailLogin=async()=>{if(!email.includes("@")){setErr("Enter valid email");return;}setLoading(true);await fakeDelay(700);setLoading(false);onLogin({name:email.split("@")[0],method:"email",email,id:"e_"+email});};
-  const handleOtp=(i,v)=>{if(!/^\d?$/.test(v)) return;const n=[...otp];n[i]=v;setOtp(n);if(v&&i<5) otpRefs.current[i+1]?.focus();};
+  const googleLogin=async()=>{
+    setLoading(true);setErr("");
+    try{
+      const{error}=await supabase.auth.signInWithOAuth({
+        provider:"google",
+        options:{redirectTo:window.location.origin}
+      });
+      if(error) throw error;
+    }catch(e){setErr(e.message);setLoading(false);}
+  };
+
+  const sendEmailOTP=async()=>{
+    if(!email.includes("@")){setErr("Valid email daalo");return;}
+    setLoading(true);setErr("");
+    try{
+      const{error}=await supabase.auth.signInWithOtp({email});
+      if(error) throw error;
+      setOtpSent(true);
+    }catch(e){setErr(e.message);}
+    setLoading(false);
+  };
+
+  useEffect(()=>{
+    supabase.auth.getSession().then(({data:{session}})=>{
+      if(session?.user){
+        onLogin({name:session.user.user_metadata?.full_name||session.user.email?.split("@")[0]||"Chef",email:session.user.email,id:session.user.id,method:"supabase"});
+      }
+    });
+    const{data:{subscription}}=supabase.auth.onAuthStateChange((_,session)=>{
+      if(session?.user){
+        onLogin({name:session.user.user_metadata?.full_name||session.user.email?.split("@")[0]||"Chef",email:session.user.email,id:session.user.id,method:"supabase"});
+      }
+    });
+    return()=>subscription.unsubscribe();
+  },[]);
 
   return<div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:24}}>
     <div style={{width:"100%",maxWidth:360}}>
@@ -576,35 +603,31 @@ function AuthScreen({onLogin}){
       </div>
       {err&&<Err msg={err}/>}
       {mode==="landing"&&<div style={{display:"flex",flexDirection:"column",gap:12}}>
-        <button onClick={googleLogin} disabled={loading} style={{...mkBtn("out","lg"),justifyContent:"center",gap:12}}>{loading?<Spin/>:<span style={{fontSize:20}}>🔵</span>} Continue with Google</button>
-        <button onClick={()=>{setMode("phone");setErr("");}} style={{...mkBtn("out","lg"),justifyContent:"center",gap:12}}><span style={{fontSize:20}}>📱</span> Login with Mobile OTP</button>
-        <button onClick={()=>{setMode("email");setErr("");}} style={{...mkBtn("out","lg"),justifyContent:"center",gap:12}}><span style={{fontSize:20}}>✉️</span> Login with Email</button>
-        <p style={{textAlign:"center",fontSize:11,color:C.sub,marginTop:8}}>No personal data stored · Free forever</p>
+        <button onClick={googleLogin} disabled={loading} style={{...mkBtn("out","lg"),justifyContent:"center",gap:12}}>
+          {loading?<Spin/>:<span style={{fontSize:20}}>🔵</span>} Continue with Google
+        </button>
+        <button onClick={()=>{setMode("email");setErr("");}} style={{...mkBtn("out","lg"),justifyContent:"center",gap:12}}>
+          <span style={{fontSize:20}}>✉️</span> Login with Email OTP
+        </button>
+        <p style={{textAlign:"center",fontSize:11,color:C.sub,marginTop:8}}>Free forever · No spam</p>
       </div>}
-      {mode==="phone"&&<div style={{display:"flex",flexDirection:"column",gap:12}}>
-        <div style={{display:"flex",gap:8}}>
-          <div style={{...ST.inp,width:56,textAlign:"center",flexShrink:0,borderRadius:12}}>+91</div>
-          <input style={ST.inp} placeholder="10-digit number" value={phone} onChange={e=>setPhone(e.target.value.replace(/\D/,""))} maxLength={10} type="tel"/>
-        </div>
-        <button onClick={sendOTP} disabled={loading||phone.length<10} style={{...mkBtn("primary","lg"),opacity:phone.length<10?.5:1}}>{loading?"Sending OTP...":"Send OTP →"}</button>
-        <button onClick={()=>setMode("landing")} style={{...mkBtn("ghost"),borderRadius:12}}>← Back</button>
-      </div>}
-      {mode==="otp"&&<div style={{display:"flex",flexDirection:"column",gap:14}}>
-        <p style={{color:C.muted,fontSize:13,textAlign:"center"}}>Enter OTP sent to +91 {phone}</p>
-        <div style={{display:"flex",gap:8,justifyContent:"center"}}>
-          {otp.map((d,i)=><input key={i} ref={el=>otpRefs.current[i]=el} style={{width:44,height:52,textAlign:"center",fontSize:22,fontWeight:700,background:C.card,border:`1px solid ${d?C.accent:C.border}`,borderRadius:10,color:C.txt,outline:"none"}} value={d} maxLength={1} onChange={e=>handleOtp(i,e.target.value)} onKeyDown={e=>e.key==="Backspace"&&!d&&i>0&&otpRefs.current[i-1]?.focus()}/>)}
-        </div>
-        <button onClick={verifyOTP} disabled={otp.join("").length<6||loading} style={{...mkBtn("primary","lg"),opacity:otp.join("").length<6?.5:1}}>{loading?"Verifying...":"Verify & Login ✓"}</button>
-      </div>}
-      {mode==="email"&&<div style={{display:"flex",flexDirection:"column",gap:12}}>
+      {mode==="email"&&!otpSent&&<div style={{display:"flex",flexDirection:"column",gap:12}}>
+        <p style={{color:C.muted,fontSize:14}}>Email pe OTP aayega</p>
         <input style={ST.inp} placeholder="your@email.com" value={email} onChange={e=>setEmail(e.target.value)} type="email"/>
-        <button onClick={emailLogin} disabled={!email.includes("@")||loading} style={{...mkBtn("primary","lg"),opacity:!email.includes("@")?.5:1}}>{loading?"Logging in...":"Continue →"}</button>
+        <button onClick={sendEmailOTP} disabled={loading||!email.includes("@")} style={{...mkBtn("primary","lg"),opacity:!email.includes("@")?.5:1}}>
+          {loading?"Sending...":"Send OTP →"}
+        </button>
         <button onClick={()=>setMode("landing")} style={{...mkBtn("ghost"),borderRadius:12}}>← Back</button>
+      </div>}
+      {otpSent&&<div style={{textAlign:"center",padding:20}}>
+        <div style={{fontSize:48,marginBottom:12}}>📧</div>
+        <h3 style={{fontSize:16,fontWeight:700,marginBottom:8}}>OTP bhej diya!</h3>
+        <p style={{color:C.muted,fontSize:13}}>{email} pe check karo — link pe click karo</p>
+        <button onClick={()=>{setOtpSent(false);setMode("landing");}} style={{...mkBtn("ghost"),margin:"16px auto 0"}}>← Back</button>
       </div>}
     </div>
   </div>;
 }
-
 // ── HOME SCREEN ───────────────────────────────────────────────
 function HomeScreen({user,onNav,onRec,t,lang,recents}){
   const[picks,setPicks]=useState([]);
