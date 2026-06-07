@@ -1106,30 +1106,61 @@ function GroceryScreen({t}){
 function ExploreIndiaScreen({onRec,t,userId}){
   const[sel,setSel]=useState(null);
   const[mf,setMf]=useState("All");
+  const[sbDishes,setSbDishes]=useState([]);
+  const[loading,setLoading]=useState(false);
   const FILTERS=["All","Breakfast","Lunch","Dinner","Snacks","Dessert","Drink"];
+
+  const loadState=async(s)=>{
+    setSel(s);setMf("All");setLoading(true);
+    try{
+      const res=await fetch("/api/supabase",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({type:"state",state:s.state})
+      });
+      const data=await res.json();
+      if(Array.isArray(data)&&data.length>0){
+        setSbDishes(data.map(r=>({...r,emoji:"🍽️",time:r.minutes?r.minutes+" min":"30 min",diff:"Medium",cal:r.nutrition?.calories||320,protein:r.nutrition?.protein||"12g",tags:[r.category||"Indian"]})));
+      } else {
+        setSbDishes(s.dishes);
+      }
+    }catch{setSbDishes(s.dishes);}
+    setLoading(false);
+  };
+
   if(sel){
-    const dishes=mf==="All"?sel.dishes:sel.dishes.filter(d=>d.tags.includes(mf));
+    const allDishes=sbDishes.length>0?sbDishes:sel.dishes;
+    const dishes=mf==="All"?allDishes:allDishes.filter(d=>(d.tags||[]).includes(mf));
     return<div style={ST.scr}>
       <button onClick={()=>setSel(null)} style={{...mkBtn("ghost","sm"),borderRadius:10,marginBottom:14}}>← {t.back}</button>
       <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:10}}>
         <span style={{fontSize:40}}>{sel.emoji}</span>
-        <div><h2 style={{margin:0,fontSize:20,fontWeight:800}}>{sel.state}</h2><p style={{color:C.muted,fontSize:12,margin:0}}>{sel.dishes.length} signature dishes</p></div>
+        <div><h2 style={{margin:0,fontSize:20,fontWeight:800}}>{sel.state}</h2><p style={{color:C.muted,fontSize:12,margin:0}}>{allDishes.length} dishes</p></div>
       </div>
       <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:8,marginBottom:14}}>
         {FILTERS.map(f=><button key={f} onClick={()=>setMf(f)} style={{flexShrink:0,padding:"7px 12px",borderRadius:20,border:`1px solid ${mf===f?sel.color:C.border}`,background:mf===f?sel.color+"22":C.card,color:mf===f?sel.color:C.muted,cursor:"pointer",fontWeight:600,fontSize:12}}>{f}</button>)}
       </div>
-      {dishes.length===0?<div style={{textAlign:"center",padding:40,color:C.muted}}>No {mf} dishes for {sel.state}</div>
-      :dishes.map((r,i)=><button key={i} onClick={()=>{const rec={...r,tags:[...r.tags,sel.state]};LS.addRecent(rec);onRec(rec);}} style={{...ST.card,width:"100%",textAlign:"left",cursor:"pointer",display:"flex",gap:14,alignItems:"center",border:`1px solid ${sel.color}33`}}>
-        <span style={{fontSize:34,flexShrink:0}}>{r.emoji}</span>
+      {loading?[1,2,3].map(i=><Shim key={i}/>):dishes.length===0?<div style={{textAlign:"center",padding:40,color:C.muted}}>No {mf} dishes for {sel.state}</div>
+      :dishes.map((r,i)=><button key={i} onClick={()=>{const rec={...r,tags:[...(r.tags||[]),sel.state]};LS.addRecent(rec);onRec(rec);}} style={{...ST.card,width:"100%",textAlign:"left",cursor:"pointer",display:"flex",gap:14,alignItems:"center",border:`1px solid ${sel.color}33`}}>
+        <span style={{fontSize:34,flexShrink:0}}>{r.emoji||"🍽️"}</span>
         <div style={{flex:1}}>
-          <div style={{fontWeight:700,fontSize:14}}>{r.name}</div>
-          <div style={{fontSize:12,color:C.muted,marginTop:3}}>⏱ {r.time} · 🔥 {r.cal} kcal · 💪 {r.protein}</div>
-          <div style={{display:"flex",gap:5,marginTop:5,flexWrap:"wrap"}}>{r.tags.map((tg,ti)=><span key={ti} style={mkTag(sel.color)}>{tg}</span>)}</div>
+          <div style={{fontWeight:700,fontSize:14,color:C.txt}}>{r.name}</div>
+          <div style={{fontSize:12,color:C.muted,marginTop:3}}>⏱ {r.time||"30 min"} · 🔥 {r.cal||320} kcal</div>
         </div>
-        <HeartBtn recipe={{...r,tags:[...r.tags,sel.state]}} userId={userId}/>
+        <HeartBtn recipe={{...r,tags:[...(r.tags||[]),sel.state]}} userId={userId}/>
       </button>)}
     </div>;
   }
+  return<div style={ST.scr}>
+    <h2 style={{fontSize:18,fontWeight:800,marginBottom:4}}>🗺️ {t.exploreIndia}</h2>
+    <p style={{color:C.muted,fontSize:13,marginBottom:14}}>{INDIA_STATES.length} States · 200+ Authentic Dishes</p>
+    {INDIA_STATES.map((s,i)=><button key={i} onClick={()=>loadState(s)} style={{...ST.card,width:"100%",textAlign:"left",cursor:"pointer",display:"flex",alignItems:"center",gap:14,border:`1px solid ${s.color}33`,padding:"13px 14px"}}>
+      <span style={{fontSize:30,flexShrink:0}}>{s.emoji}</span>
+      <div style={{flex:1}}><div style={{fontWeight:700,fontSize:14,color:C.txt}}>{s.state}</div><div style={{fontSize:11,color:C.muted,marginTop:2}}>{s.dishes.length} dishes · {s.dishes[0]?.name}, {s.dishes[1]?.name}...</div></div>
+      <div style={{fontSize:18,color:C.muted}}>›</div>
+    </button>)}
+  </div>;
+}
   return<div style={ST.scr}>
     <h2 style={{fontSize:18,fontWeight:800,marginBottom:4}}>🗺️ {t.exploreIndia}</h2>
     <p style={{color:C.muted,fontSize:13,marginBottom:14}}>{INDIA_STATES.length} States · 200+ Authentic Dishes</p>
