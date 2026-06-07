@@ -1175,26 +1175,65 @@ return<div style={ST.scr}>
 function WorldCuisinesScreen({onRec,t,userId}){
   const[sel,setSel]=useState(null);
   const[mf,setMf]=useState("All");
-  const FILTERS=["All","Breakfast","Lunch","Dinner","Snacks","Dessert"];
+  const[sbDishes,setSbDishes]=useState([]);
+  const[loading,setLoading]=useState(false);
+  const FILTERS=["All","breakfast","lunch","dinner","snack","dessert","main course"];
+
+  const loadCuisine=async(c)=>{
+    setSel(c);setMf("All");setLoading(true);
+    try{
+      const res=await fetch("/api/supabase",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({type:"cuisine",cuisine:c.country})
+      });
+      const data=await res.json();
+      if(Array.isArray(data)&&data.length>0){
+        const sbRecipes=data.map(r=>({...r,emoji:"🍽️",time:r.minutes?r.minutes+" min":"30 min",diff:"Medium",cal:r.nutrition?.calories||320,protein:r.nutrition?.protein||"12g",tags:[r.category||"World"]}));
+        setSbDishes([...c.dishes,...sbRecipes]);
+      } else {
+        setSbDishes(c.dishes);
+      }
+    }catch{setSbDishes(c.dishes);}
+    setLoading(false);
+  };
+
   if(sel){
-    const dishes=mf==="All"?sel.dishes:sel.dishes.filter(d=>d.tags.includes(mf));
+    const allDishes=sbDishes.length>0?sbDishes:sel.dishes;
+    const dishes=mf==="All"?allDishes:allDishes.filter(d=>(d.category||"").toLowerCase().includes(mf.toLowerCase())||(d.tags||[]).includes(mf));
     return<div style={ST.scr}>
       <button onClick={()=>setSel(null)} style={{...mkBtn("ghost","sm"),borderRadius:10,marginBottom:14}}>← {t.back}</button>
       <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:10}}>
         <span style={{fontSize:40}}>{sel.emoji}</span>
-        <div><h2 style={{margin:0,fontSize:20,fontWeight:800}}>{sel.country}</h2><p style={{color:C.muted,fontSize:12,margin:0}}>{sel.dishes.length} dishes</p></div>
+        <div><h2 style={{margin:0,fontSize:20,fontWeight:800}}>{sel.country}</h2><p style={{color:C.muted,fontSize:12,margin:0}}>{allDishes.length} dishes</p></div>
       </div>
       <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:8,marginBottom:14}}>
         {FILTERS.map(f=><button key={f} onClick={()=>setMf(f)} style={{flexShrink:0,padding:"7px 12px",borderRadius:20,border:`1px solid ${mf===f?sel.color:C.border}`,background:mf===f?sel.color+"22":C.card,color:mf===f?sel.color:C.muted,cursor:"pointer",fontWeight:600,fontSize:12}}>{f}</button>)}
       </div>
-      {dishes.map((r,i)=><button key={i} onClick={()=>{const rec={...r,tags:[...r.tags,sel.country]};LS.addRecent(rec);onRec(rec);}} style={{...ST.card,width:"100%",textAlign:"left",cursor:"pointer",display:"flex",gap:14,alignItems:"center",border:`1px solid ${sel.color}33`}}>
-        <span style={{fontSize:34,flexShrink:0}}>{r.emoji}</span>
-        <div style={{flex:1}}><div style={{fontWeight:700,fontSize:14}}>{r.name}</div><div style={{fontSize:12,color:C.muted,marginTop:3}}>⏱ {r.time} · 🔥 {r.cal} kcal · 💪 {r.protein}</div></div>
-        <HeartBtn recipe={{...r,tags:[...r.tags,sel.country]}} userId={userId}/>
+      {loading?[1,2,3].map(i=><Shim key={i}/>):dishes.length===0?<div style={{textAlign:"center",padding:40,color:C.muted}}>No {mf} dishes for {sel.country}</div>
+      :dishes.map((r,i)=><button key={i} onClick={()=>{const rec={...r,tags:[...(r.tags||[]),sel.country]};LS.addRecent(rec);onRec(rec);}} style={{...ST.card,width:"100%",textAlign:"left",cursor:"pointer",display:"flex",gap:14,alignItems:"center",border:`1px solid ${sel.color}33`}}>
+        <span style={{fontSize:34,flexShrink:0}}>{r.emoji||"🍽️"}</span>
+        <div style={{flex:1}}>
+          <div style={{fontWeight:700,fontSize:14,color:C.txt}}>{r.name}</div>
+          <div style={{fontSize:12,color:C.muted,marginTop:3}}>⏱ {r.time||"30 min"} · 🔥 {r.cal||320} kcal</div>
+        </div>
+        <HeartBtn recipe={{...r,tags:[...(r.tags||[]),sel.country]}} userId={userId}/>
       </button>)}
     </div>;
   }
   return<div style={ST.scr}>
+    <h2 style={{fontSize:18,fontWeight:800,marginBottom:4}}>🌍 {t.worldCuisines}</h2>
+    <p style={{color:C.muted,fontSize:13,marginBottom:14}}>{WORLD.length} Countries · Global Authentic Recipes</p>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+      {WORLD.map((c,i)=><button key={i} onClick={()=>loadCuisine(c)} style={{background:C.card,border:`1px solid ${c.color}44`,borderRadius:16,padding:"18px 14px",cursor:"pointer",textAlign:"center"}}>
+        <div style={{fontSize:36,marginBottom:8}}>{c.emoji}</div>
+        <div style={{fontWeight:700,fontSize:14,color:C.txt}}>{c.country}</div>
+        <div style={{fontSize:11,color:C.muted,marginTop:4}}>{c.dishes.length} dishes</div>
+      </button>)}
+    </div>
+  </div>;
+}
+ return<div style={ST.scr}>
     <h2 style={{fontSize:18,fontWeight:800,marginBottom:4}}>🌍 {t.worldCuisines}</h2>
     <p style={{color:C.muted,fontSize:13,marginBottom:14}}>{WORLD.length} Countries · Global Authentic Recipes</p>
     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
@@ -1205,12 +1244,6 @@ function WorldCuisinesScreen({onRec,t,userId}){
       </button>)}
     </div>
   </div>;
-}
-
-// ── NUTRITION TRACKER ─────────────────────────────────────────
-function NutritionTrackerScreen({t}){
-  const[goal,setGoalState]=useState(()=>LS.get("cal_goal",2000));
-  const[editGoal,setEditGoal]=useState(false);
   const[goalInp,setGoalInp]=useState(goal);
   const[log,setLog]=useState(()=>LS.getTodayLog());
   const[search,setSearch]=useState("");
@@ -1266,8 +1299,6 @@ function NutritionTrackerScreen({t}){
       <span style={mkPill()}>{e.calories} kcal</span>
     </div>)}
   </div>;
-}
-
 // ── FAVORITES ─────────────────────────────────────────────────
 function FavoritesScreen({onRec,t,userId}){
   const[favs,setFavs]=useState(()=>LS.getFavs());
