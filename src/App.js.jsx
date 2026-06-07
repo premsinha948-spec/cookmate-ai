@@ -1130,7 +1130,7 @@ function ExploreIndiaScreen({onRec,t,userId}){
 
   if(sel){
     const allDishes=sbDishes.length>0?sbDishes:sel.dishes;
-    const dishes=mf==="All"?allDishes:allDishes.filter(d=>(d.tags||[]).includes(mf));
+   const dishes=mf==="All"?allDishes:allDishes.filter(d=>(d.category||"").toLowerCase().includes(mf.toLowerCase())||(d.tags||[]).includes(mf));
     return<div style={ST.scr}>
       <button onClick={()=>setSel(null)} style={{...mkBtn("ghost","sm"),borderRadius:10,marginBottom:14}}>← {t.back}</button>
       <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:10}}>
