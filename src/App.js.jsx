@@ -1150,7 +1150,7 @@ function WorldCuisinesScreen({onRec,t,userId}){
     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
       {WORLD.map((c,i)=><button key={i} onClick={()=>{setSel(c);setMf("All");}} style={{background:C.card,border:`1px solid ${c.color}44`,borderRadius:16,padding:"18px 14px",cursor:"pointer",textAlign:"center"}}>
         <div style={{fontSize:36,marginBottom:8}}>{c.emoji}</div>
-        <div style={{fontWeight:700,fontSize:14}}>{c.country}</div>
+   <div style={{fontWeight:700,fontSize:14,color:C.txt}}>{c.country}</div>
         <div style={{fontSize:11,color:C.muted,marginTop:4}}>{c.dishes.length} dishes</div>
       </button>)}
     </div>
