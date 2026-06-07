@@ -9,16 +9,14 @@ module.exports = async function handler(req, res) {
   try {
     const supabaseUrl = process.env.SUPABASE_URL || process.env.REACT_APP_SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_KEY || process.env.REACT_APP_SUPABASE_KEY;
-    const { type, category, state, cuisine, endpoint } = req.body;
-    const offset = Math.floor(Math.random() * 500);
-
+   const { type, category, state, cuisine, endpoint } = req.body;
     let url = "";
     if(type === "category") {
-      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,state&limit=30&offset=${offset}`;
+      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,state&limit=30&offset=${Math.floor(Math.random()*100)}`;
     } else if(type === "state") {
-      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,state&state=eq.${encodeURIComponent(state)}&limit=30&offset=${offset}`;
+      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,state&state=eq.${encodeURIComponent(state)}&limit=30`;
     } else if(type === "cuisine") {
-      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,cuisine&limit=30&offset=${offset}`;
+      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,cuisine&limit=30&offset=${Math.floor(Math.random()*500)}`;
     } else {
       url = `${supabaseUrl}${endpoint || "/rest/v1/recipes?select=id,name,ingredients,minutes,nutrition,category,state&limit=100"}`;
     }
