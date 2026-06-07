@@ -648,7 +648,7 @@ function HomeScreen({user,onNav,onRec,t,lang,recents}){
       <div style={{display:"flex",gap:8,overflowX:"auto",paddingBottom:4}}>
         {recents.slice(0,10).map((r,i)=><button key={i} onClick={()=>openRec(r)} style={{flexShrink:0,width:108,background:C.card,border:`1px solid ${C.border}`,borderRadius:14,padding:10,cursor:"pointer",textAlign:"left"}}>
           <div style={{fontSize:26,marginBottom:4}}>{r.emoji||"🍽️"}</div>
-          <div style={{fontWeight:700,fontSize:11,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{r.name}</div>
+      <div style={{fontWeight:700,fontSize:11,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",color:C.txt}}>{r.name}</div>
           <div style={{fontSize:10,color:C.muted,marginTop:2}}>{r.time||"30 min"}</div>
         </button>)}
       </div>
