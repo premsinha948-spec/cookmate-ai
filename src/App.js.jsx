@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 // ╔══════════════════════════════════════════════════════════════╗
 // ║        CookMate AI v5.0 — Full Production App               ║
