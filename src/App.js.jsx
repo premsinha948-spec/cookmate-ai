@@ -1160,8 +1160,7 @@ function ExploreIndiaScreen({onRec,t,userId}){
       <div style={{fontSize:18,color:C.muted}}>›</div>
     </button>)}
   </div>;
-}
-  return<div style={ST.scr}>
+return<div style={ST.scr}>
     <h2 style={{fontSize:18,fontWeight:800,marginBottom:4}}>🗺️ {t.exploreIndia}</h2>
     <p style={{color:C.muted,fontSize:13,marginBottom:14}}>{INDIA_STATES.length} States · 200+ Authentic Dishes</p>
     {INDIA_STATES.map((s,i)=><button key={i} onClick={()=>{setSel(s);setMf("All");}} style={{...ST.card,width:"100%",textAlign:"left",cursor:"pointer",display:"flex",alignItems:"center",gap:14,border:`1px solid ${s.color}33`,padding:"13px 14px"}}>
