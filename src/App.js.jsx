@@ -1291,8 +1291,8 @@ function NutritionTrackerScreen({t}){
     {log.length===0?<div style={{...ST.card,textAlign:"center",padding:24,color:C.muted,fontSize:13}}>No meals logged today</div>
     :log.map((e,i)=><div key={i} style={{...ST.card,display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
       <div style={{flex:1}}><div style={{fontWeight:600,fontSize:13}}>{e.name}</div><div style={{fontSize:11,color:C.muted,marginTop:2}}>🔥 {e.calories} · 💪 {e.protein}</div></div>
-      <span style={mkPill()}>{e.calories} kcal</span>
-    </div>)}
+ <span style={mkPill()}>{e.calories} kcal</span>
+</div>)}
   </div>;
 // ── FAVORITES ─────────────────────────────────────────────────
 function FavoritesScreen({onRec,t,userId}){
