@@ -1108,7 +1108,7 @@ function ExploreIndiaScreen({onRec,t,userId}){
   const[mf,setMf]=useState("All");
   const[sbDishes,setSbDishes]=useState([]);
   const[loading,setLoading]=useState(false);
-  const FILTERS=["All","Breakfast","Lunch","Dinner","Snacks","Dessert","Drink"];
+  const FILTERS=["All","breakfast","lunch","dinner","snack","dessert","main course"];
 
   const loadState=async(s)=>{
     setSel(s);setMf("All");setLoading(true);
