@@ -233,12 +233,14 @@ const SB = {
   hdrs(){
     return {"Content-Type":"application/json","apikey":CFG.SUPABASE_KEY,"Authorization":`Bearer ${CFG.SUPABASE_KEY}`};
   },
-  // Search recipes by ingredients — 60%+ match threshold
   async searchByIngredients(ingredients){
     if(!this.ok()) return [];
     try{
-     const url=`${CFG.SUPABASE_URL}/rest/v1/recipes?select=id,name,ingredients,emoji,minutes,difficulty,nutrition&limit=100`;
-      const res=await fetch(url,{headers:this.hdrs()});
+      const res=await fetch("/api/supabase",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({endpoint:"/rest/v1/recipes?select=id,name,ingredients,emoji,minutes,difficulty,nutrition&limit=100"})
+      });
       if(!res.ok) return [];
       const all=await res.json();
       const norm=ingredients.map(i=>i.toLowerCase().trim());
@@ -251,6 +253,27 @@ const SB = {
        .map(r=>({...r,source:"db",emoji:r.emoji||"🍽️",time:r.minutes?r.minutes+" min":r.time||"30 min",diff:r.difficulty||r.diff||"Medium",cal:r.nutrition?.calories||r.cal||320,protein:r.nutrition?.protein||r.protein||"12g"}));
     }catch(e){console.error("SB search:",e);return [];}
   },
+  async saveRecipe(recipe){
+    if(!this.ok()) return;
+    try{
+      await fetch(`${CFG.SUPABASE_URL}/rest/v1/recipes`,{
+        method:"POST",
+        headers:{...this.hdrs(),"Prefer":"return=minimal"},
+        body:JSON.stringify({name:recipe.name,emoji:recipe.emoji||"🍽️",cuisine:recipe.cuisine||"Indian",category:recipe.category||"General",ingredients:(recipe.ingredients||[]).map(i=>typeof i==="string"?i:i.item),instructions:recipe.steps||[],nutrition:recipe.nutrition||{},time_minutes:parseInt(recipe.time)||30,difficulty:recipe.diff||"Medium",source:"ai_generated",ai_generated:true}),
+      });
+    }catch(e){console.error("SB save:",e);}
+  },
+  async syncFav(userId,recipe,isFav){
+    if(!this.ok()||!userId) return;
+    try{
+      if(isFav){
+        await fetch(`${CFG.SUPABASE_URL}/rest/v1/user_favorites`,{method:"POST",headers:{...this.hdrs(),"Prefer":"return=minimal"},body:JSON.stringify({user_id:userId,recipe_name:recipe.name,recipe_data:recipe,saved_at:new Date().toISOString()})});
+      } else {
+        await fetch(`${CFG.SUPABASE_URL}/rest/v1/user_favorites?user_id=eq.${userId}&recipe_name=eq.${encodeURIComponent(recipe.name)}`,{method:"DELETE",headers:this.hdrs()});
+      }
+    }catch(e){console.error("SB fav:",e);}
+  },
+};
   // Auto-save AI-generated recipe for future DB hits
   async saveRecipe(recipe){
     if(!this.ok()) return;
