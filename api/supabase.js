@@ -14,7 +14,7 @@ module.exports = async function handler(req, res) {
     let url = "";
     if(type === "category") {
  const offset = Math.floor(Math.random() * 200);
-url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,state,prep_time,cook_time&category=ilike.*${encodeURIComponent(category)}*&limit=30&offset=${offset}`;
+url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,state,prep_time,cook_time&category=ilike.${encodeURIComponent(category)}&limit=30&offset=${offset}`;
     } else if(type === "state") {
     url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,state,prep_time,cook_time&state=ilike.*${encodeURIComponent(state)}*&limit=30`;
     } else if(type === "cuisine") {
