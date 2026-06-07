@@ -243,7 +243,7 @@ const SB = {
       const all=await res.json();
       const norm=ingredients.map(i=>i.toLowerCase().trim());
       return all.map(recipe=>{
-        const rIngs=(recipe.ingredients||[]).map(i=>String(i).toLowerCase());
+        const rIngs=typeof recipe.ingredients==="string"?recipe.ingredients.toLowerCase().replace(/['\[\]]/g,"").split(",").map(i=>i.trim()):(recipe.ingredients||[]).map(i=>String(i).toLowerCase());
         const hits=norm.filter(u=>rIngs.some(r=>r.includes(u)||u.includes(r)));
         const score=rIngs.length>0?hits.length/rIngs.length:0;
         return{...recipe,matchScore:score};
