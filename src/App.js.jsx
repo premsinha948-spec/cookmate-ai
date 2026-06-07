@@ -289,7 +289,7 @@ const Claude = {
     try{
       const text=await this.call(messages,system,maxTokens);
       const clean=text.replace(/```json\s*/g,"").replace(/```\s*/g,"").trim();
-      const start=clean.search(/[\[{]/);
+      const start=clean.search(/[[{]/);
       return start!==-1?JSON.parse(clean.slice(start)):null;
     }catch{return null;}
   },
