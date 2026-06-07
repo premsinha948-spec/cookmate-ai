@@ -8,6 +8,11 @@ import { useState, useEffect, useRef, useCallback } from "react";
 
 // ── CONFIG ────────────────────────────────────────────────────
 // Add these to your .env.local — never share these keys
+import { createClient } from '@supabase/supabase-js';
+const supabase = createClient(
+  process.env.REACT_APP_SUPABASE_URL || "",
+  process.env.REACT_APP_SUPABASE_KEY || ""
+);
 const CFG = {
   CLAUDE_MODEL: "claude-sonnet-4-20250514",
   GROQ_MODEL:   "llama-3.3-70b-versatile",
