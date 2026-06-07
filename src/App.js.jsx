@@ -274,17 +274,21 @@ const SB = {
     }catch(e){console.error("SB fav:",e);}
   },
 };
-
 // ── CLAUDE API ────────────────────────────────────────────────
 const Claude = {
   async call(messages, system="", maxTokens=1500){
     const body={model:CFG.CLAUDE_MODEL,max_tokens:maxTokens,messages};
     if(system) body.system=system;
-   const res=await fetch("/api/claude",{
-   if(!res.ok) throw new Error("Claude " + res.status);
+    const res=await fetch("/api/claude",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(body)
+    });
+    if(!res.ok) throw new Error("Claude " + res.status);
     const d=await res.json();
     return(d.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("");
   },
+
   async callJSON(messages, system="", maxTokens=1500){
     try{
       const text=await this.call(messages,system,maxTokens);
