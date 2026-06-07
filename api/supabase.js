@@ -7,25 +7,35 @@ module.exports = async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).end();
   try {
-    const { endpoint, method="GET", body } = req.body;
-    const url = `${process.env.REACT_APP_SUPABASE_URL}${endpoint}`;
-    console.log("Supabase URL:", process.env.REACT_APP_SUPABASE_URL ? "SET" : "NOT SET");
-    console.log("Supabase KEY:", process.env.REACT_APP_SUPABASE_KEY ? "SET" : "NOT SET");
-    console.log("Fetching:", url);
+    const { type, ingredients, category, state, cuisine } = req.body;
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.REACT_APP_SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_KEY || process.env.REACT_APP_SUPABASE_KEY;
+
+    let endpoint = "";
+    if(type === "ingredients") {
+      endpoint = `/rest/v1/recipes?select=id,name,ingredients,emoji,minutes,difficulty,nutrition,category,state&limit=100`;
+    } else if(type === "category") {
+      endpoint = `/rest/v1/recipes?select=id,name,ingredients,emoji,minutes,difficulty,nutrition,category,state&category=ilike.*${category}*&limit=30`;
+    } else if(type === "state") {
+      endpoint = `/rest/v1/recipes?select=id,name,ingredients,emoji,minutes,difficulty,nutrition,category,state&state=ilike.*${state}*&limit=30`;
+    } else if(type === "cuisine") {
+      endpoint = `/rest/v1/recipes?select=id,name,ingredients,emoji,minutes,difficulty,nutrition,category,cuisine&cuisine=ilike.*${cuisine}*&limit=30`;
+    } else {
+      endpoint = req.body.endpoint || `/rest/v1/recipes?select=*&limit=30`;
+    }
+
+    const url = `${supabaseUrl}${endpoint}`;
     const response = await fetch(url, {
-      method,
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "apikey": process.env.REACT_APP_SUPABASE_KEY,
-        "Authorization": `Bearer ${process.env.REACT_APP_SUPABASE_KEY}`,
+        "apikey": supabaseKey,
+        "Authorization": `Bearer ${supabaseKey}`,
       },
-      body: body ? JSON.stringify(body) : undefined,
     });
     const data = await response.json();
-    console.log("Supabase status:", response.status);
     res.status(200).json(data);
   } catch (e) {
-    console.log("Supabase error:", e.message);
     res.status(500).json({ error: e.message });
   }
 };
