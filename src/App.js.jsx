@@ -714,7 +714,7 @@ function ScanScreen({onRec,t,lang,userId}){
     let dbRes=[];
     if(SB.ok()){dbRes=await SB.searchByIngredients(names);}
 
-    if(dbRes.length>=3){
+   if(dbRes.length>=1){
       setStatus("⚡ Found in database!");
       setRecs(dbRes);setStep("rec");
     } else {
