@@ -280,7 +280,7 @@ const Claude = {
   async call(messages, system="", maxTokens=1500){
     const body={model:CFG.CLAUDE_MODEL,max_tokens:maxTokens,messages};
     if(system) body.system=system;
-    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+   const res=await fetch("/api/claude",{
     if(!res.ok) throw new Error(`Claude ${res.status}`);
     const d=await res.json();
     return(d.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("");
@@ -296,7 +296,7 @@ const Claude = {
   async detectIngredients(base64, mime="image/jpeg"){
     const body={model:CFG.CLAUDE_MODEL,max_tokens:600,system:"Food vision AI. Only report what you can clearly see. Never invent items.",
       messages:[{role:"user",content:[{type:"image",source:{type:"base64",media_type:mime,data:base64}},{type:"text",text:"List ONLY food ingredients visible. Return JSON:{ingredients:[{name,emoji,confidence}],notes:string}. No food → {ingredients:[],notes:'No food detected'}."}]}]};
-    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  const res=await fetch("/api/claude",{
     if(!res.ok) return null;
     const d=await res.json();
     const text=(d.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("");
@@ -323,7 +323,7 @@ const Groq = {
       catch{return "Chat unavailable. Please set GROQ_KEY.";}
     }
     try{
-      const res=await fetch("https://api.groq.com/openai/v1/chat/completions",{
+    const res=await fetch("/api/groq",{
         method:"POST",
         headers:{"Content-Type":"application/json","Authorization":`Bearer ${CFG.GROQ_KEY}`},
         body:JSON.stringify({model:CFG.GROQ_MODEL,max_tokens:500,messages:[{role:"system",content:sys},...messages]}),
