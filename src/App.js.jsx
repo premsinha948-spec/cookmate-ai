@@ -1120,14 +1120,14 @@ function ExploreIndiaScreen({onRec,t,userId}){
       });
       const data=await res.json();
       if(Array.isArray(data)&&data.length>0){
-        setSbDishes(data.map(r=>({...r,emoji:"🍽️",time:r.minutes?r.minutes+" min":"30 min",diff:"Medium",cal:r.nutrition?.calories||320,protein:r.nutrition?.protein||"12g",tags:[r.category||"Indian"]})));
+        const sbRecipes=data.map(r=>({...r,emoji:"🍽️",time:r.minutes?r.minutes+" min":"30 min",diff:"Medium",cal:r.nutrition?.calories||320,protein:r.nutrition?.protein||"12g",tags:[r.category||"Indian"]}));
+        setSbDishes([...s.dishes,...sbRecipes]);
       } else {
         setSbDishes(s.dishes);
       }
     }catch{setSbDishes(s.dishes);}
     setLoading(false);
   };
-
   if(sel){
     const allDishes=sbDishes.length>0?sbDishes:sel.dishes;
    const dishes=mf==="All"?allDishes:allDishes.filter(d=>(d.category||"").toLowerCase().includes(mf.toLowerCase())||(d.tags||[]).includes(mf));
