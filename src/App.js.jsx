@@ -985,7 +985,7 @@ function PlannerScreen({onRec,t,lang,userId}){
     {loading?[1,2,3,4].map(i=><Shim key={i}/>):plan.map((r,i)=><button key={i} onClick={()=>{LS.addRecent(r);onRec(r);}} style={{...ST.card,width:"100%",textAlign:"left",cursor:"pointer",display:"flex",gap:11,alignItems:"center"}} className="fade-in">
       <span style={{fontSize:28,flexShrink:0}}>{r.emoji||"🍽️"}</span>
       <div style={{flex:1,minWidth:0}}>
-        <div style={{fontWeight:700,fontSize:13}}>{r.name}</div>
+        <div style={{fontWeight:700,fontSize:13,color:C.txt}}>{r.name}</div>
         <div style={{display:"flex",gap:7,marginTop:2,flexWrap:"wrap"}}>
           <span style={{fontSize:11,color:C.muted}}>⏱ {r.time}</span>
           <span style={{fontSize:11,color:C.muted}}>🔥 {r.cal} kcal</span>
