@@ -7,24 +7,21 @@ module.exports = async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).end();
   try {
-    const { type, ingredients, category, state, cuisine } = req.body;
     const supabaseUrl = process.env.SUPABASE_URL || process.env.REACT_APP_SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_KEY || process.env.REACT_APP_SUPABASE_KEY;
+    const { type, ingredients, category, state, cuisine, endpoint } = req.body;
 
-    let endpoint = "";
-    if(type === "ingredients") {
-      endpoint = `/rest/v1/recipes?select=id,name,ingredients,emoji,minutes,difficulty,nutrition,category,state&limit=100`;
-    } else if(type === "category") {
-      endpoint = `/rest/v1/recipes?select=id,name,ingredients,emoji,minutes,difficulty,nutrition,category,state&category=ilike.*${category}*&limit=30`;
+    let url = "";
+    if(type === "category") {
+      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,emoji,minutes,difficulty,nutrition,category,state&category=ilike.*${encodeURIComponent(category)}*&limit=30`;
     } else if(type === "state") {
-      endpoint = `/rest/v1/recipes?select=id,name,ingredients,emoji,minutes,difficulty,nutrition,category,state&state=ilike.*${state}*&limit=30`;
+      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,emoji,minutes,difficulty,nutrition,category,state&state=ilike.*${encodeURIComponent(state)}*&limit=30`;
     } else if(type === "cuisine") {
-      endpoint = `/rest/v1/recipes?select=id,name,ingredients,emoji,minutes,difficulty,nutrition,category,cuisine&cuisine=ilike.*${cuisine}*&limit=30`;
+      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,emoji,minutes,difficulty,nutrition,category,cuisine&cuisine=ilike.*${encodeURIComponent(cuisine)}*&limit=30`;
     } else {
-      endpoint = req.body.endpoint || `/rest/v1/recipes?select=*&limit=30`;
+      url = `${supabaseUrl}${endpoint || "/rest/v1/recipes?select=id,name,ingredients,emoji,minutes,difficulty,nutrition&limit=100"}`;
     }
 
-    const url = `${supabaseUrl}${endpoint}`;
     const response = await fetch(url, {
       method: "GET",
       headers: {
