@@ -13,13 +13,13 @@ module.exports = async function handler(req, res) {
 
     let url = "";
     if(type === "category") {
-    url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,difficulty,nutrition,category,state&category=ilike.*${encodeURIComponent(category)}*&limit=30`;
+ url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,state,prep_time,cook_time&category=ilike.*${encodeURIComponent(category)}*&limit=30`;
     } else if(type === "state") {
-    url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,difficulty,nutrition,category,state&state=ilike.*${encodeURIComponent(state)}*&limit=30`; 
+    url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,state,prep_time,cook_time&state=ilike.*${encodeURIComponent(state)}*&limit=30`;
     } else if(type === "cuisine") {
-      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,difficulty,nutrition,category,cuisine&cuisine=ilike.*${encodeURIComponent(cuisine)}*&limit=30`;
+     url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,cuisine,prep_time,cook_time&cuisine=ilike.*${encodeURIComponent(cuisine)}*&limit=30`;
     } else {
-      url = `${supabaseUrl}${endpoint || "/rest/v1/recipes?select=id,name,ingredients,emoji,minutes,difficulty,nutrition&limit=100"}`;
+      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,ingredients,minutes,nutrition,category,state,prep_time,cook_time&limit=100`;
     }
 
     const response = await fetch(url, {
