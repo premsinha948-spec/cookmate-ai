@@ -13,11 +13,11 @@ module.exports = async function handler(req, res) {
 
     let url = "";
     if(type === "category") {
-      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,emoji,minutes,difficulty,nutrition,category,state&category=ilike.*${encodeURIComponent(category)}*&limit=30`;
+    url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,difficulty,nutrition,category,state&category=ilike.*${encodeURIComponent(category)}*&limit=30`;
     } else if(type === "state") {
-      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,emoji,minutes,difficulty,nutrition,category,state&state=ilike.*${encodeURIComponent(state)}*&limit=30`;
+    url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,difficulty,nutrition,category,state&state=ilike.*${encodeURIComponent(state)}*&limit=30`; 
     } else if(type === "cuisine") {
-      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,emoji,minutes,difficulty,nutrition,category,cuisine&cuisine=ilike.*${encodeURIComponent(cuisine)}*&limit=30`;
+      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,difficulty,nutrition,category,cuisine&cuisine=ilike.*${encodeURIComponent(cuisine)}*&limit=30`;
     } else {
       url = `${supabaseUrl}${endpoint || "/rest/v1/recipes?select=id,name,ingredients,emoji,minutes,difficulty,nutrition&limit=100"}`;
     }
