@@ -273,7 +273,6 @@ const SB = {
       }
     }catch(e){console.error("SB fav:",e);}
   },
-};
   // Auto-save AI-generated recipe for future DB hits
   async saveRecipe(recipe){
     if(!this.ok()) return;
