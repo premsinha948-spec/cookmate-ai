@@ -561,10 +561,10 @@ function AuthScreen({onLogin}){
   const googleLogin=async()=>{
     setLoading(true);setErr("");
     try{
-      const{error}=await supabase.auth.signInWithOAuth({
-        provider:"google",
-        options:{redirectTo:window.location.origin}
-      });
+    const{error}=await supabase.auth.signInWithOAuth({
+  provider:"google",
+  options:{redirectTo:"https://cookmate-ai-xi.vercel.app"}
+}); 
       if(error) throw error;
     }catch(e){setErr(e.message);setLoading(false);}
   };
