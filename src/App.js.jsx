@@ -944,7 +944,27 @@ function PlannerScreen({onRec,t,lang,userId}){
   const FD=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
   const MEALS=["Breakfast","Lunch","Dinner","Snacks"];
   const ICONS={Breakfast:"🌅",Lunch:"☀️",Dinner:"🌙",Snacks:"🍿"};
-  const gen=async()=>{setLoading(true);setErr("");try{const d=await Claude.getPlannerRecipes(day,meal,20);if(Array.isArray(d)&&d.length>0) setPlan(d);else setErr("Try again.");}catch(e){setErr(e.message||"Failed.");}setLoading(false);};
+  const gen=async()=>{
+  setLoading(true);setErr("");
+  try{
+    // Supabase pehle
+    const sbRes=await fetch("/api/supabase",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({type:"category",category:meal})
+    });
+    const sbData=await sbRes.json();
+    if(Array.isArray(sbData)&&sbData.length>=3){
+      setPlan(sbData.map(r=>({...r,source:"db",emoji:r.emoji||"🍽️",time:r.minutes?r.minutes+" min":"30 min",diff:r.difficulty||"Medium",cal:r.nutrition?.calories||320,protein:r.nutrition?.protein||"12g"})));
+    } else {
+      // Claude fallback
+      const d=await Claude.getPlannerRecipes(day,meal,20);
+      if(Array.isArray(d)&&d.length>0) setPlan(d);
+      else setErr("Try again.");
+    }
+  }catch(e){setErr(e.message||"Failed.");}
+  setLoading(false);
+};
   return<div style={ST.scr}>
     <h2 style={{fontSize:18,fontWeight:800,marginBottom:3}}>📅 {t.mealPlanner}</h2>
     <p style={{color:C.muted,fontSize:13,marginBottom:14}}>20 recipes per request · Regional Indian variety</p>
