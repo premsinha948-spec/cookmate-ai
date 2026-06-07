@@ -16,7 +16,7 @@ module.exports = async function handler(req, res) {
     if(type === "category") {
       url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,state&limit=30&offset=${offset}`;
     } else if(type === "state") {
-      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,state&state=eq.${state}&limit=30&offset=${offset}`;
+      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,state&state=eq.${encodeURIComponent(state)}&limit=30&offset=${offset}`;
     } else if(type === "cuisine") {
       url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,cuisine&limit=30&offset=${offset}`;
     } else {
