@@ -1236,7 +1236,6 @@ function WorldCuisinesScreen({onRec,t,userId}){
 
 // ── NUTRITION TRACKER ─────────────────────────────────────────
 function NutritionTrackerScreen({t}){
-}
   const[goal,setGoalState]=useState(()=>LS.get("cal_goal",2000));
   const[editGoal,setEditGoal]=useState(false);
   const[goalInp,setGoalInp]=useState(goal);
@@ -1294,6 +1293,7 @@ function NutritionTrackerScreen({t}){
  <span style={mkPill()}>{e.calories} kcal</span>
 </div>)}
   </div>;
+}
 // ── FAVORITES ─────────────────────────────────────────────────
 function FavoritesScreen({onRec,t,userId}){
   const[favs,setFavs]=useState(()=>LS.getFavs());
