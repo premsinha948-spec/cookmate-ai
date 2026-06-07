@@ -281,7 +281,7 @@ const Claude = {
     const body={model:CFG.CLAUDE_MODEL,max_tokens:maxTokens,messages};
     if(system) body.system=system;
    const res=await fetch("/api/claude",{
-    if(!res.ok) throw new Error(`Claude ${res.status}`);
+   if(!res.ok) throw new Error("Claude " + res.status);
     const d=await res.json();
     return(d.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("");
   },
