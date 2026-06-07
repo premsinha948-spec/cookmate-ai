@@ -297,10 +297,14 @@ const Claude = {
       return start!==-1?JSON.parse(clean.slice(start)):null;
     }catch{return null;}
   },
-  async detectIngredients(base64, mime="image/jpeg"){
+ async detectIngredients(base64, mime="image/jpeg"){
     const body={model:CFG.CLAUDE_MODEL,max_tokens:600,system:"Food vision AI. Only report what you can clearly see. Never invent items.",
       messages:[{role:"user",content:[{type:"image",source:{type:"base64",media_type:mime,data:base64}},{type:"text",text:"List ONLY food ingredients visible. Return JSON:{ingredients:[{name,emoji,confidence}],notes:string}. No food → {ingredients:[],notes:'No food detected'}."}]}]};
-  const res=await fetch("/api/claude",{
+    const res=await fetch("/api/claude",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(body)
+    });
     if(!res.ok) return null;
     const d=await res.json();
     const text=(d.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("");
