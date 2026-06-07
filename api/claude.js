@@ -11,14 +11,16 @@ module.exports = async function handler(req, res) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-       "x-api-key": process.env.REACT_APP_ANTHROPIC_KEY || process.env.ANTHROPIC_KEY,
+        "x-api-key": process.env.REACT_APP_ANTHROPIC_KEY || process.env.ANTHROPIC_KEY,
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify(req.body),
     });
     const data = await response.json();
+    console.log("Claude response:", JSON.stringify(data).slice(0, 500));
     res.status(200).json(data);
   } catch (e) {
+    console.log("Claude error:", e.message);
     res.status(500).json({ error: e.message });
   }
 };
