@@ -9,18 +9,18 @@ module.exports = async function handler(req, res) {
   try {
     const supabaseUrl = process.env.SUPABASE_URL || process.env.REACT_APP_SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_KEY || process.env.REACT_APP_SUPABASE_KEY;
-    const { type, ingredients, category, state, cuisine, endpoint } = req.body;
+    const { type, category, state, cuisine, endpoint } = req.body;
+    const offset = Math.floor(Math.random() * 200);
 
     let url = "";
     if(type === "category") {
- const offset = Math.floor(Math.random() * 200);
-url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,state,prep_time,cook_time&category=ilike.${encodeURIComponent(category)}&limit=30&offset=${offset}`;
+      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,state&category=eq.${category}&limit=30&offset=${offset}`;
     } else if(type === "state") {
-    url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,state,prep_time,cook_time&state=ilike.*${encodeURIComponent(state)}*&limit=30`;
+      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,state&state=eq.${state}&limit=30&offset=${offset}`;
     } else if(type === "cuisine") {
-     url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,cuisine,prep_time,cook_time&cuisine=ilike.*${encodeURIComponent(cuisine)}*&limit=30`;
+      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,cuisine&cuisine=eq.${cuisine}&limit=30&offset=${offset}`;
     } else {
-      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,ingredients,minutes,nutrition,category,state,prep_time,cook_time&limit=100`;
+      url = `${supabaseUrl}${endpoint || "/rest/v1/recipes?select=id,name,ingredients,minutes,nutrition,category,state&limit=100"}`;
     }
 
     const response = await fetch(url, {
