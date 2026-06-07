@@ -1115,7 +1115,7 @@ function ExploreIndiaScreen({onRec,t,userId}){
     <p style={{color:C.muted,fontSize:13,marginBottom:14}}>{INDIA_STATES.length} States · 200+ Authentic Dishes</p>
     {INDIA_STATES.map((s,i)=><button key={i} onClick={()=>{setSel(s);setMf("All");}} style={{...ST.card,width:"100%",textAlign:"left",cursor:"pointer",display:"flex",alignItems:"center",gap:14,border:`1px solid ${s.color}33`,padding:"13px 14px"}}>
       <span style={{fontSize:30,flexShrink:0}}>{s.emoji}</span>
-      <div style={{flex:1}}><div style={{fontWeight:700,fontSize:14}}>{s.state}</div><div style={{fontSize:11,color:C.muted,marginTop:2}}>{s.dishes.length} dishes · {s.dishes[0]?.name}, {s.dishes[1]?.name}...</div></div>
+      <div style={{flex:1}}><div style={{fontWeight:700,fontSize:14,color:C.txt}}>{s.state}</div><div style={{fontSize:11,color:C.muted,marginTop:2}}>{s.dishes.length} dishes · {s.dishes[0]?.name}, {s.dishes[1]?.name}...</div></div>
       <div style={{fontSize:18,color:C.muted}}>›</div>
     </button>)}
   </div>;
