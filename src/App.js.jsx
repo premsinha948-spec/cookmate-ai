@@ -237,7 +237,7 @@ const SB = {
   async searchByIngredients(ingredients){
     if(!this.ok()) return [];
     try{
-      const url=`${CFG.SUPABASE_URL}/rest/v1/recipes?select=*&limit=30`;
+     const url=`${CFG.SUPABASE_URL}/rest/v1/recipes?select=id,name,ingredients,emoji,minutes,difficulty,nutrition&limit=100`;
       const res=await fetch(url,{headers:this.hdrs()});
       if(!res.ok) return [];
       const all=await res.json();
