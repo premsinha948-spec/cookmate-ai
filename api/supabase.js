@@ -14,12 +14,12 @@ module.exports = async function handler(req, res) {
 
     let url = "";
     if(type === "category") {
-      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,state&category=eq.${category}&limit=30&offset=${offset}`;
+     const offset = Math.floor(Math.random() * 500);
+url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,state&limit=30&offset=${offset}`;
     } else if(type === "state") {
-      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,state&state=eq.${state}&limit=30&offset=${offset}`;
+ url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,state&state=eq.${state}&limit=30&offset=${offset}`;    
     } else if(type === "cuisine") {
-      url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,cuisine&cuisine=eq.${cuisine}&limit=30&offset=${offset}`;
-    } else {
+   url = `${supabaseUrl}/rest/v1/recipes?select=id,name,minutes,nutrition,category,cuisine&limit=30&offset=${offset}`;
       url = `${supabaseUrl}${endpoint || "/rest/v1/recipes?select=id,name,ingredients,minutes,nutrition,category,state&limit=100"}`;
     }
 
