@@ -1233,6 +1233,12 @@ function WorldCuisinesScreen({onRec,t,userId}){
     </div>
   </div>;
 }
+
+// ── NUTRITION TRACKER ─────────────────────────────────────────
+function NutritionTrackerScreen({t}){
+}
+  const[goal,setGoalState]=useState(()=>LS.get("cal_goal",2000));
+  const[editGoal,setEditGoal]=useState(false);
   const[goalInp,setGoalInp]=useState(goal);
   const[log,setLog]=useState(()=>LS.getTodayLog());
   const[search,setSearch]=useState("");
