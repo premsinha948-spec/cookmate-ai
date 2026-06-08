@@ -2159,7 +2159,7 @@ function FloatingChat({lang}){
         <div style={{width:30,height:30,borderRadius:"50%",background:grad,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14}}>🍳</div>
         <div style={{flex:1}}>
           <div style={{fontWeight:700,fontSize:13,color:C.txt}}>{t.chatTitle}</div>
-          <div style={{fontSize:10,color:C.ok}}>● {CFG.GROQ_KEY?"Groq AI":"Claude AI"} • Online</div>
+         <div style={{fontSize:10,color:C.ok}}>● Online</div> 
         </div>
         <button onClick={()=>setFull(p=>!p)} style={{background:"none",border:"none",color:C.muted,cursor:"pointer",fontSize:16,padding:"4px"}}>{full?"⊡":"⊞"}</button>
         <button onClick={()=>setOpen(false)} style={{background:"none",border:"none",color:C.muted,cursor:"pointer",fontSize:16,padding:"4px"}}>✕</button>
