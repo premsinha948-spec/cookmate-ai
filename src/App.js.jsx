@@ -3036,10 +3036,16 @@ export default function CookMateApp(){
   const t=TR[lang]||TR.en;
   const setLang=l=>{setLangState(l);LS.set("lang",l);};
   const handleLogin=u=>{setUser(u);LS.set("user",u);};
-  const handleSignOut=()=>{setUser(null);LS.set("user",null);setRecipe(null);setNav("home");};
-  const onRec=r=>{setRecipe(r);LS.addRecent(r);};
-  const onBack=()=>{setRecipe(null);setRecents(LS.getRecent());};
-  const userId=user?.id||null;
+ const handleSignOut=()=>{
+  LS.set("user",null);
+  localStorage.removeItem("cm5_user");
+  setUser(null);
+  setRecipe(null);
+  setNav("home");
+};
+const onRec=r=>{setRecipe(r);LS.addRecent(r);};
+const onBack=()=>{setRecipe(null);setRecents(LS.getRecent());};
+const userId=user?.id||null;
 
   if(!user) return<div style={ST.app}><style>{CSS}</style><AuthScreen onLogin={handleLogin}/></div>;
 
