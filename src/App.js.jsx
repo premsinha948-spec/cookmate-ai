@@ -1810,7 +1810,7 @@ const SB = {
       const res=await fetch("/api/supabase",{
         method:"POST",
         headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({endpoint:"/rest/v1/recipes?select=id,name,ingredients,emoji,minutes,difficulty,nutrition&limit=100"})
+       body:JSON.stringify({type:"ingredients"})
       });
       if(!res.ok) return [];
       const all=await res.json();
