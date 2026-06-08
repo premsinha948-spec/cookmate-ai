@@ -415,7 +415,9 @@ async function getVideos(recipeName){
       if(res.ok){
         const data=await res.json();
         if(data.length>0&&data[0].videos){
-          return{videos:JSON.parse(data[0].videos),source:"live",fromCache:true};
+          const allVideos=JSON.parse(data[0].videos);
+          const shuffled=[...allVideos].sort(()=>Math.random()-0.5).slice(0,4);
+          return{videos:shuffled,source:"live",fromCache:true};
         }
       }
     }catch{}
@@ -424,23 +426,24 @@ async function getVideos(recipeName){
   // YouTube API call
   if(CFG.YOUTUBE_KEY){
     try{
-     const r=await fetch(`/api/youtube?q=${encodeURIComponent(recipeName)}`); 
+      const r=await fetch(`/api/youtube?q=${encodeURIComponent(recipeName)}`);
       if(r.ok){
         const d=await r.json();
         if(!d.error&&d.items?.length){
-          const videos=d.items.map(i=>({id:i.id.videoId,title:i.snippet.title,channel:i.snippet.channelTitle,views:"—",duration:"—",thumb:`https://img.youtube.com/vi/${i.id.videoId}/mqdefault.jpg`,realThumb:true,url:`https://www.youtube.com/watch?v=${i.id.videoId}`}));
-          // Save to Supabase cache
+          const allVideos=d.items.map(i=>({id:i.id.videoId,title:i.snippet.title,channel:i.snippet.channelTitle,views:"—",duration:"—",thumb:`https://img.youtube.com/vi/${i.id.videoId}/mqdefault.jpg`,realThumb:true,url:`https://www.youtube.com/watch?v=${i.id.videoId}`}));
+          // Save all 50 to Supabase cache
           if(SB.ok()){
             try{
               const cacheKey=recipeName.toLowerCase().trim();
               await fetch(`${CFG.SUPABASE_URL}/rest/v1/video_cache`,{
                 method:"POST",
                 headers:{"Content-Type":"application/json","apikey":CFG.SUPABASE_KEY,"Authorization":`Bearer ${CFG.SUPABASE_KEY}`,"Prefer":"return=minimal"},
-                body:JSON.stringify({recipe_name:cacheKey,videos:JSON.stringify(videos),created_at:new Date().toISOString()})
+                body:JSON.stringify({recipe_name:cacheKey,videos:JSON.stringify(allVideos),created_at:new Date().toISOString()})
               });
             }catch{}
           }
-          return{videos,source:"live"};
+          const shuffled=[...allVideos].sort(()=>Math.random()-0.5).slice(0,4);
+          return{videos:shuffled,source:"live"};
         }
       }
     }catch{}
