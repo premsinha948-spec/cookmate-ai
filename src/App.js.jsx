@@ -2367,10 +2367,9 @@ function ScanScreen({onRec,t,lang,userId}){
   const addM=()=>{if(!mi.trim()) return;setIngs(p=>[...p,"🥗 "+mi.trim()]);setMi("");};
   const remI=i=>setIngs(p=>p.filter((_,j)=>j!==i));
 
-  const genRec=async()=>{
+ const genRec=async()=>{
     setLoading(true);setErr("");
     const names=ings.map(i=>i.replace(/^[^\w\u0900-\u097F]*/,"").trim()).filter(Boolean);
-
     // Step 1: DB search
     setStatus("🔍 Searching database...");
     let dbRes=[];
