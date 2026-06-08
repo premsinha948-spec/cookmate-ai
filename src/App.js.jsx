@@ -424,7 +424,7 @@ async function getVideos(recipeName){
   // YouTube API call
   if(CFG.YOUTUBE_KEY){
     try{
-      const r=await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(recipeName+" recipe cooking")}&type=video&maxResults=4&key=${CFG.YOUTUBE_KEY}&regionCode=IN`);
+     const r=await fetch(`/api/youtube?q=${encodeURIComponent(recipeName)}`); 
       if(r.ok){
         const d=await r.json();
         if(!d.error&&d.items?.length){
