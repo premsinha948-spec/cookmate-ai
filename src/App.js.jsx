@@ -3013,25 +3013,6 @@ function SettingsScreen({lang,setLang,user,onSignOut,t}){
       <div style={{fontSize:12,color:C.muted,lineHeight:1.6,marginBottom:10}}>Female voice auto-selected for {LANGS.find(l=>l.code===lang)?.label}. For Hindi: Settings → Accessibility → Text-to-Speech → Install Hindi.</div>
       <button onClick={testVoice} style={{...mkBtn("ghost"),borderRadius:10,fontSize:13}}>🔊 Test Voice</button>
     </div>
-    <h3 style={{fontSize:14,fontWeight:700,marginBottom:8}}>🔌 API Status</h3>
-    <div style={{...ST.card,marginBottom:14}}>
-      {[{name:"Claude AI (Vision + Recipes)",key:CFG.ANTHROPIC_KEY,ic:"🤖"},{name:"Groq (Fast Chatbot)",key:CFG.GROQ_KEY,ic:"⚡"},{name:"Supabase (DB-first search)",key:CFG.SUPABASE_KEY,ic:"🗄️"},{name:"YouTube Videos",key:CFG.YOUTUBE_KEY,ic:"📺"}].map((api,i)=><div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"8px 0",borderBottom:i<3?`1px solid ${C.border}`:"none"}}>
-        <div style={{fontSize:12}}>{api.ic} {api.name}</div>
-        <span style={mkTag(api.key?C.ok:C.warn)}>{api.key?"✓ Set":"Not set"}</span>
-      </div>)}
-      <div style={{fontSize:11,color:C.sub,marginTop:10}}>Add keys to .env.local — never share them</div>
-    </div>
-    <div style={ST.card}>
-      <h3 style={{fontSize:13,fontWeight:700,marginBottom:8}}>ℹ️ CookMate AI v5.0</h3>
-      <div style={{color:C.muted,fontSize:12,lineHeight:1.9}}>
-        <div>🤖 Claude AI — Vision + Recipe generation</div>
-        <div>⚡ Groq llama-3.3-70b — Floating chatbot</div>
-        <div>🗄️ Supabase — DB-first search + auto-save</div>
-        <div>🗺️ {INDIA_STATES.length} Indian States · {WORLD.length} World Cuisines</div>
-        <div>🌐 {LANGS.length} Languages · 🎙 Female Voice</div>
-        <div>📺 YouTube · ❤️ Favorites · 📊 Nutrition</div>
-      </div>
-    </div>
   </div>;
 }
 
