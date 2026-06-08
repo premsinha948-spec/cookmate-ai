@@ -4,6 +4,8 @@
 // ║        CookMate AI v5.0 — Full Production App               ║
 // ║  Supabase DB-first + Claude Vision + Groq Chatbot           ║
 // ╚══════════════════════════════════════════════════════════════╝
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+const supabase = createClient(process.env.REACT_APP_SUPABASE_URL, process.env.REACT_APP_SUPABASE_KEY);
 import { useState, useEffect, useRef, useCallback } from "react";
 
 // ── CONFIG ────────────────────────────────────────────────────
@@ -3036,12 +3038,13 @@ export default function CookMateApp(){
   const t=TR[lang]||TR.en;
   const setLang=l=>{setLangState(l);LS.set("lang",l);};
   const handleLogin=u=>{setUser(u);LS.set("user",u);};
- const handleSignOut=()=>{
-  LS.set("user",null);
-  localStorage.removeItem("cm5_user");
+ const handleSignOut=async()=>{
+  await supabase.auth.signOut();
+  try{localStorage.clear();}catch{}
   setUser(null);
   setRecipe(null);
   setNav("home");
+  window.location.href="/";
 };
 const onRec=r=>{setRecipe(r);LS.addRecent(r);};
 const onBack=()=>{setRecipe(null);setRecents(LS.getRecent());};
