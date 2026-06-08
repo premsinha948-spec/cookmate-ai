@@ -407,10 +407,42 @@ const YT_MOCK = [
   {id:"m4",title:"Chef's Expert Technique",channel:"MasterChef India",views:"8.4M",duration:"35:20",thumb:"⭐",url:null},
 ];
 async function getVideos(recipeName){
+  // Check Supabase cache first
+  if(SB.ok()){
+    try{
+      const cacheKey=recipeName.toLowerCase().trim();
+      const res=await fetch(`${CFG.SUPABASE_URL}/rest/v1/video_cache?recipe_name=eq.${encodeURIComponent(cacheKey)}&select=*&limit=1`,{headers:{"apikey":CFG.SUPABASE_KEY,"Authorization":`Bearer ${CFG.SUPABASE_KEY}`}});
+      if(res.ok){
+        const data=await res.json();
+        if(data.length>0&&data[0].videos){
+          return{videos:JSON.parse(data[0].videos),source:"live",fromCache:true};
+        }
+      }
+    }catch{}
+  }
+
+  // YouTube API call
   if(CFG.YOUTUBE_KEY){
     try{
-      const r=await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(recipeName+" recipe")}&type=video&maxResults=4&key=${CFG.YOUTUBE_KEY}&regionCode=IN`);
-      if(r.ok){const d=await r.json();if(!d.error&&d.items?.length){return{videos:d.items.map(i=>({id:i.id.videoId,title:i.snippet.title,channel:i.snippet.channelTitle,views:"—",duration:"—",thumb:`https://img.youtube.com/vi/${i.id.videoId}/mqdefault.jpg`,realThumb:true,url:`https://www.youtube.com/watch?v=${i.id.videoId}`})),source:"live"};}}
+      const r=await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(recipeName+" recipe cooking")}&type=video&maxResults=4&key=${CFG.YOUTUBE_KEY}&regionCode=IN`);
+      if(r.ok){
+        const d=await r.json();
+        if(!d.error&&d.items?.length){
+          const videos=d.items.map(i=>({id:i.id.videoId,title:i.snippet.title,channel:i.snippet.channelTitle,views:"—",duration:"—",thumb:`https://img.youtube.com/vi/${i.id.videoId}/mqdefault.jpg`,realThumb:true,url:`https://www.youtube.com/watch?v=${i.id.videoId}`}));
+          // Save to Supabase cache
+          if(SB.ok()){
+            try{
+              const cacheKey=recipeName.toLowerCase().trim();
+              await fetch(`${CFG.SUPABASE_URL}/rest/v1/video_cache`,{
+                method:"POST",
+                headers:{"Content-Type":"application/json","apikey":CFG.SUPABASE_KEY,"Authorization":`Bearer ${CFG.SUPABASE_KEY}`,"Prefer":"return=minimal"},
+                body:JSON.stringify({recipe_name:cacheKey,videos:JSON.stringify(videos),created_at:new Date().toISOString()})
+              });
+            }catch{}
+          }
+          return{videos,source:"live"};
+        }
+      }
     }catch{}
   }
   return{videos:YT_MOCK,source:"demo"};
@@ -456,42 +488,61 @@ function YouTubeSection({recipeName,t}){
   const[videos,setVideos]=useState([]);
   const[loading,setLoading]=useState(true);
   const[source,setSource]=useState("");
-  const[modal,setModal]=useState(null);
-  useEffect(()=>{
-    let cancel=false;setLoading(true);
-    getVideos(recipeName).then(r=>{if(!cancel){setVideos(r.videos);setSource(r.source);setLoading(false);}}).catch(()=>{if(!cancel){setVideos(YT_MOCK);setLoading(false);}});
-    return()=>{cancel=true;};
+  const[playing,setPlaying]=useState(null);
+  const[embedError,setEmbedError]=useState({});
+  const[fromCache,setFromCache]=useState(false);
+
+  const loadVideos=useCallback(async()=>{
+    setLoading(true);setPlaying(null);setEmbedError({});
+    try{
+      const r=await getVideos(recipeName);
+      setVideos(r.videos);setSource(r.source);setFromCache(r.fromCache||false);
+    }catch{setVideos(YT_MOCK);setSource("demo");}
+    setLoading(false);
   },[recipeName]);
+
+  useEffect(()=>{loadVideos();},[loadVideos]);
+
   return<div style={{marginBottom:16}}>
-    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+    <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10,flexWrap:"wrap"}}>
       <span style={{fontSize:14,fontWeight:700}}>📺 {t.videos}</span>
       <span style={mkTag(source==="live"?C.ok:C.warn)}>{source==="live"?t.liveMode:t.demoMode}</span>
+      {fromCache&&<span style={mkTag(C.a2)}>⚡ Cached</span>}
+      <button onClick={loadVideos} disabled={loading} style={{...mkBtn("ghost","sm"),borderRadius:20,marginLeft:"auto"}}>
+        {loading?<Spin s={12}/>:"↻ Refresh"}
+      </button>
     </div>
-    {loading&&[1,2].map(i=><Shim key={i} h={80}/>)}
-    {!loading&&videos.map((v,i)=><div key={i} className="fade-in" onClick={()=>v.url?window.open(v.url,"_blank"):setModal(v)} style={{background:C.bg,border:`1px solid ${C.border}`,borderRadius:14,marginBottom:8,cursor:"pointer",display:"flex",alignItems:"center",gap:12,padding:"10px 12px"}}>
-      <div style={{width:68,height:48,borderRadius:8,background:C.card,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,overflow:"hidden"}}>
-        {v.realThumb?<img src={v.thumb} style={{width:"100%",height:"100%",objectFit:"cover"}} alt=""/>:<span style={{fontSize:22}}>{v.thumb||"🎬"}</span>}
-      </div>
-      <div style={{flex:1,minWidth:0}}>
-        <div style={{fontWeight:600,fontSize:12,lineHeight:1.4,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{v.title}</div>
-        <div style={{fontSize:11,color:C.muted,marginTop:2}}>{v.channel} · {v.duration}</div>
-      </div>
-      <div style={{width:30,height:30,borderRadius:"50%",background:"#FF0000",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-        <span style={{color:"#fff",fontSize:9,marginLeft:2}}>▶</span>
-      </div>
-    </div>)}
-    {modal&&<div onClick={()=>setModal(null)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
-      <div onClick={e=>e.stopPropagation()} style={{background:C.card,borderRadius:20,padding:20,width:"100%",maxWidth:340}}>
-        <div style={{fontSize:36,textAlign:"center",marginBottom:10}}>{modal.thumb}</div>
-        <h3 style={{fontSize:14,fontWeight:700,marginBottom:5}}>{modal.title}</h3>
-        <div style={{fontSize:12,color:C.muted,marginBottom:12}}>{modal.channel} · {modal.views} views</div>
-        <div style={{...ST.card,background:C.a2S,borderColor:`${C.a2}44`,fontSize:12,color:C.a2,marginBottom:12}}>💡 Add YOUTUBE_KEY in .env for real videos</div>
-        <button onClick={()=>setModal(null)} style={{...mkBtn("out"),width:"100%"}}>Close</button>
-      </div>
+    {playing&&!embedError[playing]&&<div style={{marginBottom:12,borderRadius:14,overflow:"hidden",background:"#000",position:"relative"}}>
+      <iframe src={`https://www.youtube.com/embed/${playing}?autoplay=1`} width="100%" height="210" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{display:"block"}}/>
+      <button onClick={()=>setPlaying(null)} style={{position:"absolute",top:8,right:8,background:"rgba(0,0,0,0.75)",border:"none",color:"#fff",borderRadius:"50%",width:28,height:28,cursor:"pointer",fontSize:14,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+    </div>}
+    {loading&&[1,2,3,4].map(i=><Shim key={i} h={76}/>)}
+    {!loading&&videos.map((v,i)=>{
+      const canEmbed=v.id&&!v.id.startsWith("mock");
+      const hasError=embedError[v.id];
+      return<div key={i} className="fade-in" style={{background:C.bg,border:`1px solid ${playing===v.id?C.accent:C.border}`,borderRadius:14,marginBottom:8,display:"flex",alignItems:"center",gap:12,padding:"10px 12px"}}>
+        <div style={{width:68,height:48,borderRadius:8,background:C.card,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,overflow:"hidden"}}>
+          {v.realThumb?<img src={v.thumb} style={{width:"100%",height:"100%",objectFit:"cover"}} alt=""/>:<span style={{fontSize:22}}>{v.thumb||"🎬"}</span>}
+        </div>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontWeight:600,fontSize:12,lineHeight:1.4,overflow:"hidden",display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical"}}>{v.title}</div>
+          <div style={{fontSize:11,color:C.muted,marginTop:2}}>{v.channel}</div>
+          {hasError&&<div style={{fontSize:10,color:C.warn,marginTop:2}}>⚠️ Embed not allowed</div>}
+        </div>
+        {canEmbed&&!hasError?(
+          <button onClick={()=>setPlaying(playing===v.id?null:v.id)} style={{width:34,height:34,borderRadius:"50%",background:playing===v.id?C.accent:"#FF0000",border:"none",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,cursor:"pointer"}}>
+            <span style={{color:"#fff",fontSize:10,marginLeft:playing===v.id?0:2}}>{playing===v.id?"⏸":"▶"}</span>
+          </button>
+        ):(
+          <a href={v.url||`https://www.youtube.com/results?search_query=${encodeURIComponent(recipeName+" recipe")}`} target="_blank" rel="noreferrer" style={{width:34,height:34,borderRadius:"50%",background:"#FF0000",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,textDecoration:"none",fontSize:10,color:"#fff",paddingLeft:2}}>▶</a>
+        )}
+      </div>;
+    })}
+    {!CFG.YOUTUBE_KEY&&<div style={{...ST.card,background:C.a2S,borderColor:`${C.a2}44`,fontSize:12,color:C.a2,textAlign:"center",padding:"10px"}}>
+      💡 Set YOUTUBE_KEY for real videos
     </div>}
   </div>;
 }
-
 // ── FLOATING GROQ CHATBOT ─────────────────────────────────────
 function FloatingChat({lang}){
   const[open,setOpen]=useState(false);
