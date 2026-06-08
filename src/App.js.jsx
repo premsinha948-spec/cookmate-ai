@@ -579,7 +579,7 @@ function FloatingChat({lang}){
       <div style={{padding:"11px 14px",borderBottom:`1px solid ${C.border}`,display:"flex",alignItems:"center",gap:8,background:`linear-gradient(135deg,${C.gA}15,${C.gB}15)`}}>
         <div style={{width:30,height:30,borderRadius:"50%",background:grad,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14}}>🍳</div>
         <div style={{flex:1}}>
-          <div style={{fontWeight:700,fontSize:13,color:C.txt}}>{r.name}</div>
+          <div style={{fontWeight:700,fontSize:13,color:C.txt}}>{t.chatTitle}</div>
           <div style={{fontSize:10,color:C.ok}}>● {CFG.GROQ_KEY?"Groq AI":"Claude AI"} • Online</div>
         </div>
       </div>
