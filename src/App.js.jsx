@@ -2671,8 +2671,18 @@ function LeftoverScreen({onRec,t,lang,userId}){
   const add=it=>{if(!items.includes(it)) setItems(p=>[...p,it]);};
   const gen=async()=>{
     setLoading(true);setErr("");
-    try{const names=items.map(i=>i.replace(/^[^\w\u0900-\u097F]*/,"").trim());const d=await Claude.getLeftoverRecipes(names);if(Array.isArray(d)&&d.length>0){setRecs(d);setStep("res");}else setErr("Could not generate.");}
-    catch(e){setErr(e.message||"Failed.");}
+    try{
+      const names=items.map(i=>i.replace(/^[^\w\u0900-\u097F]*/,"").trim()).filter(Boolean);
+      let dbRes=[];
+      if(SB.ok()){dbRes=await SB.searchByIngredients(names);}
+      if(dbRes.length>=1){
+        setRecs(dbRes);setStep("res");
+      } else {
+        const d=await Claude.getLeftoverRecipes(names);
+        if(Array.isArray(d)&&d.length>0){setRecs(d);setStep("res");}
+        else setErr("Could not generate.");
+      }
+    }catch(e){setErr(e.message||"Failed.");}
     setLoading(false);
   };
   return<div style={ST.scr}>
