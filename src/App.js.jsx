@@ -549,6 +549,7 @@ function YouTubeSection({recipeName,t}){
 // ── FLOATING GROQ CHATBOT ─────────────────────────────────────
 function FloatingChat({lang}){
   const[open,setOpen]=useState(false);
+  const[full,setFull]=useState(false);
   const[msgs,setMsgs]=useState([{role:"assistant",content:"Namaste! 👋 I'm your CookMate AI assistant. Ask me anything about cooking, recipes, or nutrition!"}]);
   const[inp,setInp]=useState("");
   const[typing,setTyping]=useState(false);
@@ -571,21 +572,34 @@ function FloatingChat({lang}){
     setTyping(false);
   };
 
+  const formatMsg=(text)=>text
+    .replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
+    .replace(/^### (.*)/gm,"<h4 style='margin:6px 0 3px;font-size:13px'>$1</h4>")
+    .replace(/^## (.*)/gm,"<h3 style='margin:6px 0 3px;font-size:14px'>$1</h3>")
+    .replace(/^# (.*)/gm,"<h2 style='margin:6px 0 3px;font-size:15px'>$1</h2>")
+    .replace(/^\* (.*)/gm,"<li style='margin-left:14px'>$1</li>")
+    .replace(/^- (.*)/gm,"<li style='margin-left:14px'>$1</li>")
+    .replace(/\n/g,"<br/>");
+
   return<>
     <button onClick={()=>setOpen(p=>!p)} className="bounce-in" style={{position:"fixed",bottom:76,right:16,zIndex:300,width:52,height:52,borderRadius:"50%",border:"none",cursor:"pointer",background:grad,display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 4px 20px rgba(255,107,53,0.45)",fontSize:22,transition:"transform 0.2s"}}>
       {open?"✕":"💬"}
     </button>
-    {open&&<div className="slide-up" style={{position:"fixed",bottom:138,right:10,zIndex:299,width:308,background:C.card,border:`1px solid ${C.border}`,borderRadius:20,boxShadow:"0 8px 40px rgba(0,0,0,0.5)",display:"flex",flexDirection:"column",overflow:"hidden",maxHeight:"58vh"}}>
+    {open&&<div className="slide-up" style={{position:"fixed",bottom:full?0:138,right:full?0:10,left:full?0:"auto",top:full?0:"auto",zIndex:299,width:full?"100%":"308px",background:C.card,border:`1px solid ${C.border}`,borderRadius:full?0:20,boxShadow:"0 8px 40px rgba(0,0,0,0.5)",display:"flex",flexDirection:"column",overflow:"hidden",maxHeight:full?"100vh":"58vh"}}>
       <div style={{padding:"11px 14px",borderBottom:`1px solid ${C.border}`,display:"flex",alignItems:"center",gap:8,background:`linear-gradient(135deg,${C.gA}15,${C.gB}15)`}}>
         <div style={{width:30,height:30,borderRadius:"50%",background:grad,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14}}>🍳</div>
         <div style={{flex:1}}>
           <div style={{fontWeight:700,fontSize:13,color:C.txt}}>{t.chatTitle}</div>
           <div style={{fontSize:10,color:C.ok}}>● {CFG.GROQ_KEY?"Groq AI":"Claude AI"} • Online</div>
         </div>
+        <button onClick={()=>setFull(p=>!p)} style={{background:"none",border:"none",color:C.muted,cursor:"pointer",fontSize:16,padding:"4px"}}>{full?"⊡":"⊞"}</button>
+        <button onClick={()=>setOpen(false)} style={{background:"none",border:"none",color:C.muted,cursor:"pointer",fontSize:16,padding:"4px"}}>✕</button>
       </div>
       <div style={{flex:1,overflowY:"auto",padding:"12px",display:"flex",flexDirection:"column",gap:8}}>
         {msgs.map((m,i)=><div key={i} style={{display:"flex",justifyContent:m.role==="user"?"flex-end":"flex-start"}}>
-          <div className={m.role==="user"?"bubble-user":"bubble-ai"}>{m.content}</div>
+          {m.role==="user"
+            ?<div className="bubble-user">{m.content}</div>
+            :<div className="bubble-ai" dangerouslySetInnerHTML={{__html:formatMsg(m.content)}}/>}
         </div>)}
         {typing&&<div style={{display:"flex",justifyContent:"flex-start"}}>
           <div className="bubble-ai" style={{display:"flex",gap:4,alignItems:"center"}}>
