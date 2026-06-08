@@ -97,8 +97,1577 @@ const INDIA_STATES = [
     {name:"Sidu",emoji:"🫓",time:"60 min",diff:"Medium",cal:290,protein:"9g",tags:["Breakfast"]},
     {name:"Aktori",emoji:"🥞",time:"30 min",diff:"Easy",cal:220,protein:"6g",tags:["Breakfast"]},
   ]},
+  {
+    state: "Bihar",
+    emoji: "🌾",
+    color: "#F39C12",
+    dishes: [
+      {
+        name: "Litti Chokha",
+        emoji: "🍚",
+        time: "60 min",
+        diff: "Medium",
+        cal: 420,
+        protein: "14g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Dal Pitha",
+        emoji: "🥘",
+        time: "45 min",
+        diff: "Medium",
+        cal: 280,
+        protein: "10g",
+        tags: [
+          "Breakfast"
+        ]
+      },
+      {
+        name: "Thekua",
+        emoji: "🍮",
+        time: "30 min",
+        diff: "Easy",
+        cal: 320,
+        protein: "6g",
+        tags: [
+          "Snacks"
+        ]
+      },
+      {
+        name: "Sattu Paratha",
+        emoji: "🫓",
+        time: "25 min",
+        diff: "Easy",
+        cal: 380,
+        protein: "16g",
+        tags: [
+          "Breakfast"
+        ]
+      },
+      {
+        name: "Chura Dahi",
+        emoji: "🥣",
+        time: "10 min",
+        diff: "Easy",
+        cal: 220,
+        protein: "8g",
+        tags: [
+          "Breakfast"
+        ]
+      },
+      {
+        name: "Mutton Curry Bihari Style",
+        emoji: "🍖",
+        time: "70 min",
+        diff: "Hard",
+        cal: 480,
+        protein: "28g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Malpua",
+        emoji: "🥞",
+        time: "25 min",
+        diff: "Easy",
+        cal: 340,
+        protein: "7g",
+        tags: [
+          "Dessert",
+          "Snacks"
+        ]
+      },
+      {
+        name: "Kadhi Bari",
+        emoji: "🍲",
+        time: "40 min",
+        diff: "Medium",
+        cal: 260,
+        protein: "9g",
+        tags: [
+          "Lunch"
+        ]
+      },
+      {
+        name: "Aloo Chokha",
+        emoji: "🥔",
+        time: "20 min",
+        diff: "Easy",
+        cal: 180,
+        protein: "4g",
+        tags: [
+          "Breakfast",
+          "Snacks"
+        ]
+      },
+      {
+        name: "Ghugni",
+        emoji: "🫘",
+        time: "35 min",
+        diff: "Easy",
+        cal: 240,
+        protein: "12g",
+        tags: [
+          "Snacks",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Tilkut",
+        emoji: "🍬",
+        time: "40 min",
+        diff: "Medium",
+        cal: 290,
+        protein: "5g",
+        tags: [
+          "Snacks"
+        ]
+      },
+      {
+        name: "Baigan Bharta",
+        emoji: "🍆",
+        time: "30 min",
+        diff: "Easy",
+        cal: 160,
+        protein: "4g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Pua",
+        emoji: "🧇",
+        time: "20 min",
+        diff: "Easy",
+        cal: 300,
+        protein: "6g",
+        tags: [
+          "Breakfast",
+          "Dessert"
+        ]
+      },
+      {
+        name: "Khichdi",
+        emoji: "🍛",
+        time: "30 min",
+        diff: "Easy",
+        cal: 350,
+        protein: "11g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Rabri",
+        emoji: "🍮",
+        time: "50 min",
+        diff: "Medium",
+        cal: 310,
+        protein: "9g",
+        tags: [
+          "Dessert"
+        ]
+      },
+      {
+        name: "Sattu Sharbat",
+        emoji: "🥤",
+        time: "5 min",
+        diff: "Easy",
+        cal: 140,
+        protein: "8g",
+        tags: [
+          "Drinks"
+        ]
+      },
+      {
+        name: "Chana Ghugni",
+        emoji: "🫘",
+        time: "30 min",
+        diff: "Easy",
+        cal: 220,
+        protein: "10g",
+        tags: [
+          "Snacks"
+        ]
+      },
+      {
+        name: "Dal Tadka Bihari",
+        emoji: "🍲",
+        time: "35 min",
+        diff: "Easy",
+        cal: 270,
+        protein: "13g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Bhunja Chana",
+        emoji: "🌰",
+        time: "15 min",
+        diff: "Easy",
+        cal: 190,
+        protein: "11g",
+        tags: [
+          "Snacks"
+        ]
+      },
+      {
+        name: "Parwal Ki Sabzi",
+        emoji: "🥗",
+        time: "25 min",
+        diff: "Easy",
+        cal: 150,
+        protein: "4g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      }
+    ]
+  },
+  {
+    state: "Madhya Pradesh",
+    emoji: "🐯",
+    color: "#E67E22",
+    dishes: [
+      {
+        name: "Dal Bafla",
+        emoji: "🍚",
+        time: "90 min",
+        diff: "Hard",
+        cal: 460,
+        protein: "16g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Poha Indori",
+        emoji: "🍽",
+        time: "15 min",
+        diff: "Easy",
+        cal: 250,
+        protein: "6g",
+        tags: [
+          "Breakfast"
+        ]
+      },
+      {
+        name: "Bhutte Ki Kees",
+        emoji: "🌽",
+        time: "20 min",
+        diff: "Easy",
+        cal: 210,
+        protein: "5g",
+        tags: [
+          "Snacks",
+          "Breakfast"
+        ]
+      },
+      {
+        name: "Seekh Kebab",
+        emoji: "🍢",
+        time: "40 min",
+        diff: "Medium",
+        cal: 350,
+        protein: "25g",
+        tags: [
+          "Snacks",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Chakki Ki Shak",
+        emoji: "🥘",
+        time: "35 min",
+        diff: "Medium",
+        cal: 290,
+        protein: "8g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Mawa Bati",
+        emoji: "🧆",
+        time: "50 min",
+        diff: "Medium",
+        cal: 420,
+        protein: "10g",
+        tags: [
+          "Dessert",
+          "Snacks"
+        ]
+      },
+      {
+        name: "Ratlami Sev",
+        emoji: "🍟",
+        time: "45 min",
+        diff: "Medium",
+        cal: 310,
+        protein: "7g",
+        tags: [
+          "Snacks"
+        ]
+      },
+      {
+        name: "Sabudana Khichdi",
+        emoji: "🍥",
+        time: "20 min",
+        diff: "Easy",
+        cal: 280,
+        protein: "4g",
+        tags: [
+          "Breakfast",
+          "Snacks"
+        ]
+      },
+      {
+        name: "Shikanji",
+        emoji: "🍋",
+        time: "5 min",
+        diff: "Easy",
+        cal: 80,
+        protein: "1g",
+        tags: [
+          "Drinks"
+        ]
+      },
+      {
+        name: "Lavang Lata",
+        emoji: "🍩",
+        time: "40 min",
+        diff: "Medium",
+        cal: 330,
+        protein: "6g",
+        tags: [
+          "Dessert"
+        ]
+      },
+      {
+        name: "Palak Puri",
+        emoji: "🫓",
+        time: "30 min",
+        diff: "Easy",
+        cal: 270,
+        protein: "7g",
+        tags: [
+          "Breakfast",
+          "Lunch"
+        ]
+      },
+      {
+        name: "Gur Papdi",
+        emoji: "🍯",
+        time: "25 min",
+        diff: "Easy",
+        cal: 280,
+        protein: "5g",
+        tags: [
+          "Snacks",
+          "Dessert"
+        ]
+      },
+      {
+        name: "Mutton Rogan Josh MP Style",
+        emoji: "🍖",
+        time: "75 min",
+        diff: "Hard",
+        cal: 490,
+        protein: "30g",
+        tags: [
+          "Dinner"
+        ]
+      },
+      {
+        name: "Makai Ki Roti",
+        emoji: "🫓",
+        time: "20 min",
+        diff: "Medium",
+        cal: 230,
+        protein: "6g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Biryani Bhopal Style",
+        emoji: "🍛",
+        time: "80 min",
+        diff: "Hard",
+        cal: 520,
+        protein: "22g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      }
+    ]
+  },
+  {
+    state: "Odisha",
+    emoji: "🌊",
+    color: "#3498DB",
+    dishes: [
+      {
+        name: "Dalma",
+        emoji: "🥘",
+        time: "40 min",
+        diff: "Medium",
+        cal: 290,
+        protein: "14g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Pakhala Bhata",
+        emoji: "🍚",
+        time: "480 min",
+        diff: "Easy",
+        cal: 200,
+        protein: "4g",
+        tags: [
+          "Lunch"
+        ]
+      },
+      {
+        name: "Chhena Poda",
+        emoji: "🧀",
+        time: "60 min",
+        diff: "Medium",
+        cal: 380,
+        protein: "14g",
+        tags: [
+          "Dessert"
+        ]
+      },
+      {
+        name: "Machha Besara",
+        emoji: "🐟",
+        time: "45 min",
+        diff: "Medium",
+        cal: 320,
+        protein: "22g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Bara",
+        emoji: "🫓",
+        time: "30 min",
+        diff: "Easy",
+        cal: 240,
+        protein: "10g",
+        tags: [
+          "Breakfast",
+          "Snacks"
+        ]
+      },
+      {
+        name: "Rasabali",
+        emoji: "🍮",
+        time: "50 min",
+        diff: "Medium",
+        cal: 350,
+        protein: "11g",
+        tags: [
+          "Dessert"
+        ]
+      },
+      {
+        name: "Chakuli Pitha",
+        emoji: "🥞",
+        time: "30 min",
+        diff: "Easy",
+        cal: 220,
+        protein: "5g",
+        tags: [
+          "Breakfast"
+        ]
+      },
+      {
+        name: "Enduri Pitha",
+        emoji: "🫕",
+        time: "40 min",
+        diff: "Medium",
+        cal: 260,
+        protein: "8g",
+        tags: [
+          "Breakfast",
+          "Snacks"
+        ]
+      },
+      {
+        name: "Chhena Jhili",
+        emoji: "🍡",
+        time: "35 min",
+        diff: "Medium",
+        cal: 290,
+        protein: "10g",
+        tags: [
+          "Dessert",
+          "Snacks"
+        ]
+      },
+      {
+        name: "Santula",
+        emoji: "🥗",
+        time: "25 min",
+        diff: "Easy",
+        cal: 160,
+        protein: "5g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Mudhi Mansa",
+        emoji: "🍗",
+        time: "50 min",
+        diff: "Medium",
+        cal: 430,
+        protein: "26g",
+        tags: [
+          "Snacks",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Khaja",
+        emoji: "🍯",
+        time: "45 min",
+        diff: "Medium",
+        cal: 310,
+        protein: "4g",
+        tags: [
+          "Dessert",
+          "Snacks"
+        ]
+      },
+      {
+        name: "Macha Ghanta",
+        emoji: "🐡",
+        time: "35 min",
+        diff: "Medium",
+        cal: 270,
+        protein: "18g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Dahi Baigana",
+        emoji: "🍆",
+        time: "20 min",
+        diff: "Easy",
+        cal: 180,
+        protein: "6g",
+        tags: [
+          "Lunch"
+        ]
+      },
+      {
+        name: "Arisa Pitha",
+        emoji: "🍪",
+        time: "40 min",
+        diff: "Medium",
+        cal: 300,
+        protein: "4g",
+        tags: [
+          "Snacks",
+          "Dessert"
+        ]
+      }
+    ]
+  },
+  {
+    state: "Jharkhand",
+    emoji: "🌿",
+    color: "#27AE60",
+    dishes: [
+      {
+        name: "Litti Chokha",
+        emoji: "🍚",
+        time: "60 min",
+        diff: "Medium",
+        cal: 420,
+        protein: "14g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Rugda",
+        emoji: "🍄",
+        time: "30 min",
+        diff: "Easy",
+        cal: 180,
+        protein: "6g",
+        tags: [
+          "Lunch",
+          "Snacks"
+        ]
+      },
+      {
+        name: "Pittha",
+        emoji: "🫕",
+        time: "40 min",
+        diff: "Medium",
+        cal: 250,
+        protein: "8g",
+        tags: [
+          "Breakfast"
+        ]
+      },
+      {
+        name: "Handia Rice Beer",
+        emoji: "🍶",
+        time: "120 min",
+        diff: "Hard",
+        cal: 100,
+        protein: "2g",
+        tags: [
+          "Drinks"
+        ]
+      },
+      {
+        name: "Aloo Chokha",
+        emoji: "🥔",
+        time: "20 min",
+        diff: "Easy",
+        cal: 180,
+        protein: "4g",
+        tags: [
+          "Breakfast",
+          "Snacks"
+        ]
+      },
+      {
+        name: "Bamboo Shoot Curry",
+        emoji: "🎋",
+        time: "45 min",
+        diff: "Medium",
+        cal: 160,
+        protein: "5g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Mahua Laddu",
+        emoji: "🍡",
+        time: "35 min",
+        diff: "Medium",
+        cal: 280,
+        protein: "4g",
+        tags: [
+          "Dessert",
+          "Snacks"
+        ]
+      },
+      {
+        name: "Chilka Roti",
+        emoji: "🫓",
+        time: "20 min",
+        diff: "Easy",
+        cal: 240,
+        protein: "7g",
+        tags: [
+          "Breakfast"
+        ]
+      },
+      {
+        name: "Ragi Roti",
+        emoji: "🫓",
+        time: "20 min",
+        diff: "Easy",
+        cal: 210,
+        protein: "6g",
+        tags: [
+          "Breakfast",
+          "Lunch"
+        ]
+      },
+      {
+        name: "Mutton Jharkhand Style",
+        emoji: "🍖",
+        time: "70 min",
+        diff: "Hard",
+        cal: 460,
+        protein: "27g",
+        tags: [
+          "Dinner"
+        ]
+      },
+      {
+        name: "Tilkut",
+        emoji: "🍬",
+        time: "40 min",
+        diff: "Medium",
+        cal: 290,
+        protein: "5g",
+        tags: [
+          "Snacks",
+          "Dessert"
+        ]
+      },
+      {
+        name: "Dhuska",
+        emoji: "🥐",
+        time: "25 min",
+        diff: "Easy",
+        cal: 280,
+        protein: "8g",
+        tags: [
+          "Breakfast",
+          "Snacks"
+        ]
+      },
+      {
+        name: "Chana Dal Puri",
+        emoji: "🫓",
+        time: "35 min",
+        diff: "Medium",
+        cal: 330,
+        protein: "12g",
+        tags: [
+          "Breakfast",
+          "Lunch"
+        ]
+      }
+    ]
+  },
+  {
+    state: "Uttarakhand",
+    emoji: "🏔️",
+    color: "#1ABC9C",
+    dishes: [
+      {
+        name: "Kafuli",
+        emoji: "🥬",
+        time: "35 min",
+        diff: "Medium",
+        cal: 180,
+        protein: "8g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Aloo Ke Gutke",
+        emoji: "🥔",
+        time: "25 min",
+        diff: "Easy",
+        cal: 220,
+        protein: "4g",
+        tags: [
+          "Breakfast",
+          "Snacks"
+        ]
+      },
+      {
+        name: "Bhang Ki Chutney",
+        emoji: "🌿",
+        time: "10 min",
+        diff: "Easy",
+        cal: 60,
+        protein: "2g",
+        tags: [
+          "Snacks"
+        ]
+      },
+      {
+        name: "Bal Mithai",
+        emoji: "🍫",
+        time: "45 min",
+        diff: "Medium",
+        cal: 340,
+        protein: "8g",
+        tags: [
+          "Dessert",
+          "Snacks"
+        ]
+      },
+      {
+        name: "Singori",
+        emoji: "🍡",
+        time: "30 min",
+        diff: "Medium",
+        cal: 280,
+        protein: "7g",
+        tags: [
+          "Dessert"
+        ]
+      },
+      {
+        name: "Chainsoo",
+        emoji: "🥘",
+        time: "40 min",
+        diff: "Medium",
+        cal: 260,
+        protein: "12g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Phanu",
+        emoji: "🍲",
+        time: "50 min",
+        diff: "Medium",
+        cal: 280,
+        protein: "14g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Jhangore Ki Kheer",
+        emoji: "🍮",
+        time: "40 min",
+        diff: "Easy",
+        cal: 300,
+        protein: "6g",
+        tags: [
+          "Dessert"
+        ]
+      },
+      {
+        name: "Mandua Roti",
+        emoji: "🫓",
+        time: "20 min",
+        diff: "Easy",
+        cal: 200,
+        protein: "6g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Gahat Dal",
+        emoji: "🫘",
+        time: "50 min",
+        diff: "Medium",
+        cal: 270,
+        protein: "15g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Kumaoni Raita",
+        emoji: "🥛",
+        time: "10 min",
+        diff: "Easy",
+        cal: 120,
+        protein: "5g",
+        tags: [
+          "Lunch"
+        ]
+      },
+      {
+        name: "Arsa",
+        emoji: "🍪",
+        time: "35 min",
+        diff: "Medium",
+        cal: 310,
+        protein: "4g",
+        tags: [
+          "Snacks",
+          "Dessert"
+        ]
+      },
+      {
+        name: "Badi Aur Cholia",
+        emoji: "🥗",
+        time: "40 min",
+        diff: "Medium",
+        cal: 230,
+        protein: "10g",
+        tags: [
+          "Lunch"
+        ]
+      }
+    ]
+  },
+  {
+    state: "Haryana",
+    emoji: "🌾",
+    color: "#F1C40F",
+    dishes: [
+      {
+        name: "Bajra Khichdi",
+        emoji: "🍛",
+        time: "35 min",
+        diff: "Easy",
+        cal: 320,
+        protein: "10g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Kadhi Pakora",
+        emoji: "🍲",
+        time: "40 min",
+        diff: "Medium",
+        cal: 270,
+        protein: "9g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Singri Ki Sabzi",
+        emoji: "🥗",
+        time: "30 min",
+        diff: "Easy",
+        cal: 160,
+        protein: "5g",
+        tags: [
+          "Lunch"
+        ]
+      },
+      {
+        name: "Kachri Ki Chutney",
+        emoji: "🌶",
+        time: "10 min",
+        diff: "Easy",
+        cal: 40,
+        protein: "1g",
+        tags: [
+          "Snacks"
+        ]
+      },
+      {
+        name: "Hara Dhania Cholia",
+        emoji: "🌿",
+        time: "25 min",
+        diff: "Easy",
+        cal: 200,
+        protein: "9g",
+        tags: [
+          "Snacks",
+          "Lunch"
+        ]
+      },
+      {
+        name: "Bathua Raita",
+        emoji: "🥛",
+        time: "10 min",
+        diff: "Easy",
+        cal: 110,
+        protein: "4g",
+        tags: [
+          "Lunch"
+        ]
+      },
+      {
+        name: "Aloo Methi",
+        emoji: "🥔",
+        time: "25 min",
+        diff: "Easy",
+        cal: 210,
+        protein: "5g",
+        tags: [
+          "Breakfast",
+          "Lunch"
+        ]
+      },
+      {
+        name: "Bajra Roti",
+        emoji: "🫓",
+        time: "20 min",
+        diff: "Easy",
+        cal: 240,
+        protein: "6g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Dahi Bhalle",
+        emoji: "🥣",
+        time: "30 min",
+        diff: "Medium",
+        cal: 280,
+        protein: "10g",
+        tags: [
+          "Snacks",
+          "Lunch"
+        ]
+      },
+      {
+        name: "Maa Ki Dal",
+        emoji: "🫘",
+        time: "45 min",
+        diff: "Medium",
+        cal: 290,
+        protein: "14g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Churma",
+        emoji: "🍯",
+        time: "30 min",
+        diff: "Easy",
+        cal: 380,
+        protein: "7g",
+        tags: [
+          "Dessert",
+          "Snacks"
+        ]
+      },
+      {
+        name: "Kheer Makhane Ki",
+        emoji: "🍮",
+        time: "35 min",
+        diff: "Easy",
+        cal: 320,
+        protein: "8g",
+        tags: [
+          "Dessert"
+        ]
+      },
+      {
+        name: "Besan Masala Roti",
+        emoji: "🫓",
+        time: "25 min",
+        diff: "Easy",
+        cal: 260,
+        protein: "8g",
+        tags: [
+          "Breakfast",
+          "Lunch"
+        ]
+      },
+      {
+        name: "Mithe Chawal",
+        emoji: "🍚",
+        time: "25 min",
+        diff: "Easy",
+        cal: 310,
+        protein: "4g",
+        tags: [
+          "Dessert"
+        ]
+      }
+    ]
+  },
+  {
+    state: "Assam",
+    emoji: "🍵",
+    color: "#16A085",
+    dishes: [
+      {
+        name: "Masor Tenga",
+        emoji: "🐟",
+        time: "40 min",
+        diff: "Medium",
+        cal: 280,
+        protein: "22g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Aloo Pitika",
+        emoji: "🥔",
+        time: "15 min",
+        diff: "Easy",
+        cal: 160,
+        protein: "4g",
+        tags: [
+          "Breakfast",
+          "Snacks"
+        ]
+      },
+      {
+        name: "Duck Curry",
+        emoji: "🦆",
+        time: "75 min",
+        diff: "Hard",
+        cal: 490,
+        protein: "28g",
+        tags: [
+          "Dinner"
+        ]
+      },
+      {
+        name: "Pitha",
+        emoji: "🥞",
+        time: "35 min",
+        diff: "Medium",
+        cal: 260,
+        protein: "6g",
+        tags: [
+          "Breakfast",
+          "Snacks"
+        ]
+      },
+      {
+        name: "Khar",
+        emoji: "🥘",
+        time: "35 min",
+        diff: "Medium",
+        cal: 220,
+        protein: "5g",
+        tags: [
+          "Lunch"
+        ]
+      },
+      {
+        name: "Xaak Bhaji",
+        emoji: "🥬",
+        time: "20 min",
+        diff: "Easy",
+        cal: 120,
+        protein: "4g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Ou Tenga Maas",
+        emoji: "🍋",
+        time: "40 min",
+        diff: "Medium",
+        cal: 260,
+        protein: "20g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Bhapot Diya Maas",
+        emoji: "🐠",
+        time: "30 min",
+        diff: "Easy",
+        cal: 240,
+        protein: "21g",
+        tags: [
+          "Dinner"
+        ]
+      },
+      {
+        name: "Til Pitha",
+        emoji: "🥞",
+        time: "30 min",
+        diff: "Medium",
+        cal: 280,
+        protein: "7g",
+        tags: [
+          "Breakfast",
+          "Snacks"
+        ]
+      },
+      {
+        name: "Assam Biryani",
+        emoji: "🍛",
+        time: "70 min",
+        diff: "Hard",
+        cal: 500,
+        protein: "22g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Jolpan",
+        emoji: "🥣",
+        time: "10 min",
+        diff: "Easy",
+        cal: 230,
+        protein: "5g",
+        tags: [
+          "Breakfast"
+        ]
+      },
+      {
+        name: "Sunga Pitha",
+        emoji: "🎋",
+        time: "45 min",
+        diff: "Medium",
+        cal: 250,
+        protein: "6g",
+        tags: [
+          "Snacks"
+        ]
+      },
+      {
+        name: "Narikolor Laru",
+        emoji: "🥥",
+        time: "30 min",
+        diff: "Easy",
+        cal: 320,
+        protein: "3g",
+        tags: [
+          "Dessert",
+          "Snacks"
+        ]
+      },
+      {
+        name: "Mustard Fish",
+        emoji: "🐡",
+        time: "35 min",
+        diff: "Medium",
+        cal: 290,
+        protein: "23g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      }
+    ]
+  },
+  {
+    state: "Manipur",
+    emoji: "🌺",
+    color: "#8E44AD",
+    dishes: [
+      {
+        name: "Eromba",
+        emoji: "🌶",
+        time: "30 min",
+        diff: "Medium",
+        cal: 200,
+        protein: "8g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Iromba",
+        emoji: "🍲",
+        time: "35 min",
+        diff: "Medium",
+        cal: 210,
+        protein: "9g",
+        tags: [
+          "Lunch"
+        ]
+      },
+      {
+        name: "Singju",
+        emoji: "🥗",
+        time: "20 min",
+        diff: "Easy",
+        cal: 120,
+        protein: "4g",
+        tags: [
+          "Snacks",
+          "Lunch"
+        ]
+      },
+      {
+        name: "Champhut",
+        emoji: "🥬",
+        time: "25 min",
+        diff: "Easy",
+        cal: 150,
+        protein: "6g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Ngri Fish Curry",
+        emoji: "🐟",
+        time: "40 min",
+        diff: "Medium",
+        cal: 280,
+        protein: "22g",
+        tags: [
+          "Dinner"
+        ]
+      },
+      {
+        name: "Kangsoi",
+        emoji: "🥘",
+        time: "30 min",
+        diff: "Easy",
+        cal: 190,
+        protein: "7g",
+        tags: [
+          "Lunch"
+        ]
+      },
+      {
+        name: "Paaknam",
+        emoji: "🍥",
+        time: "40 min",
+        diff: "Medium",
+        cal: 230,
+        protein: "8g",
+        tags: [
+          "Breakfast",
+          "Snacks"
+        ]
+      },
+      {
+        name: "Chak Hao Kheer",
+        emoji: "🍮",
+        time: "40 min",
+        diff: "Easy",
+        cal: 300,
+        protein: "6g",
+        tags: [
+          "Dessert"
+        ]
+      },
+      {
+        name: "Tan Ngang",
+        emoji: "🥣",
+        time: "15 min",
+        diff: "Easy",
+        cal: 140,
+        protein: "5g",
+        tags: [
+          "Breakfast"
+        ]
+      },
+      {
+        name: "Ooti",
+        emoji: "🫘",
+        time: "35 min",
+        diff: "Easy",
+        cal: 220,
+        protein: "11g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Morok Metpa",
+        emoji: "🌶",
+        time: "15 min",
+        diff: "Easy",
+        cal: 60,
+        protein: "2g",
+        tags: [
+          "Snacks"
+        ]
+      },
+      {
+        name: "Nga Thongba",
+        emoji: "🐠",
+        time: "35 min",
+        diff: "Medium",
+        cal: 260,
+        protein: "20g",
+        tags: [
+          "Dinner"
+        ]
+      },
+      {
+        name: "Sareng Fish Curry",
+        emoji: "🎣",
+        time: "45 min",
+        diff: "Medium",
+        cal: 290,
+        protein: "24g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      }
+    ]
+  },
+  {
+    state: "Sikkim",
+    emoji: "🏔️",
+    color: "#2980B9",
+    dishes: [
+      {
+        name: "Momos",
+        emoji: "🥟",
+        time: "45 min",
+        diff: "Medium",
+        cal: 280,
+        protein: "14g",
+        tags: [
+          "Snacks",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Phagshapa",
+        emoji: "🥩",
+        time: "50 min",
+        diff: "Medium",
+        cal: 380,
+        protein: "22g",
+        tags: [
+          "Dinner"
+        ]
+      },
+      {
+        name: "Thukpa",
+        emoji: "🍜",
+        time: "35 min",
+        diff: "Easy",
+        cal: 310,
+        protein: "14g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Gundruk",
+        emoji: "🥬",
+        time: "15 min",
+        diff: "Easy",
+        cal: 130,
+        protein: "5g",
+        tags: [
+          "Snacks",
+          "Lunch"
+        ]
+      },
+      {
+        name: "Sel Roti",
+        emoji: "🍩",
+        time: "30 min",
+        diff: "Medium",
+        cal: 290,
+        protein: "5g",
+        tags: [
+          "Breakfast",
+          "Snacks"
+        ]
+      },
+      {
+        name: "Sha Phaley",
+        emoji: "🥙",
+        time: "40 min",
+        diff: "Medium",
+        cal: 340,
+        protein: "16g",
+        tags: [
+          "Snacks",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Chhurpi Soup",
+        emoji: "🍲",
+        time: "25 min",
+        diff: "Easy",
+        cal: 200,
+        protein: "12g",
+        tags: [
+          "Lunch"
+        ]
+      },
+      {
+        name: "Sinki",
+        emoji: "🫚",
+        time: "15 min",
+        diff: "Easy",
+        cal: 80,
+        protein: "3g",
+        tags: [
+          "Snacks"
+        ]
+      },
+      {
+        name: "Sael Roti",
+        emoji: "🍞",
+        time: "30 min",
+        diff: "Medium",
+        cal: 280,
+        protein: "5g",
+        tags: [
+          "Breakfast"
+        ]
+      },
+      {
+        name: "Kinema Curry",
+        emoji: "🫘",
+        time: "30 min",
+        diff: "Medium",
+        cal: 240,
+        protein: "13g",
+        tags: [
+          "Lunch",
+          "Dinner"
+        ]
+      },
+      {
+        name: "Buckwheat Pancake",
+        emoji: "🥞",
+        time: "20 min",
+        diff: "Easy",
+        cal: 220,
+        protein: "6g",
+        tags: [
+          "Breakfast"
+        ]
+      },
+      {
+        name: "Tsampa Porridge",
+        emoji: "🥣",
+        time: "15 min",
+        diff: "Easy",
+        cal: 260,
+        protein: "8g",
+        tags: [
+          "Breakfast"
+        ]
+      },
+      {
+        name: "Wai Wai Salad",
+        emoji: "🥗",
+        time: "10 min",
+        diff: "Easy",
+        cal: 200,
+        protein: "5g",
+        tags: [
+          "Snacks"
+        ]
+      }
+    ]
+  }
 ];
-
 const WORLD = [
   { country:"Italy", emoji:"🇮🇹", color:"#E74C3C", dishes:[
     {name:"Spaghetti Carbonara",emoji:"🍝",time:"25 min",diff:"Medium",cal:580,protein:"24g",tags:["Dinner"]},
