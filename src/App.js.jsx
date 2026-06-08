@@ -4,12 +4,7 @@
 // ║        CookMate AI v5.0 — Full Production App               ║
 // ║  Supabase DB-first + Claude Vision + Groq Chatbot           ║
 // ╚══════════════════════════════════════════════════════════════╝
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-const supabase = createClient(process.env.REACT_APP_SUPABASE_URL, process.env.REACT_APP_SUPABASE_KEY);
-import { useState, useEffect, useRef, useCallback } from "react";
-
-// ── CONFIG ────────────────────────────────────────────────────
-// Add these to your .env.local — never share these keys
+ import { useState, useEffect, useRef, useCallback } from "react";
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL || "",
