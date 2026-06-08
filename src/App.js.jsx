@@ -1456,6 +1456,11 @@ function SettingsScreen({lang,setLang,user,onSignOut,t}){
 const NAV=[{id:"home",ic:"🏠",lb:"home"},{id:"scan",ic:"📷",lb:"scan"},{id:"planner",ic:"📅",lb:"planner"},{id:"leftover",ic:"🥘",lb:"leftover"},{id:"grocery",ic:"🛒",lb:"grocery"}];
 
 export default function CookMateApp(){
+  useEffect(()=>{
+  if(window.location.hash.includes("access_token")){
+    window.history.replaceState(null,"",window.location.pathname);
+  }
+},[]);
   const[user,setUser]=useState(()=>LS.get("user"));
   const[nav,setNav]=useState("home");
   const[recipe,setRecipe]=useState(null);
