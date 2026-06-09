@@ -1909,12 +1909,12 @@ const Claude = {
     catch{return null;}
   },
 getAIPicks:async(count=15)=>{
-    const msg=[{role:"user",content:`Generate exactly 15 diverse Indian & world recipe picks for today. Include variety. Return JSON array:[{name,emoji,time,diff,cal,protein,tags,category,reason}]. category must be: Breakfast|Lunch|Dinner|Snacks.`}];
+    const msg=[{role:"user",content:`Generate exactly 6 diverse Indian & world recipe picks for today. Include variety. Return JSON array:[{name,emoji,time,diff,cal,protein,tags,category,reason}]. category must be: Breakfast|Lunch|Dinner|Snacks.`}];
     try{return await Groq.callJSON(msg);}catch{return await Claude.callJSON(msg,"Indian cooking expert. Return ONLY valid JSON array.",3000);}
   },
   getFullRecipe:(name,servings=2)=>Claude.callJSON([{role:"user",content:`Full recipe for "${name}" for ${servings} people. Return JSON:{name,emoji,description,time,prepTime,cookTime,diff,servings,ingredients:[{item,amount,unit}],steps:[{num,title,desc,timerMin,tip}],prepTips:[],cookTips:[],servingSuggestions:[],nutrition:{calories,protein,carbs,fat,fiber}}`}],"Professional chef. Return ONLY valid JSON object.",3000),
  getLeftoverRecipes:async(leftovers)=>{
-    const msg=[{role:"user",content:`Leftovers: ${leftovers.join(", ")}. Suggest 6 creative recipes. Return JSON array:[{name,emoji,time,diff,cal,idea,ingredients:[],why}]`}];
+    const msg=[{role:"user",content:`Leftovers: ${leftovers.join(", ")}. Suggest 4 creative recipes. Return JSON array:[{name,emoji,time,diff,cal,idea,ingredients:[],why}]`}];
     try{return await Groq.callJSON(msg);}catch{return await Claude.callJSON(msg,"Zero-waste chef. Return ONLY valid JSON array.",2000);}
   },
   getPlannerRecipes:async(day,meal,count=30)=>{
@@ -1955,7 +1955,7 @@ const Groq = {
     const res=await fetch("/api/groq",{
         method:"POST",
         headers:{"Content-Type":"application/json","Authorization":`Bearer ${CFG.GROQ_KEY}`},
-        body:JSON.stringify({model:CFG.GROQ_MODEL,max_tokens:500,messages:[{role:"system",content:sys},...messages]}),
+        body:JSON.stringify({model:CFG.GROQ_MODEL,max_tokens:2000,messages:[{role:"system",content:sys},...messages]}),
       });
       const d=await res.json();
       if(d.error) throw new Error(d.error.message);
