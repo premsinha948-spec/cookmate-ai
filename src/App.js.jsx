@@ -1912,8 +1912,10 @@ getAIPicks:async(count=15)=>{
     const msg=[{role:"user",content:`Generate exactly 6 diverse Indian & world recipe picks for today. Include variety. Return JSON array:[{name,emoji,time,diff,cal,protein,tags,category,reason}]. category must be: Breakfast|Lunch|Dinner|Snacks.`}];
     try{return await Groq.callJSON(msg);}catch{return await Claude.callJSON(msg,"Indian cooking expert. Return ONLY valid JSON array.",3000);}
   },
- getFullRecipe:async(name,servings=2)=>{
-    const msg=[{role:"user",content:`Full recipe for "${name}" for ${servings} people. Return JSON object:{name,emoji,description,time,prepTime,cookTime,diff,servings,ingredients:[{item,amount,unit}],steps:[{num,title,desc,timerMin,tip}],prepTips:[],cookTips:[],servingSuggestions:[],nutrition:{calories,protein,carbs,fat,fiber}}`}];
+ getFullRecipe:async(name,servings=2,lang="en")=>{
+    const langInst={hi:"Sab kuch Hindi mein likho.",hinglish:"Hinglish mein likho.",ta:"தமிழில் எழுதவும்.",te:"తెలుగులో రాయండి.",bn:"বাংলায় লিখুন।",mr:"मराठीत लिहा.",gu:"ગુજરાતીમાં લખો.",kn:"ಕನ್ನಡದಲ್ಲಿ ಬರೆಯಿರಿ.",ml:"മലയാളത്തിൽ എഴുതുക.",pa:"ਪੰਜਾਬੀ ਵਿੱਚ ਲਿਖੋ."};
+    const langNote=langInst[lang]||"Write everything in English.";
+    const msg=[{role:"user",content:`Full recipe for "${name}" for ${servings} people. ${langNote} Return JSON object:{name,emoji,description,time,prepTime,cookTime,diff,servings,ingredients:[{item,amount,unit}],steps:[{num,title,desc,timerMin,tip}],prepTips:[],cookTips:[],servingSuggestions:[],nutrition:{calories,protein,carbs,fat,fiber}}`}];
     try{return await Groq.callJSON(msg);}catch{return await Claude.callJSON(msg,"Professional chef. Return ONLY valid JSON object.",3000);}
   },
   getRecipesFromIngredients:async(ingredients)=>{
@@ -2515,7 +2517,7 @@ function RecipeDetail({recipe,onBack,t,lang,userId}){
   const loadDetail=async s=>{
     setLoading(true);setErr("");
     try{
-      const d=await Claude.getFullRecipe(recipe.name,s);
+     const d=await Claude.getFullRecipe(recipe.name,s,lang);
       if(d?.steps?.length>0){
         setDetail(d);LS.addRecent(recipe);
         if(SB.ok()) SB.saveRecipe(d).catch(()=>{});
