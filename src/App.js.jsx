@@ -1772,16 +1772,16 @@ Object.keys(TR).forEach(l=>{if(l!=="en") TR[l]={...TR.en,...TR[l]};});
 
 const LANGS = [
   {code:"en",label:"English",native:"English",flag:"🇬🇧",voice:["en-IN","en-US"]},
-  {code:"hi",label:"Hindi",native:"हिंदी",flag:"🇮🇳",voice:["hi-IN"]},
-  {code:"hinglish",label:"Hinglish",native:"Hinglish",flag:"🇮🇳",voice:["hi-IN","en-IN"]},
-  {code:"ta",label:"Tamil",native:"தமிழ்",flag:"🇮🇳",voice:["ta-IN"]},
-  {code:"te",label:"Telugu",native:"తెలుగు",flag:"🇮🇳",voice:["te-IN"]},
-  {code:"bn",label:"Bengali",native:"বাংলা",flag:"🇮🇳",voice:["bn-IN"]},
-  {code:"mr",label:"Marathi",native:"मराठी",flag:"🇮🇳",voice:["mr-IN"]},
-  {code:"gu",label:"Gujarati",native:"ગુજરાતી",flag:"🇮🇳",voice:["gu-IN"]},
-  {code:"kn",label:"Kannada",native:"ಕನ್ನಡ",flag:"🇮🇳",voice:["kn-IN"]},
-  {code:"ml",label:"Malayalam",native:"മലയാളം",flag:"🇮🇳",voice:["ml-IN"]},
-  {code:"pa",label:"Punjabi",native:"ਪੰਜਾਬੀ",flag:"🇮🇳",voice:["pa-IN"]},
+ {code:"hi",label:"Hindi",native:"हिंदी",flag:"🇮🇳",voice:["hi-IN","hi"]},
+{code:"hinglish",label:"Hinglish",native:"Hinglish",flag:"🇮🇳",voice:["hi-IN","en-IN","en-GB"]},
+{code:"ta",label:"Tamil",native:"தமிழ்",flag:"🇮🇳",voice:["ta-IN","ta","hi-IN","en-IN"]},
+{code:"te",label:"Telugu",native:"తెలుగు",flag:"🇮🇳",voice:["te-IN","te","hi-IN","en-IN"]},
+{code:"bn",label:"Bengali",native:"বাংলা",flag:"🇮🇳",voice:["bn-IN","bn","hi-IN","en-IN"]},
+{code:"mr",label:"Marathi",native:"मराठी",flag:"🇮🇳",voice:["mr-IN","mr","hi-IN","en-IN"]},
+{code:"gu",label:"Gujarati",native:"ગુજરાતી",flag:"🇮🇳",voice:["gu-IN","gu","hi-IN","en-IN"]},
+{code:"kn",label:"Kannada",native:"ಕನ್ನಡ",flag:"🇮🇳",voice:["kn-IN","kn","hi-IN","en-IN"]},
+{code:"ml",label:"Malayalam",native:"മലയാളം",flag:"🇮🇳",voice:["ml-IN","ml","hi-IN","en-IN"]},
+{code:"pa",label:"Punjabi",native:"ਪੰਜਾਬੀ",flag:"🇮🇳",voice:["pa-IN","pa","hi-IN","en-IN"]}, 
 ];
 
 // ── LOCAL STORAGE ─────────────────────────────────────────────
