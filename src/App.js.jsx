@@ -1934,14 +1934,14 @@ getAIPicks:async(count=30)=>{
 
 // ── GROQ CHATBOT SERVICE ──────────────────────────────────────
 const Groq = {
-  async callJSON(messages){
+ async callJSON(messages){
     try{
-      const sys="You are an Indian cooking expert. Return ONLY valid JSON array or object. No markdown, no explanation.";
-      const text=await this.chat(messages.map(m=>({role:m.role||"user",content:m.content})),"en",sys);
+      const history=messages.map(m=>({role:m.role||"user",content:m.content}));
+      const text=await this.chat(history,"en");
       const clean=text.replace(/```json\s*/g,"").replace(/```\s*/g,"").trim();
       const start=clean.search(/[[{]/);
       return start!==-1?JSON.parse(clean.slice(start)):null;
-    }catch{return null;}
+    }catch(e){console.error("Groq JSON error:",e);return null;}
   },
   async chat(messages, lang="en"){
     const langMap={en:"Respond in English.",hi:"Hamesha Hindi mein jawab do.",hinglish:"Hinglish mein baat karo — mix of Hindi aur English.",ta:"தமிழில் பதில் சொல்.",te:"తెలుగులో సమాధానం.",bn:"বাংলায় উত্তর দাও।",mr:"मराठीत उत्तर द्या.",gu:"ગુજરાતીમાં જવાબ.",kn:"ಕನ್ನಡದಲ್ಲಿ ಉತ್ತರ.",ml:"മലയാളത്തിൽ.",pa:"ਪੰਜਾਬੀ ਵਿੱਚ."};
