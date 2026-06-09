@@ -1912,18 +1912,9 @@ getAIPicks:async(count=15)=>{
     const msg=[{role:"user",content:`Generate exactly 6 diverse Indian & world recipe picks for today. Include variety. Return JSON array:[{name,emoji,time,diff,cal,protein,tags,category,reason}]. category must be: Breakfast|Lunch|Dinner|Snacks.`}];
     try{return await Groq.callJSON(msg);}catch{return await Claude.callJSON(msg,"Indian cooking expert. Return ONLY valid JSON array.",3000);}
   },
-  getFullRecipe:(name,servings=2)=>Claude.callJSON([{role:"user",content:`Full recipe for "${name}" for ${servings} people. Return JSON:{name,emoji,description,time,prepTime,cookTime,diff,servings,ingredients:[{item,amount,unit}],steps:[{num,title,desc,timerMin,tip}],prepTips:[],cookTips:[],servingSuggestions:[],nutrition:{calories,protein,carbs,fat,fiber}}`}],"Professional chef. Return ONLY valid JSON object.",3000),
- getLeftoverRecipes:async(leftovers)=>{
-    const msg=[{role:"user",content:`Leftovers: ${leftovers.join(", ")}. Suggest 4 creative recipes. Return JSON array:[{name,emoji,time,diff,cal,idea,ingredients:[],why}]`}];
-    try{return await Groq.callJSON(msg);}catch{return await Claude.callJSON(msg,"Zero-waste chef. Return ONLY valid JSON array.",2000);}
-  },
-  getPlannerRecipes:async(day,meal,count=30)=>{
-    const msg=[{role:"user",content:`Suggest exactly ${count} ${meal} recipes for ${day}. Diverse Indian regional varieties. Return JSON array:[{name,emoji,time,cal,protein,diff,why,region,tags}]`}];
-    try{return await Groq.callJSON(msg);}catch{return await Claude.callJSON(msg,"Meal planning expert. Return ONLY valid JSON array.",2500);}
-  },
- getGroceryList:async(recipe)=>{
-    const msg=[{role:"user",content:`Grocery list for: ${recipe}. Return JSON:{needed:[{item,amount,note,category}],alternatives:[{original,substitute,note}],tips:[string]}`}];
-    try{return await Groq.callJSON(msg);}catch{return await Claude.callJSON(msg,"Grocery assistant. Return ONLY valid JSON object.",2000);}
+ getFullRecipe:async(name,servings=2)=>{
+    const msg=[{role:"user",content:`Full recipe for "${name}" for ${servings} people. Return JSON object:{name,emoji,description,time,prepTime,cookTime,diff,servings,ingredients:[{item,amount,unit}],steps:[{num,title,desc,timerMin,tip}],prepTips:[],cookTips:[],servingSuggestions:[],nutrition:{calories,protein,carbs,fat,fiber}}`}];
+    try{return await Groq.callJSON(msg);}catch{return await Claude.callJSON(msg,"Professional chef. Return ONLY valid JSON object.",3000);}
   },
   getRecipesFromIngredients:async(ingredients)=>{
     const msg=[{role:"user",content:`I have: ${ingredients.join(", ")}. Suggest 10 recipes. Return JSON array:[{name,emoji,time,diff,cal,protein,tags,usesIngredients:[]}]`}];
