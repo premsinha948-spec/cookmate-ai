@@ -3066,7 +3066,12 @@ export default function CookMateApp(){
 
   const t=TR[lang]||TR.en;
   const setLang=l=>{setLangState(l);LS.set("lang",l);};
-  const setTheme=t=>{setThemeState(t);LS.set("theme",t);Object.assign(C,THEMES[t]);};
+  const setTheme=newTheme=>{
+    setThemeState(newTheme);
+    LS.set("theme",newTheme);
+    Object.assign(C,THEMES[newTheme]);
+    window.location.reload();
+  };
   const handleLogin=u=>{setUser(u);LS.set("user",u);};
   const handleSignOut=async()=>{
     await supabase.auth.signOut();
