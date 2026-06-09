@@ -1959,17 +1959,27 @@ const Groq = {
 const Voice = {
   _v:[],
   init(){if(typeof window==="undefined"||!window.speechSynthesis)return;window.speechSynthesis.onvoiceschanged=()=>{this._v=window.speechSynthesis.getVoices();};this._v=window.speechSynthesis.getVoices()||[];},
-  _best(lang){
+ _best(lang){
     const L=LANGS.find(l=>l.code===lang)||LANGS[0];
     const voices=this._v.length?this._v:(window.speechSynthesis?.getVoices()||[]);
-    const fem=["female","woman","samantha","victoria","zira","heera","aditi","veena","divya","priya","lekha"];
+    const fem=["female","woman","samantha","victoria","zira","heera","aditi","veena","divya","priya","lekha","google"];
+    // Try exact language code first
     for(const code of L.voice){
-      const fv=voices.find(v=>v.lang.startsWith(code.split("-")[0])&&fem.some(h=>v.name.toLowerCase().includes(h)));
+      // Try female voice with exact lang
+      const fv=voices.find(v=>v.lang===code&&fem.some(h=>v.name.toLowerCase().includes(h)));
       if(fv) return fv;
-      const av=voices.find(v=>v.lang.startsWith(code.split("-")[0]));
+      // Try any voice with exact lang
+      const av=voices.find(v=>v.lang===code);
       if(av) return av;
+      // Try partial match female
+      const pfv=voices.find(v=>v.lang.startsWith(code.split("-")[0])&&fem.some(h=>v.name.toLowerCase().includes(h)));
+      if(pfv) return pfv;
+      // Try partial match any
+      const pav=voices.find(v=>v.lang.startsWith(code.split("-")[0]));
+      if(pav) return pav;
     }
-    return voices.find(v=>fem.some(h=>v.name.toLowerCase().includes(h)))||null;
+    // Fallback to any female English
+   return voices.find(v=>v.lang.startsWith("en")&&fem.some(h=>v.name.toLowerCase().includes(h)))||voices[0]||null;
   },
   speak(text,lang="en",onEnd,onStart){
     if(typeof window==="undefined"||!window.speechSynthesis) return false;
