@@ -2354,7 +2354,7 @@ function HomeScreen({user,onNav,onRec,t,lang,recents}){
       {err&&<Err msg={err} retry={loadPicks}/>}
       {loading?[1,2,3,4].map(i=><Shim key={i}/>)
       :<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-        {filtered.slice(0,20).map((r,i)=><button key={i} onClick={()=>openRec({name:r.name,emoji:r.emoji||"🍽️",time:r.time||"30 min",diff:r.diff||"Easy",cal:r.cal||320,protein:r.protein||"12g",tags:[r.category||"AI Pick"]})} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:14,padding:11,cursor:"pointer",textAlign:"left"}} className="fade-in">
+        {filtered.slice(0,20).map((r,i)=><button key={i} onClick={()=>openRec({name:r.name,emoji:r.emoji||"🍽️",time:r.time||"30 min",diff:r.diff||"Easy",cal:r.cal||320,protein:r.protein||"12g",tags:[r.category||"AI Pick"]})} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:14,padding:11,cursor:"pointer",textAlign:"left",color:C.txt}} className="fade-in">
           <div style={{fontSize:26,marginBottom:5}}>{r.emoji||"🍽️"}</div>
           <div style={{fontWeight:700,fontSize:12,lineHeight:1.3}}>{r.name}</div>
           <div style={{fontSize:10,color:C.muted,marginTop:2}}>{r.time}</div>
