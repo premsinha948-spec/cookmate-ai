@@ -2717,7 +2717,7 @@ function LeftoverScreen({onRec,t,lang,userId}){
       {loading?[1,2,3].map(i=><Shim key={i}/>):recs.map((r,i)=><button key={i} onClick={()=>{LS.addRecent(r);onRec({...r,tags:r.tags||["Leftover"]});}} style={{...ST.card,width:"100%",textAlign:"left",cursor:"pointer",display:"flex",gap:11,border:`1px solid ${C.border}`}}>
         <span style={{fontSize:32,flexShrink:0}}>{r.emoji||"🍽️"}</span>
         <div style={{flex:1,minWidth:0}}>
-          <div style={{fontWeight:700,fontSize:13}}>{r.name}</div>
+          <div style={{fontWeight:700,fontSize:13,color:C.txt}}>{r.name}</div>
           <div style={{fontSize:11,color:C.muted,marginTop:2}}>{r.time||"20 min"} · {r.diff||"Easy"}</div>
           {r.idea&&<div style={{fontSize:11,color:C.a2,marginTop:3}}>💡 {r.idea}</div>}
         </div>
