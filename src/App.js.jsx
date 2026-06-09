@@ -1706,16 +1706,15 @@ const WORLD = [
 ];
 
 // ── DESIGN TOKENS ─────────────────────────────────────────────
-const C = {
-  bg:"#0F1117", card:"#1A1D27", border:"#2A2D3E",
-  accent:"#FF6B35", accentS:"rgba(255,107,53,0.12)",
-  a2:"#4ECDC4", a2S:"rgba(78,205,196,0.12)",
-  txt:"#F0F2FF", muted:"#8B8FA8", sub:"#5A5E78",
-  ok:"#2ECC71", okS:"rgba(46,204,113,0.1)",
-  warn:"#F39C12", warnS:"rgba(243,156,18,0.1)",
-  red:"#E74C3C", redS:"rgba(231,76,60,0.1)",
-  gA:"#FF6B35", gB:"#FF3CAC",
+const THEMES = {
+  dark:{bg:"#0F1117",card:"#1A1D27",border:"#2A2D3E",accent:"#FF6B35",accentS:"rgba(255,107,53,0.12)",a2:"#4ECDC4",a2S:"rgba(78,205,196,0.12)",txt:"#F0F2FF",muted:"#8B8FA8",sub:"#5A5E78",ok:"#2ECC71",okS:"rgba(46,204,113,0.1)",warn:"#F39C12",warnS:"rgba(243,156,18,0.1)",red:"#E74C3C",redS:"rgba(231,76,60,0.1)",gA:"#FF6B35",gB:"#FF3CAC"},
+  light:{bg:"#F5F5F5",card:"#FFFFFF",border:"#E0E0E0",accent:"#FF6B35",accentS:"rgba(255,107,53,0.12)",a2:"#4ECDC4",a2S:"rgba(78,205,196,0.12)",txt:"#1A1A2E",muted:"#666680",sub:"#9999AA",ok:"#2ECC71",okS:"rgba(46,204,113,0.1)",warn:"#F39C12",warnS:"rgba(243,156,18,0.1)",red:"#E74C3C",redS:"rgba(231,76,60,0.1)",gA:"#FF6B35",gB:"#FF3CAC"},
+  orange:{bg:"#1A0A00",card:"#2D1500",border:"#4A2500",accent:"#FF8C00",accentS:"rgba(255,140,0,0.12)",a2:"#FFD700",a2S:"rgba(255,215,0,0.12)",txt:"#FFF0E0",muted:"#C49A6C",sub:"#8B6040",ok:"#2ECC71",okS:"rgba(46,204,113,0.1)",warn:"#F39C12",warnS:"rgba(243,156,18,0.1)",red:"#E74C3C",redS:"rgba(231,76,60,0.1)",gA:"#FF8C00",gB:"#FF4500"},
+  purple:{bg:"#0D0017",card:"#1A0030",border:"#2D0050",accent:"#9B59B6",accentS:"rgba(155,89,182,0.12)",a2:"#E91E8C",a2S:"rgba(233,30,140,0.12)",txt:"#F0E0FF",muted:"#9B8FAA",sub:"#6A5A7A",ok:"#2ECC71",okS:"rgba(46,204,113,0.1)",warn:"#F39C12",warnS:"rgba(243,156,18,0.1)",red:"#E74C3C",redS:"rgba(231,76,60,0.1)",gA:"#9B59B6",gB:"#E91E8C"},
+  blue:{bg:"#000D1A",card:"#001830",border:"#002D50",accent:"#0099FF",accentS:"rgba(0,153,255,0.12)",a2:"#00E5FF",a2S:"rgba(0,229,255,0.12)",txt:"#E0F0FF",muted:"#6A8FAA",sub:"#3A5F7A",ok:"#2ECC71",okS:"rgba(46,204,113,0.1)",warn:"#F39C12",warnS:"rgba(243,156,18,0.1)",red:"#E74C3C",redS:"rgba(231,76,60,0.1)",gA:"#0099FF",gB:"#00E5FF"},
+  brown:{bg:"#1A0F00",card:"#2D1A00",border:"#4A2E00",accent:"#8B4513",accentS:"rgba(139,69,19,0.12)",a2:"#D2691E",a2S:"rgba(210,105,30,0.12)",txt:"#FFF5E0",muted:"#B8956A",sub:"#8B6940",ok:"#2ECC71",okS:"rgba(46,204,113,0.1)",warn:"#F39C12",warnS:"rgba(243,156,18,0.1)",red:"#E74C3C",redS:"rgba(231,76,60,0.1)",gA:"#8B4513",gB:"#D2691E"},
 };
+let C = {...THEMES.dark};
 const grad = `linear-gradient(135deg,${C.gA},${C.gB})`;
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
@@ -3002,14 +3001,29 @@ function FavoritesScreen({onRec,t,userId}){
 }
 
 // ── SETTINGS ──────────────────────────────────────────────────
-function SettingsScreen({lang,setLang,user,onSignOut,t}){
+function SettingsScreen({lang,setLang,theme,setTheme,user,onSignOut,t}){
   const testVoice=()=>{const texts={en:"Hello! I'm your CookMate AI kitchen assistant!",hi:"नमस्ते! मैं आपकी CookMate AI रसोई सहायक हूँ!",hinglish:"Hello! Main aapki CookMate AI assistant hoon!"};Voice.speak(texts[lang]||texts.en,lang);};
+  const THEME_LIST=[
+    {id:"dark",label:"Dark",emoji:"🌑"},
+    {id:"light",label:"Light",emoji:"🌕"},
+    {id:"orange",label:"Orange",emoji:"🟠"},
+    {id:"purple",label:"Purple",emoji:"🟣"},
+    {id:"blue",label:"Blue Ocean",emoji:"🌊"},
+    {id:"brown",label:"Brown",emoji:"🟤"},
+  ];
   return<div style={ST.scr}>
     <h2 style={{fontSize:18,fontWeight:800,marginBottom:14}}>⚙️ {t.settings}</h2>
     <div style={{...ST.card,display:"flex",alignItems:"center",gap:12,marginBottom:14}}>
       <div style={{width:44,height:44,borderRadius:"50%",background:grad,display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0}}>{user?.name?.[0]?.toUpperCase()||"👤"}</div>
-      <div style={{flex:1}}><div style={{fontWeight:700,fontSize:14}}>{user?.name||"Chef"}</div><div style={{fontSize:11,color:C.muted}}>{user?.email||user?.phone||"Guest"}</div></div>
+      <div style={{flex:1}}><div style={{fontWeight:700,fontSize:14,color:C.txt}}>{user?.name||"Chef"}</div><div style={{fontSize:11,color:C.muted}}>{user?.email||user?.phone||"Guest"}</div></div>
       <button onClick={onSignOut} style={{...mkBtn("red","sm"),borderRadius:10}}>Sign Out</button>
+    </div>
+    <h3 style={{fontSize:14,fontWeight:700,marginBottom:10}}>🎨 Theme</h3>
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:18}}>
+      {THEME_LIST.map(th=><button key={th.id} onClick={()=>setTheme(th.id)} style={{...ST.card,cursor:"pointer",border:`2px solid ${theme===th.id?C.accent:C.border}`,background:theme===th.id?C.accentS:C.card,padding:"10px 8px",marginBottom:0,textAlign:"center"}}>
+        <div style={{fontSize:22,marginBottom:4}}>{th.emoji}</div>
+        <div style={{fontWeight:700,fontSize:11,color:theme===th.id?C.accent:C.txt}}>{th.label}</div>
+      </button>)}
     </div>
     <h3 style={{fontSize:14,fontWeight:700,marginBottom:10}}>🌐 {t.language}</h3>
     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:18}}>
@@ -3041,20 +3055,27 @@ export default function CookMateApp(){
   const[recipe,setRecipe]=useState(null);
   const[lang,setLangState]=useState(()=>LS.get("lang","en"));
   const[recents,setRecents]=useState([]);
+  const[theme,setThemeState]=useState(()=>LS.get("theme","dark"));
 
-  useEffect(()=>{Voice.init();setRecents(LS.getRecent());},[]);
+  useEffect(()=>{
+    Voice.init();
+    setRecents(LS.getRecent());
+    const saved=LS.get("theme","dark");
+    if(THEMES[saved]) Object.assign(C,THEMES[saved]);
+  },[]);
 
   const t=TR[lang]||TR.en;
   const setLang=l=>{setLangState(l);LS.set("lang",l);};
+  const setTheme=t=>{setThemeState(t);LS.set("theme",t);Object.assign(C,THEMES[t]);};
   const handleLogin=u=>{setUser(u);LS.set("user",u);};
- const handleSignOut=async()=>{
-  await supabase.auth.signOut();
-  try{localStorage.clear();}catch{}
-  setUser(null);
-  setRecipe(null);
-  setNav("home");
-  window.location.href="/";
-};
+  const handleSignOut=async()=>{
+    await supabase.auth.signOut();
+    try{localStorage.clear();}catch{}
+    setUser(null);
+    setRecipe(null);
+    setNav("home");
+    window.location.href="/";
+  };
 const onRec=r=>{setRecipe(r);LS.addRecent(r);};
 const onBack=()=>{setRecipe(null);setRecents(LS.getRecent());};
 const userId=user?.id||null;
@@ -3082,7 +3103,7 @@ const userId=user?.id||null;
     india:<ExploreIndiaScreen onRec={onRec} t={t} userId={userId}/>,
     world:<WorldCuisinesScreen onRec={onRec} t={t} userId={userId}/>,
     tracker:<NutritionTrackerScreen t={t} lang={lang}/>,
-    settings:<SettingsScreen lang={lang} setLang={setLang} user={user} onSignOut={handleSignOut} t={t}/>,
+  settings:<SettingsScreen lang={lang} setLang={setLang} theme={theme} setTheme={setTheme} user={user} onSignOut={handleSignOut} t={t}/>,
   };
 
   return<div style={ST.app}>
