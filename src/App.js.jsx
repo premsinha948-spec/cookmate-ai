@@ -1908,17 +1908,41 @@ const Claude = {
     try{const c=text.replace(/```json\s*/g,"").replace(/```\s*/g,"").trim();const s=c.indexOf("{");return s!==-1?JSON.parse(c.slice(s)):null;}
     catch{return null;}
   },
-  getAIPicks:(count=16)=>Claude.callJSON([{role:"user",content:`Generate ${count} diverse Indian & world recipe picks today. Return JSON array:[{name,emoji,time,diff,cal,protein,tags,category,reason}]. category: Breakfast|Lunch|Dinner|Snacks.`}],"Indian cooking expert. Return ONLY valid JSON array.",2500),
+getAIPicks:async(count=30)=>{
+    const msg=[{role:"user",content:`Generate exactly ${count} diverse Indian & world recipe picks for today. Include variety. Return JSON array:[{name,emoji,time,diff,cal,protein,tags,category,reason}]. category must be: Breakfast|Lunch|Dinner|Snacks.`}];
+    try{return await Groq.callJSON(msg);}catch{return await Claude.callJSON(msg,"Indian cooking expert. Return ONLY valid JSON array.",3000);}
+  },
   getFullRecipe:(name,servings=2)=>Claude.callJSON([{role:"user",content:`Full recipe for "${name}" for ${servings} people. Return JSON:{name,emoji,description,time,prepTime,cookTime,diff,servings,ingredients:[{item,amount,unit}],steps:[{num,title,desc,timerMin,tip}],prepTips:[],cookTips:[],servingSuggestions:[],nutrition:{calories,protein,carbs,fat,fiber}}`}],"Professional chef. Return ONLY valid JSON object.",3000),
-  getLeftoverRecipes:(leftovers)=>Claude.callJSON([{role:"user",content:`Leftovers: ${leftovers.join(", ")}. Suggest 6 creative recipes. Return JSON array:[{name,emoji,time,diff,cal,idea,ingredients:[],why}]`}],"Zero-waste chef. Return ONLY valid JSON array.",2000),
-  getPlannerRecipes:(day,meal,count=20)=>Claude.callJSON([{role:"user",content:`Suggest ${count} ${meal} recipes for ${day}. Diverse Indian regional varieties. Return JSON array:[{name,emoji,time,cal,protein,diff,why,region,tags}]`}],"Meal planning expert. Return ONLY valid JSON array.",2500),
-  getGroceryList:(recipe)=>Claude.callJSON([{role:"user",content:`Grocery list for: ${recipe}. Return JSON:{needed:[{item,amount,note,category}],alternatives:[{original,substitute,note}],tips:[string]}`}],"Grocery assistant. Return ONLY valid JSON object.",2000),
-  getRecipesFromIngredients:(ingredients)=>Claude.callJSON([{role:"user",content:`I have: ${ingredients.join(", ")}. Suggest 6 recipes. Return JSON array:[{name,emoji,time,diff,cal,protein,tags,usesIngredients:[]}]`}],"Cooking assistant. Return ONLY valid JSON array.",2000),
+ getLeftoverRecipes:async(leftovers)=>{
+    const msg=[{role:"user",content:`Leftovers: ${leftovers.join(", ")}. Suggest 10 creative recipes. Return JSON array:[{name,emoji,time,diff,cal,idea,ingredients:[],why}]`}];
+    try{return await Groq.callJSON(msg);}catch{return await Claude.callJSON(msg,"Zero-waste chef. Return ONLY valid JSON array.",2000);}
+  },
+  getPlannerRecipes:async(day,meal,count=30)=>{
+    const msg=[{role:"user",content:`Suggest exactly ${count} ${meal} recipes for ${day}. Diverse Indian regional varieties. Return JSON array:[{name,emoji,time,cal,protein,diff,why,region,tags}]`}];
+    try{return await Groq.callJSON(msg);}catch{return await Claude.callJSON(msg,"Meal planning expert. Return ONLY valid JSON array.",2500);}
+  },
+ getGroceryList:async(recipe)=>{
+    const msg=[{role:"user",content:`Grocery list for: ${recipe}. Return JSON:{needed:[{item,amount,note,category}],alternatives:[{original,substitute,note}],tips:[string]}`}];
+    try{return await Groq.callJSON(msg);}catch{return await Claude.callJSON(msg,"Grocery assistant. Return ONLY valid JSON object.",2000);}
+  },
+  getRecipesFromIngredients:async(ingredients)=>{
+    const msg=[{role:"user",content:`I have: ${ingredients.join(", ")}. Suggest 10 recipes. Return JSON array:[{name,emoji,time,diff,cal,protein,tags,usesIngredients:[]}]`}];
+    try{return await Groq.callJSON(msg);}catch{return await Claude.callJSON(msg,"Cooking assistant. Return ONLY valid JSON array.",2000);}
+  },
   getNutrition:(name)=>Claude.callJSON([{role:"user",content:`Nutritional info for ${name} per serving. Return JSON:{calories,protein,carbs,fat,fiber,dietType}`}],"Nutritionist. Return ONLY valid JSON.",800),
 };
 
 // ── GROQ CHATBOT SERVICE ──────────────────────────────────────
 const Groq = {
+  async callJSON(messages){
+    try{
+      const sys="You are an Indian cooking expert. Return ONLY valid JSON array or object. No markdown, no explanation.";
+      const text=await this.chat(messages.map(m=>({role:m.role||"user",content:m.content})),"en",sys);
+      const clean=text.replace(/```json\s*/g,"").replace(/```\s*/g,"").trim();
+      const start=clean.search(/[[{]/);
+      return start!==-1?JSON.parse(clean.slice(start)):null;
+    }catch{return null;}
+  },
   async chat(messages, lang="en"){
     const langMap={en:"Respond in English.",hi:"Hamesha Hindi mein jawab do.",hinglish:"Hinglish mein baat karo — mix of Hindi aur English.",ta:"தமிழில் பதில் சொல்.",te:"తెలుగులో సమాధానం.",bn:"বাংলায় উত্তর দাও।",mr:"मराठीत उत्तर द्या.",gu:"ગુજરાતીમાં જવાબ.",kn:"ಕನ್ನಡದಲ್ಲಿ ಉತ್ತರ.",ml:"മലയാളത്തിൽ.",pa:"ਪੰਜਾਬੀ ਵਿੱਚ."};
     const sys=`You are CookMate AI — expert Indian cooking assistant. Help with recipes, ingredients, nutrition, meal planning. Be friendly, concise, practical. ${langMap[lang]||langMap.en}`;
