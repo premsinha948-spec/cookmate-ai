@@ -1927,6 +1927,10 @@ getAIPicks:async(count=15)=>{
 
 // ── GROQ CHATBOT SERVICE ──────────────────────────────────────
 const Groq = {
+  async getGroceryList(recipe){
+    const msg=[{role:"user",content:`Grocery list for: ${recipe}. Return JSON:{needed:[{item,amount,note,category}],alternatives:[{original,substitute,note}],tips:[string]}`}];
+    return await this.callJSON(msg);
+  },
  async callJSON(messages){
     try{
       const history=messages.map(m=>({role:m.role||"user",content:m.content}));
