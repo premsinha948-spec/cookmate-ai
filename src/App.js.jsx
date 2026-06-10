@@ -1894,28 +1894,16 @@ const Claude = {
       return start!==-1?JSON.parse(clean.slice(start)):null;
     }catch{return null;}
   },
- async detectIngredients(base64, mime="image/jpeg"){
+async detectIngredients(base64, mime="image/jpeg"){
     try{
-      const res=await fetch(
-   `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${CFG.GEMINI_KEY}`,
-        {
-          method:"POST",
-          headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({
-            contents:[{parts:[
-              {inline_data:{mime_type:mime,data:base64}},
-              {text:"List ONLY food ingredients visible. Return JSON:{ingredients:[{name,emoji,confidence}],notes:string}. No food → {ingredients:[],notes:'No food detected'}."}
-            ]}]
-          })
-        }
-      );
+      const res=await fetch("/api/gemini",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({base64,mimeType:mime}),
+      });
       if(!res.ok) return null;
-      const d=await res.json();
-      const text=d.candidates?.[0]?.content?.parts?.[0]?.text||"";
-      const c=text.replace(/```json\s*/g,"").replace(/```\s*/g,"").trim();
-      const s=c.indexOf("{");
-      return s!==-1?JSON.parse(c.slice(s)):null;
-    }catch{return null;}
+      return await res.json();
+    }catch(e){console.error("Gemini error:",e);return null;}
   },
 getAIPicks:async(count=15)=>{
     const msg=[{role:"user",content:`Generate exactly 6 diverse Indian & world recipe picks for today. Include variety. Return JSON array:[{name,emoji,time,diff,cal,protein,tags,category,reason}]. category must be: Breakfast|Lunch|Dinner|Snacks.`}];
