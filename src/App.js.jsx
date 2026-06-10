@@ -2717,7 +2717,7 @@ function LeftoverScreen({onRec,t,lang,userId}){
       if(dbRes.length>=1){
         setRecs(dbRes);setStep("res");
       } else {
-        const d=await Claude.getLeftoverRecipes(names);
+       const d=await Groq.getLeftoverRecipes(names); 
         if(Array.isArray(d)&&d.length>0){setRecs(d);setStep("res");}
         else setErr("Could not generate.");
       }
