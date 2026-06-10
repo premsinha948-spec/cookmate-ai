@@ -11,7 +11,7 @@ const supabase = createClient(
   process.env.REACT_APP_SUPABASE_KEY || ""
 );
 const CFG = {
-  GEMINI_MODEL: "gemini-1.5-flash",
+  GEMINI_MODEL:  "gemini-2.0-flash-lite",
   GROQ_MODEL:"llama-3.3-70b-versatile",
   GEMINI_KEY:    process.env.REACT_APP_GEMINI_KEY || "",
   GROQ_KEY:      process.env.REACT_APP_GROQ_KEY || "",
@@ -1897,7 +1897,7 @@ const Claude = {
  async detectIngredients(base64, mime="image/jpeg"){
     try{
       const res=await fetch(
-   `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${CFG.GEMINI_KEY}`,
+   `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${CFG.GEMINI_KEY}`,
         {
           method:"POST",
           headers:{"Content-Type":"application/json"},
