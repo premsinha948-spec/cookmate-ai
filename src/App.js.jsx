@@ -1927,6 +1927,10 @@ getAIPicks:async(count=15)=>{
 
 // ── GROQ CHATBOT SERVICE ──────────────────────────────────────
 const Groq = {
+  async getLeftoverRecipes(leftovers){
+    const msg=[{role:"user",content:`Leftovers: ${leftovers.join(", ")}. Suggest 4 creative recipes. Return JSON array:[{name,emoji,time,diff,cal,idea,ingredients:[],why}]`}];
+    return await this.callJSON(msg);
+  },
   async getGroceryList(recipe){
     const msg=[{role:"user",content:`Grocery list for: ${recipe}. Return JSON:{needed:[{item,amount,note,category}],alternatives:[{original,substitute,note}],tips:[string]}`}];
     return await this.callJSON(msg);
