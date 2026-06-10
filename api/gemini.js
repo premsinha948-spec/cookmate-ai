@@ -7,7 +7,7 @@ module.exports = async function handler(req, res) {
   try {
     const { base64, mimeType } = req.body;
     const key = process.env.REACT_APP_GEMINI_KEY;
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${key}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
     const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
