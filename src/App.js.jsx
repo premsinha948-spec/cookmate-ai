@@ -11,9 +11,9 @@ const supabase = createClient(
   process.env.REACT_APP_SUPABASE_KEY || ""
 );
 const CFG = {
-  CLAUDE_MODEL: "claude-sonnet-4-20250514",
-  GROQ_MODEL:"llama-3.1-8b-instant", 
-  ANTHROPIC_KEY: process.env.REACT_APP_ANTHROPIC_KEY || "",
+  GEMINI_MODEL: "gemini-1.5-flash",
+  GROQ_MODEL:"llama-3.3-70b-versatile",
+  GEMINI_KEY:    process.env.REACT_APP_GEMINI_KEY || "",
   GROQ_KEY:      process.env.REACT_APP_GROQ_KEY || "",
   SUPABASE_URL:  process.env.REACT_APP_SUPABASE_URL || "",
   SUPABASE_KEY:  process.env.REACT_APP_SUPABASE_KEY || "",
@@ -1895,18 +1895,27 @@ const Claude = {
     }catch{return null;}
   },
  async detectIngredients(base64, mime="image/jpeg"){
-    const body={model:CFG.CLAUDE_MODEL,max_tokens:600,system:"Food vision AI. Only report what you can clearly see. Never invent items.",
-      messages:[{role:"user",content:[{type:"image",source:{type:"base64",media_type:mime,data:base64}},{type:"text",text:"List ONLY food ingredients visible. Return JSON:{ingredients:[{name,emoji,confidence}],notes:string}. No food → {ingredients:[],notes:'No food detected'}."}]}]};
-    const res=await fetch("/api/claude",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(body)
-    });
-    if(!res.ok) return null;
-    const d=await res.json();
-    const text=(d.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("");
-    try{const c=text.replace(/```json\s*/g,"").replace(/```\s*/g,"").trim();const s=c.indexOf("{");return s!==-1?JSON.parse(c.slice(s)):null;}
-    catch{return null;}
+    try{
+      const res=await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${CFG.GEMINI_KEY}`,
+        {
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({
+            contents:[{parts:[
+              {inline_data:{mime_type:mime,data:base64}},
+              {text:"List ONLY food ingredients visible. Return JSON:{ingredients:[{name,emoji,confidence}],notes:string}. No food → {ingredients:[],notes:'No food detected'}."}
+            ]}]
+          })
+        }
+      );
+      if(!res.ok) return null;
+      const d=await res.json();
+      const text=d.candidates?.[0]?.content?.parts?.[0]?.text||"";
+      const c=text.replace(/```json\s*/g,"").replace(/```\s*/g,"").trim();
+      const s=c.indexOf("{");
+      return s!==-1?JSON.parse(c.slice(s)):null;
+    }catch{return null;}
   },
 getAIPicks:async(count=15)=>{
     const msg=[{role:"user",content:`Generate exactly 6 diverse Indian & world recipe picks for today. Include variety. Return JSON array:[{name,emoji,time,diff,cal,protein,tags,category,reason}]. category must be: Breakfast|Lunch|Dinner|Snacks.`}];
