@@ -2761,7 +2761,7 @@ function GroceryScreen({t}){
   const[loading,setLoading]=useState(false);
   const[err,setErr]=useState("");
   const[checked,setChecked]=useState({});
-  const gen=async()=>{if(!recipe.trim()) return;setLoading(true);setErr("");try{const d=await Claude.getGroceryList(recipe);setList(d);setChecked({});}catch(e){setErr(e.message||"Failed.");}setLoading(false);};
+  const gen=async()=>{if(!recipe.trim()) return;setLoading(true);setErr("");try{const d=await Groq.getGroceryList(recipe);;setList(d);setChecked({});}catch(e){setErr(e.message||"Failed.");}setLoading(false);};
   const tog=item=>setChecked(p=>({...p,[item]:!p[item]}));
   const cats=[...new Set((list?.needed||[]).map(i=>i.category||"General"))];
   const done=Object.values(checked).filter(Boolean).length;
