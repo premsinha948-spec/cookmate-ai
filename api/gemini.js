@@ -15,19 +15,30 @@ module.exports = async function handler(req, res) {
         contents: [{
           parts: [
             { inline_data: { mime_type: mimeType || "image/jpeg", data: base64 } },
-            { text: "List ONLY food ingredients visible in this image. Be specific. Return JSON: {ingredients:[{name,emoji,confidence}],notes:string}. If no food visible return {ingredients:[],notes:'No food detected'}. Return ONLY valid JSON, no markdown." }
+            { text: 'Look at this image carefully. List all food ingredients you can see. Respond with ONLY this JSON format, nothing else:\n{"ingredients":[{"name":"tomato","emoji":"🍅","confidence":"high"}],"notes":"found 3 items"}' }
           ]
         }],
-        generationConfig: { temperature: 0.1, maxOutputTokens: 800 }
+        generationConfig: { 
+          temperature: 0.1, 
+          maxOutputTokens: 500,
+          
+        }
       }),
     });
     const data = await response.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-    const clean = text.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
-    const start = clean.indexOf("{");
-    const result = start !== -1 ? JSON.parse(clean.slice(start)) : { ingredients: [], notes: "Could not parse response" };
-    res.status(200).json(result);
+    if(data.error) {
+      return res.status(200).json({ingredients:[], notes: data.error.message});
+    }
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+    try {
+      const clean = text.replace(/```json\s*/g,"").replace(/```\s*/g,"").trim();
+      const start = clean.indexOf("{");
+      const result = start !== -1 ? JSON.parse(clean.slice(start)) : {ingredients:[],notes:"No food detected"};
+      res.status(200).json(result);
+    } catch {
+      res.status(200).json({ingredients:[],notes:"Could not detect ingredients"});
+    }
   } catch (e) {
-    res.status(500).json({ error: e.message });
+    res.status(500).json({error: e.message, ingredients:[], notes:"Server error"});
   }
 };
