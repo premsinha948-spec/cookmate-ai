@@ -2010,8 +2010,8 @@ const Groq = {
     try {
       const res = await fetch("/api/groq", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${CFG.GROQ_KEY}` },
         body: JSON.stringify({ model: CFG.GROQ_MODEL, max_tokens: 4000, messages: [{ role: "system", content: sys }, ...messages] }),
+        headers: { "Content-Type": "application/json" },
       });
       const d = await res.json();
       if (d.error) throw new Error(d.error.message);
