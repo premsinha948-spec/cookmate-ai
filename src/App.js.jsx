@@ -1887,13 +1887,33 @@ const Claude = {
   },
 
   async callJSON(messages, system="", maxTokens=1500){
-    try{
-      const text=await this.call(messages,system,maxTokens);
-      const clean=text.replace(/```json\s*/g,"").replace(/```\s*/g,"").trim();
-      const start=clean.search(/[[{]/);
-      return start!==-1?JSON.parse(clean.slice(start)):null;
-    }catch{return null;}
-  },
+  try{
+
+    const text = await this.call(messages, system, maxTokens);
+
+    console.log("RAW GROQ RESPONSE:", text);
+
+    const clean = text
+      .replace(/```json\s*/gi, "")
+      .replace(/```\s*/g, "")
+      .trim();
+
+    const start = clean.search(/[[{]/);
+
+    if(start === -1){
+      console.error("No JSON found:", clean);
+      return null;
+    }
+
+    return JSON.parse(clean.slice(start));
+
+  }catch(err){
+
+    console.error("Groq JSON Error:", err);
+
+    return null;
+  }
+},
 async detectIngredients(base64, mime="image/jpeg"){
     try{
       const res=await fetch("/api/gemini",{
@@ -2417,15 +2437,49 @@ function ScanScreen({onRec,t,lang,userId}){
     } else {
       // Step 2: AI fallback
       setStatus("🤖 AI generating recipes...");
-      try{
-        const d=await Claude.getRecipesFromIngredients(names);
-        if(Array.isArray(d)&&d.length>0){
-          const aiRecs=d.map(r=>({...r,source:"ai"}));
-          setRecs([...dbRes,...aiRecs]);setStep("rec");
-          if(SB.ok()) aiRecs.forEach(r=>SB.saveRecipe(r).catch(()=>{}));
-        } else setErr("No recipes found. Try different ingredients.");
-      }catch(e){setErr(e.message||"Generation failed.");}
+     try{
+  const d = await Claude.getRecipesFromIngredients(names);
+
+  if(Array.isArray(d) && d.length > 0){
+
+    const aiRecs = d.map(r => ({
+      ...r,
+      source: "ai"
+    }));
+
+    setRecs([...dbRes, ...aiRecs]);
+    setStep("rec");
+
+    if(SB.ok()){
+      aiRecs.forEach(r =>
+        SB.saveRecipe(r).catch(() => {})
+      );
     }
+
+  }else{
+
+    console.error("Groq returned:", d);
+
+    const fallbackRecipe = {
+      name: `${names.slice(0,3).join(" ")} Recipe`,
+      ingredients: names,
+      source: "fallback",
+      steps: [
+        "Heat oil in a pan",
+        "Add ingredients",
+        "Cook for 10-15 minutes",
+        "Serve hot"
+      ]
+    };
+
+    setRecs([...dbRes, fallbackRecipe]);
+    setStep("rec");
+  }
+
+}catch(e){
+  setErr(e.message || "Generation failed.");
+}
+      }
     setStatus("");setLoading(false);
   };
 
