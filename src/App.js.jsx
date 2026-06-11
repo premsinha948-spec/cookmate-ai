@@ -2002,11 +2002,7 @@ const Groq = {
   async chat(messages, lang = "en") {
     const langMap = { en: "Respond in English.", hi: "Hamesha Hindi mein jawab do.", hinglish: "Hinglish mein baat karo — mix of Hindi aur English.", ta: "தமிழில் பதில் சொல்.", te: "తెలుగులో సమాధానం.", bn: "বাংলায় উত্তর দাও।", mr: "मराठीत उत्तर द्या.", gu: "ગુજરાતીમાં જવાબ.", kn: "ಕನ್ನಡದಲ್ಲಿ ಉತ್ತರ.", ml: "മലയാളത്തിൽ.", pa: "ਪੰਜਾਬੀ ਵਿੱਚ." };
     const sys = `You are CookMate AI — expert Indian cooking assistant. Help with recipes, ingredients, nutrition, meal planning. Be friendly, concise, practical. ${langMap[lang] || langMap.en}`;
-    if (!CFG.GROQ_KEY) {
-      // Fallback to Claude if Groq not set
-      try { return await Claude.call([{ role: "user", content: messages[messages.length - 1]?.content || "" }], sys, 500); }
-      catch { return "Chat unavailable. Please set GROQ_KEY."; }
-    }
+   
     try {
       const res = await fetch("/api/groq", {
         method: "POST",
