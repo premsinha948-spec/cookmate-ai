@@ -2012,7 +2012,7 @@ const Groq = {
       const d = await res.json();
       if (d.error) throw new Error(d.error.message);
       return d.choices[0].message.content;
-    } catch { return "Couldn't process that. Try again!"; }
+    } catch(e) { console.log("Groq fetch error:", e); return "Couldn't process that. Try again!"; }
   },
 };
 
