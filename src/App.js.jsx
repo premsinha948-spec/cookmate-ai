@@ -1862,7 +1862,7 @@ const SB = {
     } catch (e) { console.error("SB search:", e); return []; }
   },
   // Auto-save AI-generated recipe for future DB hits
-  async saveRecipe(recipe) {
+ async saveRecipe(recipe)  {
     if (!this.ok()) return;
     try {
       await fetch(`${CFG.SUPABASE_URL}/rest/v1/recipes`, {
@@ -1870,16 +1870,13 @@ const SB = {
         headers: { ...this.hdrs(), "Prefer": "return=minimal" },
         body: JSON.stringify({
           name: recipe.name,
-          emoji: recipe.emoji || "🍽️",
           cuisine: recipe.cuisine || "Indian",
           category: recipe.category || "General",
           ingredients: (recipe.ingredients || []).map(i => typeof i === "string" ? i : i.item),
-          instructions: recipe.steps || [],
+          steps: recipe.steps || [],
           nutrition: recipe.nutrition || {},
-          time_minutes: parseInt(recipe.time) || 30,
-          difficulty: recipe.diff || "Medium",
-          source: "ai_generated",
-          ai_generated: true
+          minutes: parseInt(recipe.time) || 30,
+          source: "ai_generated"
         }),
       });
     } catch (e) { console.error("SB save:", e); }
