@@ -11,7 +11,7 @@ const supabase = createClient(
   process.env.REACT_APP_SUPABASE_KEY || ""
 );
 const CFG = {
-  GEMINI_MODEL:  "gemini-2.0-flash",
+  GEMINI_MODEL:  "gemini-3.1-flash-lite",
   GROQ_MODEL:"llama-3.3-70b-versatile",
   GEMINI_KEY:    process.env. GEMINI_API_KEY_REMOVED|| "",
   GROQ_KEY:      process.env.REACT_APP_GROQ_KEY || "",

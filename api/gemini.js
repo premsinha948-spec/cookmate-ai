@@ -11,7 +11,7 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ ingredients: [], notes: "Server config error" });
   }
 
-  const model = "gemini-2.0-flash";
+  const model = "gemini-3.1-flash-lite";
   console.log(`[Gemini] Using model: ${model}`);
 
   try {
