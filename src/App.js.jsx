@@ -2699,8 +2699,9 @@ function HomeScreen({ user, onNav, onRec, t, lang, recents }) {
     const tRef = useRef();
     useEffect(() => () => { if (tRef.current) clearInterval(tRef.current); Voice.stop(); }, []);
 
-    const loadDetail = async s => {
-      setLoading(true); setErr("");
+  const loadDetail = async s => {
+  console.log("loadDetail called with:", s);
+  setLoading(true); setErr("");
       try {
         // Groq se full recipe lo
         const prompt = `Full recipe for "${recipe.name}" for ${s} people. Return ONLY this JSON object:
