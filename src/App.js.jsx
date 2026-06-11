@@ -2735,7 +2735,7 @@ console.log("Groq reply:", reply);
         <div style={{ display: "flex", justifyContent: "center", gap: 7, flexWrap: "wrap" }}>
           <span style={mkTag(C.accent)}>⏱ {recipe.time || "30 min"}</span>
           <span style={mkTag(C.a2)}>📊 {recipe.diff || "Easy"}</span>
-          {(recipe.tags || []).slice(0, 2).map((tg, i) => <span key={i} style={mkTag(C.ok)}>{tg}</span>)}
+          {(Array.isArray(recipe.tags) ? recipe.tags : []).slice(0, 2).map((tg, i) => <span key={i} style={mkTag(C.ok)}>{tg}</span>)}
         </div>
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 6, marginBottom: 14 }}>
