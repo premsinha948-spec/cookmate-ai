@@ -9,7 +9,7 @@ module.exports = async function handler(req, res) {
   try {
     const supabaseUrl = process.env.SUPABASE_URL || process.env.REACT_APP_SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_KEY || process.env.REACT_APP_SUPABASE_KEY;
-    const { type, category, state, cuisine, endpoint, user_id, recipes } = req.body;
+    const { type, category, state, cuisine, endpoint, user_id, recipes, recipe_name, servings } = req.body;
 
     const headers = {
       "Content-Type": "application/json",
@@ -57,6 +57,13 @@ module.exports = async function handler(req, res) {
       headers["Prefer"] = "return=minimal";
     } else if(type === "ingredients") {
       url = `${supabaseUrl}/rest/v1/recipes?select=*&limit=200`;
+    } else if(type === "get_recipe_cache") {
+      url = `${supabaseUrl}/rest/v1/recipe_cache?recipe_name=eq.${encodeURIComponent(recipe_name)}&servings=eq.${servings}&limit=1`;
+    } else if(type === "save_recipe_cache") {
+      url = `${supabaseUrl}/rest/v1/recipe_cache`;
+      method = "POST";
+      body = JSON.stringify({recipe_name, servings, recipe_data: JSON.stringify(recipes)});
+      headers["Prefer"] = "return=minimal";
     } else {
       url = `${supabaseUrl}${endpoint || "/rest/v1/recipes?select=id,name,ingredients,minutes,nutrition,category,state&limit=100"}`;
     }
