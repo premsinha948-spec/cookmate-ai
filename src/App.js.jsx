@@ -2707,7 +2707,6 @@ function HomeScreen({ user, onNav, onRec, t, lang, recents }) {
 {"name":"${recipe.name}","emoji":"🍽️","description":"brief description","time":"30 min","diff":"Medium","servings":${s},"ingredients":[{"item":"ingredient","amount":"1","unit":"cup"}],"steps":[{"num":1,"title":"Step title","desc":"Step description","timerMin":5,"tip":"helpful tip"}],"cookTips":["tip1","tip2"],"nutrition":{"calories":300,"protein":"15g","carbs":"30g","fat":"10g","fiber":"5g"}}`;
 
         const reply = await Groq.chat([{ role: "user", content: prompt }], lang);
-        const reply = await Groq.chat([{ role: "user", content: prompt }], lang);
 console.log("Groq reply:", reply);
         const clean = reply.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
         const start = clean.search(/[{]/);
