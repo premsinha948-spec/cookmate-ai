@@ -2700,13 +2700,25 @@ function HomeScreen({ user, onNav, onRec, t, lang, recents }) {
     useEffect(() => () => { if (tRef.current) clearInterval(tRef.current); Voice.stop(); }, []);
 
   const loadDetail = async s => {
-  console.log("loadDetail called with:", s);
   setLoading(true); setErr("");
-      try {
-        // Groq se full recipe lo
-        const prompt = `Full recipe for "${recipe.name}" for ${s} people. Return ONLY this JSON object:
+  try {
+    // Pehle cache check karo
+    const cacheRes = await fetch("/api/supabase", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "get_recipe_cache", recipe_name: recipe.name, servings: s })
+    });
+    const cacheData = await cacheRes.json();
+    if (Array.isArray(cacheData) && cacheData.length > 0) {
+      const cached = JSON.parse(cacheData[0].recipe_data);
+      if (cached?.steps?.length > 0) {
+        setDetail(cached); setMode("cooking"); setCur(0);
+        setLoading(false); return;
+      }
+    }
+    // Groq se full recipe lo
+    const prompt = `Full recipe for "${recipe.name}" for ${s} people. Return ONLY this JSON object:
 {"name":"${recipe.name}","emoji":"🍽️","description":"brief description","time":"30 min","diff":"Medium","servings":${s},"ingredients":[{"item":"ingredient","amount":"1","unit":"cup"}],"steps":[{"num":1,"title":"Step title","desc":"Step description","timerMin":5,"tip":"helpful tip"}],"cookTips":["tip1","tip2"],"nutrition":{"calories":300,"protein":"15g","carbs":"30g","fat":"10g","fiber":"5g"}}`;
-
         const reply = await Groq.chat([{ role: "user", content: prompt }], lang, "recipe");
 console.log("Groq reply:", reply);
         const clean = reply.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
@@ -2715,8 +2727,14 @@ console.log("Groq reply:", reply);
 
         if (d?.steps?.length > 0) {
           setDetail(d); LS.addRecent(recipe);
-          if (SB.ok()) SB.saveRecipe(d).catch(() => { });
-          setMode("cooking"); setCur(0);
+         if (SB.ok()) SB.saveRecipe(d).catch(() => { });
+// Cache save karo
+await fetch("/api/supabase", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ type: "save_recipe_cache", recipe_name: recipe.name, servings: s, recipes: d })
+});
+setMode("cooking"); setCur(0);
         } else setErr("Could not load steps. Try again.");
       } catch (e) { console.log("loadDetail error:", e); setErr(e.message || "Failed."); }
       setLoading(false);
