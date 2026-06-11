@@ -2717,7 +2717,7 @@ console.log("Groq reply:", reply);
           if (SB.ok()) SB.saveRecipe(d).catch(() => { });
           setMode("cooking"); setCur(0);
         } else setErr("Could not load steps. Try again.");
-      } catch (e) { setErr(e.message || "Failed."); }
+      } catch (e) { console.log("loadDetail error:", e); setErr(e.message || "Failed."); }
       setLoading(false);
     };
     const startTimer = m => { if (tRef.current) clearInterval(tRef.current); setTLeft(m * 60); tRef.current = setInterval(() => setTLeft(p => { if (p <= 1) { clearInterval(tRef.current); return 0; } return p - 1; }), 1000); };
