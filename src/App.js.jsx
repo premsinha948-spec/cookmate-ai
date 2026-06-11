@@ -1993,20 +1993,20 @@ const Groq = {
   async callJSON(messages) {
     try {
       const history = messages.map(m => ({ role: m.role || "user", content: m.content }));
-      const text = await this.chat(history, "en");
+     const text = await this.chat(history, "en", "leftover"); 
       const clean = text.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
       const start = clean.search(/[[{]/);
       return start !== -1 ? JSON.parse(clean.slice(start)) : null;
     } catch (e) { console.error("Groq JSON error:", e); return null; }
   },
-  async chat(messages, lang = "en") {
+  async chat(messages, lang = "en", type = "chat") {
     const langMap = { en: "Respond in English.", hi: "Hamesha Hindi mein jawab do.", hinglish: "Hinglish mein baat karo — mix of Hindi aur English.", ta: "தமிழில் பதில் சொல்.", te: "తెలుగులో సమాధానం.", bn: "বাংলায় উত্তর দাও।", mr: "मराठीत उत्तर द्या.", gu: "ગુજરાતીમાં જવાબ.", kn: "ಕನ್ನಡದಲ್ಲಿ ಉತ್ತರ.", ml: "മലയാളത്തിൽ.", pa: "ਪੰਜਾਬੀ ਵਿੱਚ." };
     const sys = `You are CookMate AI — expert Indian cooking assistant. Help with recipes, ingredients, nutrition, meal planning. Be friendly, concise, practical. ${langMap[lang] || langMap.en}`;
    
     try {
       const res = await fetch("/api/groq", {
         method: "POST",
-       body: JSON.stringify({ model: CFG.GROQ_MODEL, max_tokens: 1000, messages: [{ role: "system", content: sys }, ...messages] }),
+      body: JSON.stringify({ type, model: CFG.GROQ_MODEL, max_tokens: 1000, messages: [{ role: "system", content: sys }, ...messages] }),
         headers: { "Content-Type": "application/json" },
       });
       const d = await res.json();
@@ -2222,7 +2222,7 @@ function FloatingChat({ lang }) {
     setTyping(true);
     try {
       const history = [...msgs, userMsg].slice(-8).map(m => ({ role: m.role === "assistant" ? "assistant" : "user", content: m.content }));
-      const reply = await Groq.chat(history, lang);
+     const reply = await Groq.chat(history, lang, "chat"); 
       setMsgs(p => [...p, { role: "assistant", content: reply }]);
     } catch { setMsgs(p => [...p, { role: "assistant", content: "Sorry, try again!" }]); }
     setTyping(false);
@@ -2707,7 +2707,7 @@ function HomeScreen({ user, onNav, onRec, t, lang, recents }) {
         const prompt = `Full recipe for "${recipe.name}" for ${s} people. Return ONLY this JSON object:
 {"name":"${recipe.name}","emoji":"🍽️","description":"brief description","time":"30 min","diff":"Medium","servings":${s},"ingredients":[{"item":"ingredient","amount":"1","unit":"cup"}],"steps":[{"num":1,"title":"Step title","desc":"Step description","timerMin":5,"tip":"helpful tip"}],"cookTips":["tip1","tip2"],"nutrition":{"calories":300,"protein":"15g","carbs":"30g","fat":"10g","fiber":"5g"}}`;
 
-        const reply = await Groq.chat([{ role: "user", content: prompt }], lang);
+        const reply = await Groq.chat([{ role: "user", content: prompt }], lang, "recipe");
 console.log("Groq reply:", reply);
         const clean = reply.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
         const start = clean.search(/[{]/);
