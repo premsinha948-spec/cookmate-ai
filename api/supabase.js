@@ -47,7 +47,7 @@ module.exports = async function handler(req, res) {
     } else if(type === "save_pool") {
       url = `${supabaseUrl}/rest/v1/recipe_pool`;
       method = "POST";
-      body = JSON.stringify(recipes.map(r=>({name:r.name,emoji:r.emoji||"🍽️",time:r.time||"30 min",diff:r.diff||"Medium",cal:r.cal||320,protein:r.protein||"12g",tags:r.tags||[],category:r.category||"General"})));
+     body = JSON.stringify(recipes.map(r=>({name:r.name,emoji:r.emoji||"🍽️",time:r.time||"30 min",diff:r.diff||"Medium",cal:r.cal||320,protein:r.protein||"12g",tags:r.tags||[],category:r.category||"General"})));
       headers["Prefer"] = "return=minimal";
       headers["on_conflict"] = "name";
     } else if(type === "save_history") {
@@ -55,6 +55,8 @@ module.exports = async function handler(req, res) {
       method = "POST";
       body = JSON.stringify(recipes.map(r=>({user_id, recipe_name:r.name, shown_at:new Date().toISOString()})));
       headers["Prefer"] = "return=minimal";
+    } else if(type === "ingredients") {
+      url = `${supabaseUrl}/rest/v1/recipes?select=*&limit=200`;
     } else {
       url = `${supabaseUrl}${endpoint || "/rest/v1/recipes?select=id,name,ingredients,minutes,nutrition,category,state&limit=100"}`;
     }

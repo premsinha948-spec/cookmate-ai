@@ -2326,7 +2326,7 @@ function HomeScreen({user,onNav,onRec,t,lang,recents}){
   const[err,setErr]=useState("");
 
  const loadPicks = useCallback(async () => {
-  setLoading(true);  // ← add karo
+  setLoading(true);
   try {
     const res = await fetch("/api/supabase", {
       method: "POST",
@@ -2338,28 +2338,87 @@ function HomeScreen({user,onNav,onRec,t,lang,recents}){
       const picks = JSON.parse(data[0].recipes);
       if (Array.isArray(picks) && picks.length > 0) {
         setPicks(picks);
-        setLoading(false);  // ← add karo
+        setLoading(false);
         return;
       }
     }
-    // Supabase empty hai → INDIA_STATES se fallback lo
-    const fallback = INDIA_STATES.flatMap(s =>
-      s.dishes.map(d => ({ ...d, category: d.tags?.[0] || "Lunch" }))
-    ).sort(() => Math.random() - 0.5).slice(0, 20);
-    setPicks(fallback);
-  } catch (e) {
-    // Error pe bhi fallback
-    const fallback = INDIA_STATES.flatMap(s =>
-      s.dishes.map(d => ({ ...d, category: d.tags?.[0] || "Lunch" }))
-    ).sort(() => Math.random() - 0.5).slice(0, 20);
-    setPicks(fallback);
-  }
-  setLoading(false);  // ← add karo
+  } catch {}
+  // Fallback — INDIA_STATES local data
+  const fallback = INDIA_STATES
+    .flatMap(s => s.dishes.map(d => ({ ...d, category: d.tags?.[0] || "Lunch" })))
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 20);
+  setPicks(fallback);
+  setLoading(false);
 }, [user]);
 
-// useEffect fix:
-useEffect(() => { loadPicks(); }, [loadPicks]);  // ← loadPicks dependency add karo
+const refreshPicks = useCallback(async () => {
+  setLoading(true); setErr("");
+  try {
+    // Step 1: Last 4 din ki history
+    const histRes = await fetch("/api/supabase", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "recipe_history", user_id: user?.id || "guest" })
+    });
+    const histData = await histRes.json();
+    const seenNames = new Set(
+      (Array.isArray(histData) ? histData : []).map(h => h.recipe_name)
+    );
 
+    // Step 2: Recipe pool se unseen recipes
+    const poolRes = await fetch("/api/supabase", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "recipe_pool" })
+    });
+    const poolData = await poolRes.json();
+    const unseen = (Array.isArray(poolData) ? poolData : [])
+      .filter(r => !seenNames.has(r.name));
+
+    let newPicks = [];
+
+    if (unseen.length >= 8) {
+      // Pool se random 20
+      newPicks = [...unseen]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 20);
+    } else {
+      // AI se generate karo
+      const d = await Claude.getAIPicks(20);
+      if (Array.isArray(d) && d.length > 0) {
+        newPicks = d;
+        // Pool mein save karo
+        await fetch("/api/supabase", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type: "save_pool", recipes: newPicks })
+        });
+      }
+    }
+
+    if (newPicks.length > 0) {
+      setPicks(newPicks);
+      // ai_picks save
+      await fetch("/api/supabase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "save_picks", user_id: user?.id || "guest", recipes: newPicks })
+      });
+      // History update
+      await fetch("/api/supabase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "save_history", user_id: user?.id || "guest", recipes: newPicks })
+      });
+    } else {
+      setErr("Could not load picks.");
+    }
+  } catch (e) { setErr(e.message || "Failed."); }
+  setLoading(false);
+}, [user]);
+
+useEffect(() => { loadPicks(); }, [loadPicks]);
   const refreshPicks=useCallback(async()=>{
     setLoading(true);setErr("");
     try{
