@@ -2325,12 +2325,81 @@ function HomeScreen({user,onNav,onRec,t,lang,recents}){
   const[filter,setFilter]=useState("All");
   const[err,setErr]=useState("");
 
-  const loadPicks=useCallback(async()=>{
+ const loadPicks=useCallback(async()=>{
+    // Sirf Supabase se fetch karo — AI call nahi
+    try{
+      const res=await fetch("/api/supabase",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({type:"ai_picks",user_id:user?.id||"guest"})
+      });
+      const data=await res.json();
+      if(Array.isArray(data)&&data.length>0){
+        const picks=JSON.parse(data[0].recipes);
+        if(Array.isArray(picks)&&picks.length>0){setPicks(picks);return;}
+      }
+    }catch{}
+    // Koi picks nahi hain — empty dikhao
+    setPicks([]);
+  },[user]);
+
+  const refreshPicks=useCallback(async()=>{
     setLoading(true);setErr("");
-    try{const d=await Claude.getAIPicks(20);if(Array.isArray(d)&&d.length>0) setPicks(d);else setErr("Could not load picks.");}
-    catch(e){setErr(e.message||"Failed.");}
+    try{
+      // Step 1: Last 4 din ki history fetch karo
+      const histRes=await fetch("/api/supabase",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({type:"recipe_history",user_id:user?.id||"guest"})
+      });
+      const histData=await histRes.json();
+      const recentNames=new Set((Array.isArray(histData)?histData:[]).map(h=>h.recipe_name));
+
+      // Step 2: Recipe pool se unseen recipes lo
+      const poolRes=await fetch("/api/supabase",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({type:"recipe_pool"})
+      });
+      const poolData=await poolRes.json();
+      const unseen=(Array.isArray(poolData)?poolData:[]).filter(r=>!recentNames.has(r.name));
+
+      let newPicks=[];
+      if(unseen.length>=8){
+        // Pool se random 20 lo
+        newPicks=[...unseen].sort(()=>Math.random()-0.5).slice(0,20);
+      } else {
+        // Groq se generate karo
+        const d=await Claude.getAIPicks(20);
+        if(Array.isArray(d)&&d.length>0){
+          newPicks=d;
+          // Pool mein save karo
+          await fetch("/api/supabase",{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({type:"save_pool",recipes:newPicks})
+          });
+        }
+      }
+
+      if(newPicks.length>0){
+        setPicks(newPicks);
+        // ai_picks save karo
+        await fetch("/api/supabase",{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({type:"save_picks",user_id:user?.id||"guest",recipes:newPicks})
+        });
+        // History update karo
+        await fetch("/api/supabase",{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({type:"save_history",user_id:user?.id||"guest",recipes:newPicks})
+        });
+      } else setErr("Could not load picks.");
+    }catch(e){setErr(e.message||"Failed.");}
     setLoading(false);
-  },[]);
+  },[user]);
 
   useEffect(()=>{loadPicks();},[]);
 
@@ -2374,7 +2443,7 @@ function HomeScreen({user,onNav,onRec,t,lang,recents}){
     <div>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
         <h2 style={{margin:0,fontSize:15,fontWeight:700}}>✨ {t.aiPicks}</h2>
-        <button onClick={loadPicks} disabled={loading} style={{...mkBtn("ghost","sm"),borderRadius:20,fontSize:11}}>{loading?<Spin s={12}/>:"↻"}</button>
+        <button onClick={refreshPicks} disabled={loading} style={{...mkBtn("ghost","sm"),borderRadius:20,fontSize:11}}>{loading?<Spin s={12}/>:"↻"}</button>
       </div>
       <div style={{display:"flex",gap:6,overflowX:"auto",paddingBottom:8,marginBottom:10}}>
         {CATS.map(cat=><button key={cat} onClick={()=>setFilter(cat)} style={{flexShrink:0,padding:"6px 12px",borderRadius:20,border:`1px solid ${filter===cat?C.accent:C.border}`,background:filter===cat?C.accentS:C.card,color:filter===cat?C.accent:C.muted,cursor:"pointer",fontWeight:600,fontSize:11}}>{cat}</button>)}
