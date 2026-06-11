@@ -2325,23 +2325,40 @@ function HomeScreen({user,onNav,onRec,t,lang,recents}){
   const[filter,setFilter]=useState("All");
   const[err,setErr]=useState("");
 
- const loadPicks=useCallback(async()=>{
-    // Sirf Supabase se fetch karo — AI call nahi
-    try{
-      const res=await fetch("/api/supabase",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({type:"ai_picks",user_id:user?.id||"guest"})
-      });
-      const data=await res.json();
-      if(Array.isArray(data)&&data.length>0){
-        const picks=JSON.parse(data[0].recipes);
-        if(Array.isArray(picks)&&picks.length>0){setPicks(picks);return;}
+ const loadPicks = useCallback(async () => {
+  setLoading(true);  // ← add karo
+  try {
+    const res = await fetch("/api/supabase", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "ai_picks", user_id: user?.id || "guest" })
+    });
+    const data = await res.json();
+    if (Array.isArray(data) && data.length > 0) {
+      const picks = JSON.parse(data[0].recipes);
+      if (Array.isArray(picks) && picks.length > 0) {
+        setPicks(picks);
+        setLoading(false);  // ← add karo
+        return;
       }
-    }catch{}
-    // Koi picks nahi hain — empty dikhao
-    setPicks([]);
-  },[user]);
+    }
+    // Supabase empty hai → INDIA_STATES se fallback lo
+    const fallback = INDIA_STATES.flatMap(s =>
+      s.dishes.map(d => ({ ...d, category: d.tags?.[0] || "Lunch" }))
+    ).sort(() => Math.random() - 0.5).slice(0, 20);
+    setPicks(fallback);
+  } catch (e) {
+    // Error pe bhi fallback
+    const fallback = INDIA_STATES.flatMap(s =>
+      s.dishes.map(d => ({ ...d, category: d.tags?.[0] || "Lunch" }))
+    ).sort(() => Math.random() - 0.5).slice(0, 20);
+    setPicks(fallback);
+  }
+  setLoading(false);  // ← add karo
+}, [user]);
+
+// useEffect fix:
+useEffect(() => { loadPicks(); }, [loadPicks]);  // ← loadPicks dependency add karo
 
   const refreshPicks=useCallback(async()=>{
     setLoading(true);setErr("");
