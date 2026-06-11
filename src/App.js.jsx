@@ -13,7 +13,7 @@ const supabase = createClient(
 const CFG = {
   GEMINI_MODEL:  "gemini-2.0-flash",
   GROQ_MODEL:"llama-3.3-70b-versatile",
-  GEMINI_KEY:    process.env.REACT_APP_GEMINI_KEY || "",
+  GEMINI_KEY:    process.env. GEMINI_API_KEY_REMOVED|| "",
   GROQ_KEY:      process.env.REACT_APP_GROQ_KEY || "",
   SUPABASE_URL:  process.env.REACT_APP_SUPABASE_URL || "",
   SUPABASE_KEY:  process.env.REACT_APP_SUPABASE_KEY || "",
