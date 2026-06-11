@@ -2598,7 +2598,15 @@ function RecipeDetail({recipe,onBack,t,lang,userId}){
   const loadDetail=async s=>{
     setLoading(true);setErr("");
     try{
-     const d=await Claude.getFullRecipe(recipe.name,s,lang);
+      // Groq se full recipe lo
+      const prompt=`Full recipe for "${recipe.name}" for ${s} people. Return ONLY this JSON object:
+{"name":"${recipe.name}","emoji":"🍽️","description":"brief description","time":"30 min","diff":"Medium","servings":${s},"ingredients":[{"item":"ingredient","amount":"1","unit":"cup"}],"steps":[{"num":1,"title":"Step title","desc":"Step description","timerMin":5,"tip":"helpful tip"}],"cookTips":["tip1","tip2"],"nutrition":{"calories":300,"protein":"15g","carbs":"30g","fat":"10g","fiber":"5g"}}`;
+      
+      const reply=await Groq.chat([{role:"user",content:prompt}],lang);
+      const clean=reply.replace(/```json\s*/g,"").replace(/```\s*/g,"").trim();
+      const start=clean.search(/[{]/);
+      const d=start!==-1?JSON.parse(clean.slice(start)):null;
+      
       if(d?.steps?.length>0){
         setDetail(d);LS.addRecent(recipe);
         if(SB.ok()) SB.saveRecipe(d).catch(()=>{});
