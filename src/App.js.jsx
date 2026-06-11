@@ -2406,20 +2406,42 @@ function ScanScreen({onRec,t,lang,userId}){
   const[status,setStatus]=useState("");
   const fref=useRef();
 
-  const handleFile=async e=>{
+ const handleFile=async e=>{
     const file=e.target.files?.[0];if(!file) return;
     const url=URL.createObjectURL(file);setPreview(url);
     setScanning(true);setLoading(true);setErr("");
     try{
-      const base64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(",")[1]);r.onerror=rej;r.readAsDataURL(file);});
-      const result=await Claude.detectIngredients(base64,file.type||"image/jpeg");
+      // Compress image before sending
+      console.time("image-compression");
+      const compressed=await new Promise((res,rej)=>{
+        const img=new Image();
+        img.onload=()=>{
+          const maxW=1024;
+          const scale=Math.min(1,maxW/img.width);
+          const canvas=document.createElement("canvas");
+          canvas.width=img.width*scale;
+          canvas.height=img.height*scale;
+          canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);
+          canvas.toBlob(blob=>res(blob),"image/jpeg",0.7);
+        };
+        img.onerror=rej;
+        img.src=URL.createObjectURL(file);
+      });
+      console.timeEnd("image-compression");
+      console.log(`Original: ${(file.size/1024).toFixed(1)}KB → Compressed: ${(compressed.size/1024).toFixed(1)}KB`);
+
+      const base64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(",")[1]);r.onerror=rej;r.readAsDataURL(compressed);});
+      
+      console.time("gemini-scan");
+      const result=await Claude.detectIngredients(base64,"image/jpeg");
+      console.timeEnd("gemini-scan");
+      
       if(result?.ingredients?.length>0){setIngs(result.ingredients.map(i=>`${i.emoji||"🥗"} ${i.name}`));setStep("det");}
       else{setErr(result?.notes||"No food detected. Add manually.");setStep("det");}
     }catch{setErr("Image analysis failed. Add ingredients manually.");}
     setScanning(false);setLoading(false);
     if(fref.current) fref.current.value="";
   };
-
   const addM=()=>{if(!mi.trim()) return;setIngs(p=>[...p,"🥗 "+mi.trim()]);setMi("");};
   const remI=i=>setIngs(p=>p.filter((_,j)=>j!==i));
 
