@@ -2477,7 +2477,7 @@ useEffect(() => { loadPicks(); }, [loadPicks]);
     setLoading(false);
   },[user]);
 
-  useEffect(()=>{loadPicks();},[]);
+  useEffect(()=>{loadPicks();},[loadPicks]);
 
   const CATS=["All","Breakfast","Lunch","Dinner","Snacks"];
   const filtered=filter==="All"?picks:picks.filter(r=>r.category===filter);
