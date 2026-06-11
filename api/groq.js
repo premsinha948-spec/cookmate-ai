@@ -7,13 +7,21 @@ module.exports = async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).end();
   try {
+    const { type, ...body } = req.body;
+    const keyMap = {
+      chat: process.env.GROQ_KEY_CHAT,
+      leftover: process.env.GROQ_KEY_LEFTOVER,
+      planner: process.env.GROQ_KEY_PLANNER,
+      recipe: process.env.GROQ_KEY_RECIPE,
+    };
+    const groqKey = keyMap[type] || process.env.GROQ_KEY;
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.REACT_APP_GROQ_KEY || process.env.GROQ_KEY}`,
+        "Authorization": `Bearer ${groqKey}`,
       },
-      body: JSON.stringify(req.body),
+      body: JSON.stringify(body),
     });
     const data = await response.json();
     res.status(200).json(data);
