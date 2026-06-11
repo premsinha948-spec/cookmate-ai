@@ -2093,7 +2093,7 @@ function RecipeCard({recipe,onClick,userId}){
   return<button onClick={onClick} style={{...ST.card,width:"100%",textAlign:"left",cursor:"pointer",display:"flex",alignItems:"center",gap:12,padding:"13px",marginBottom:8}}>
     <span style={{fontSize:38,flexShrink:0}}>{recipe.emoji||"🍽️"}</span>
     <div style={{flex:1,minWidth:0}}>
-      <div style={{fontWeight:700,fontSize:14}}>{recipe.name}</div>
+      <div style={{fontWeight:700,fontSize:14,color:C.txt}}>{recipe.name}</div>
       <div style={{display:"flex",gap:8,marginTop:3,flexWrap:"wrap"}}>
         <span style={{fontSize:11,color:C.muted}}>⏱ {recipe.time||"30 min"}</span>
         <span style={{fontSize:11,color:C.muted}}>📊 {recipe.diff||"Easy"}</span>
