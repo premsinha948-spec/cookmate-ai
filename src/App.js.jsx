@@ -2974,7 +2974,37 @@ setMode("cooking"); setCur(0);
     const [loading, setLoading] = useState(false);
     const [err, setErr] = useState("");
     const [checked, setChecked] = useState({});
-    const gen = async () => { if (!recipe.trim()) return; setLoading(true); setErr(""); try { const d = await Groq.getGroceryList(recipe);; setList(d); setChecked({}); } catch (e) { setErr(e.message || "Failed."); } setLoading(false); };
+    const gen = async () => { 
+  if (!recipe.trim()) return; 
+  setLoading(true); setErr(""); 
+  try { 
+    // Cache check karo
+    const cacheRes = await fetch("/api/supabase", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "get_grocery_cache", recipe_name: recipe.trim() })
+    });
+    const cacheData = await cacheRes.json();
+    if (Array.isArray(cacheData) && cacheData.length > 0) {
+      console.log("GROCERY CACHE HIT");
+      setList(JSON.parse(cacheData[0].grocery_data)); 
+      setChecked({});
+      setLoading(false); 
+      return;
+    }
+    console.log("GROCERY CACHE MISS - calling Groq");
+    const d = await Groq.getGroceryList(recipe);
+    setList(d); 
+    setChecked({});
+    // Cache save karo
+    await fetch("/api/supabase", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "save_grocery_cache", recipe_name: recipe.trim(), recipes: d })
+    });
+  } catch (e) { setErr(e.message || "Failed."); } 
+  setLoading(false); 
+};
     const tog = item => setChecked(p => ({ ...p, [item]: !p[item] }));
     const cats = [...new Set((list?.needed || []).map(i => i.category || "General"))];
     const done = Object.values(checked).filter(Boolean).length;
