@@ -78,6 +78,13 @@ module.exports = async function handler(req, res) {
       method = "POST";
       body = JSON.stringify({ingredients_key: recipe_name, recipes_data: JSON.stringify(recipes)});
       headers["Prefer"] = "return=minimal";
+    } else if(type === "get_nutrition_cache") {
+      url = `${supabaseUrl}/rest/v1/nutrition_cache?food_name=eq.${encodeURIComponent(recipe_name)}&limit=1`;
+    } else if(type === "save_nutrition_cache") {
+      url = `${supabaseUrl}/rest/v1/nutrition_cache`;
+      method = "POST";
+      body = JSON.stringify({food_name: recipe_name, nutrition_data: JSON.stringify(recipes)});
+      headers["Prefer"] = "return=minimal";
     } else {
     }
     const response = await fetch(url, { method, headers, body });
