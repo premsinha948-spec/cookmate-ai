@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "app.vercel.cookmate_ai_xi.twa",
+    "sha256_cert_fingerprints": ["3E:85:72:F6:99:55:79:65:8B:50:93:46:AD:33:CC:CD:6F:0F:66:DA:A3:78:EF:7D:94:DB:2F:7D:9E:05:35:A2"]
+  }
+}]
