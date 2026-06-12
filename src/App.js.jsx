@@ -1974,7 +1974,7 @@ const Claude = {
     const msg = [{ role: "user", content: `I have: ${ingredients.join(", ")}. Suggest 10 recipes. Return JSON array:[{name,emoji,time,diff,cal,protein,tags,usesIngredients:[]}]` }];
     try { return await Groq.callJSON(msg); } catch { return await Claude.callJSON(msg, "Cooking assistant. Return ONLY valid JSON array.", 2000); }
   },
-  getNutrition: (name) => Groq.callJSON([{ role: "user", content: `Nutritional info for ${name} per serving. Return JSON:{calories,protein,carbs,fat,fiber,dietType}` }]),
+ getNutrition: (name) => Groq.callJSON([{ role: "user", content: `Nutritional info for ${name} per serving. Return ONLY this JSON object with no extra text: {"calories":300,"protein":"15g","carbs":"30g","fat":"10g","fiber":"5g","dietType":"vegetarian"}` }]),
 };
 
 // ── GROQ CHATBOT SERVICE ──────────────────────────────────────
