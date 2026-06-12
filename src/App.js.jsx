@@ -1974,7 +1974,7 @@ const Claude = {
     const msg = [{ role: "user", content: `I have: ${ingredients.join(", ")}. Suggest 10 recipes. Return JSON array:[{name,emoji,time,diff,cal,protein,tags,usesIngredients:[]}]` }];
     try { return await Groq.callJSON(msg); } catch { return await Claude.callJSON(msg, "Cooking assistant. Return ONLY valid JSON array.", 2000); }
   },
-  getNutrition: (name) => Claude.callJSON([{ role: "user", content: `Nutritional info for ${name} per serving. Return JSON:{calories,protein,carbs,fat,fiber,dietType}` }], "Nutritionist. Return ONLY valid JSON.", 800),
+  getNutrition: (name) => Groq.callJSON([{ role: "user", content: `Nutritional info for ${name} per serving. Return JSON:{calories,protein,carbs,fat,fiber,dietType}` }]),
 };
 
 // ── GROQ CHATBOT SERVICE ──────────────────────────────────────
@@ -2729,7 +2729,7 @@ console.log("Groq reply:", reply);
 
         if (d?.steps?.length > 0) {
           setDetail(d); LS.addRecent(recipe);
-         if (SB.ok()) SB.saveRecipe(d).catch(() => { });
+         
 // Cache save karo
 console.log("Saving to cache:", recipe.name, s, d);
 await fetch("/api/supabase", {
