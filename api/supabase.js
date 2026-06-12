@@ -71,10 +71,15 @@ module.exports = async function handler(req, res) {
       method = "POST";
       body = JSON.stringify({recipe_name, grocery_data: JSON.stringify(recipes)});
       headers["Prefer"] = "return=minimal";
+    } else if(type === "get_leftover_cache") {
+      url = `${supabaseUrl}/rest/v1/leftover_cache?ingredients_key=eq.${encodeURIComponent(recipe_name)}&limit=1`;
+    } else if(type === "save_leftover_cache") {
+      url = `${supabaseUrl}/rest/v1/leftover_cache`;
+      method = "POST";
+      body = JSON.stringify({ingredients_key: recipe_name, recipes_data: JSON.stringify(recipes)});
+      headers["Prefer"] = "return=minimal";
     } else {
-      url = `${supabaseUrl}${endpoint || "/rest/v1/recipes?select=id,name,ingredients,minutes,nutrition,category,state&limit=100"}`;
     }
-
     const response = await fetch(url, { method, headers, body });
     const text = await response.text();
     const data = text ? JSON.parse(text) : {};
