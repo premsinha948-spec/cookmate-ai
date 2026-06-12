@@ -2913,18 +2913,41 @@ setMode("cooking"); setCur(0);
     const [err, setErr] = useState("");
     const QUICK = ["🍚 Rice", "🫘 Dal", "🫓 Roti", "🍞 Bread", "🥗 Sabzi", "🍗 Chicken", "🥚 Eggs", "🧀 Paneer", "🥔 Potato", "🍝 Pasta", "🫕 Curry", "🌽 Corn", "🧅 Onion", "🍅 Tomato", "🫑 Capsicum"];
     const add = it => { if (!items.includes(it)) setItems(p => [...p, it]); };
-    const gen = async () => {
+   const gen = async () => {
       setLoading(true); setErr("");
       try {
         const names = items.map(i => i.replace(/^[^\w\u0900-\u097F]*/, "").trim()).filter(Boolean);
+        const cacheKey = names.sort().join(",");
+        // Cache check karo
+        const cacheRes = await fetch("/api/supabase", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ type: "get_leftover_cache", recipe_name: cacheKey })
+        });
+        const cacheData = await cacheRes.json();
+        if (Array.isArray(cacheData) && cacheData.length > 0) {
+          console.log("LEFTOVER CACHE HIT");
+          setRecs(JSON.parse(cacheData[0].recipes_data));
+          setStep("res");
+          setLoading(false);
+          return;
+        }
+        console.log("LEFTOVER CACHE MISS - calling Groq");
         let dbRes = [];
         if (SB.ok()) { dbRes = await SB.searchByIngredients(names); }
         if (dbRes.length >= 1) {
           setRecs(dbRes); setStep("res");
         } else {
           const d = await Groq.getLeftoverRecipes(names);
-          if (Array.isArray(d) && d.length > 0) { setRecs(d); setStep("res"); }
-          else setErr("Could not generate.");
+          if (Array.isArray(d) && d.length > 0) {
+            setRecs(d); setStep("res");
+            // Cache save karo
+            await fetch("/api/supabase", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ type: "save_leftover_cache", recipe_name: cacheKey, recipes: d })
+            });
+          } else setErr("Could not generate.");
         }
       } catch (e) { setErr(e.message || "Failed."); }
       setLoading(false);
