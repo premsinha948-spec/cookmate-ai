@@ -2549,65 +2549,36 @@ function HomeScreen({ user, onNav, onRec, t, lang, recents }) {
     const addM = () => { if (!mi.trim()) return; setIngs(p => [...p, "🥗 " + mi.trim()]); setMi(""); };
     const remI = i => setIngs(p => p.filter((_, j) => j !== i));
 
-    const genRec = async () => {
+   const genRec = async () => {
       setLoading(true); setErr("");
       const names = ings.map(i => i.replace(/^[^\w\u0900-\u097F]*/, "").trim()).filter(Boolean);
-      // Step 1: DB search
       setStatus("🔍 Searching database...");
       let dbRes = [];
       if (SB.ok()) { dbRes = await SB.searchByIngredients(names); }
-
-      if (dbRes.length >= 1) {
-        setStatus("⚡ Found in database!");
-        setRecs(dbRes); setStep("rec");
-      } else {
-        // Step 2: AI fallback
-        setStatus("🤖 AI generating recipes...");
-        try {
-          const d = await Claude.getRecipesFromIngredients(names);
-
-          if (Array.isArray(d) && d.length > 0) {
-
-            const aiRecs = d.map(r => ({
-              ...r,
-              source: "ai"
-            }));
-
-            setRecs([...dbRes, ...aiRecs]);
-            setStep("rec");
-
-            if (SB.ok()) {
-              aiRecs.forEach(r =>
-                SB.saveRecipe(r).catch(() => { })
-              );
-            }
-
-          } else {
-
-            console.error("Groq returned:", d);
-
-            const fallbackRecipe = {
-              name: `${names.slice(0, 3).join(" ")} Recipe`,
-              ingredients: names,
-              source: "fallback",
-              steps: [
-                "Heat oil in a pan",
-                "Add ingredients",
-                "Cook for 10-15 minutes",
-                "Serve hot"
-              ]
-            };
-
-            setRecs([...dbRes, fallbackRecipe]);
-            setStep("rec");
-          }
-
-        } catch (e) {
-          setErr(e.message || "Generation failed.");
+      setStatus("🤖 AI generating more recipes...");
+      try {
+        const d = await Claude.getRecipesFromIngredients(names);
+        const aiRecs = Array.isArray(d) && d.length > 0 ? d.map(r => ({ ...r, source: "ai" })) : [];
+        if (aiRecs.length > 0 && SB.ok()) {
+          await fetch("/api/supabase", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ type: "save_pool", recipes: aiRecs })
+          });
         }
+        const allRecs = [...dbRes, ...aiRecs];
+        if (allRecs.length > 0) {
+          setRecs(allRecs); setStep("rec");
+        } else {
+          setRecs([{ name: `${names.slice(0, 3).join(" ")} Recipe`, ingredients: names, source: "fallback", steps: ["Heat oil in a pan", "Add ingredients", "Cook for 10-15 minutes", "Serve hot"] }]);
+          setStep("rec");
+        }
+      } catch (e) {
+        if (dbRes.length > 0) { setRecs(dbRes); setStep("rec"); }
+        else setErr(e.message || "Generation failed.");
       }
       setStatus(""); setLoading(false);
-    };
+   };
 
     const openRec = r => { LS.addRecent(r); onRec(r); };
 
