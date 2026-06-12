@@ -62,7 +62,7 @@ module.exports = async function handler(req, res) {
     } else if(type === "save_recipe_cache") {
       url = `${supabaseUrl}/rest/v1/recipe_cache`;
       method = "POST";
-      body = JSON.stringify({recipe_name, servings, recipe_data: JSON.stringify(recipes)});
+     body = JSON.stringify({recipe_name, servings: parseInt(servings), recipe_data: JSON.stringify(recipes)});
       headers["Prefer"] = "return=minimal";
     } else {
       url = `${supabaseUrl}${endpoint || "/rest/v1/recipes?select=id,name,ingredients,minutes,nutrition,category,state&limit=100"}`;
