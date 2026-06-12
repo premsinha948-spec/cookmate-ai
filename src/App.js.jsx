@@ -2122,7 +2122,10 @@ function HeartBtn({ recipe, userId, onToggle }) {
 
 function RecipeCard({ recipe, onClick, userId }) {
   return <button onClick={onClick} style={{ ...ST.card, width: "100%", textAlign: "left", cursor: "pointer", display: "flex", alignItems: "center", gap: 12, padding: "13px", marginBottom: 8 }}>
-    <span style={{ fontSize: 38, flexShrink: 0 }}>{recipe.emoji || "🍽️"}</span>
+   {recipe.thumbnail 
+  ? <img src={recipe.thumbnail} style={{width:52,height:52,borderRadius:10,objectFit:"cover",flexShrink:0}} alt="" onError={e=>e.target.style.display='none'}/>
+  : <span style={{ fontSize: 38, flexShrink: 0 }}>{recipe.emoji || "🍽️"}</span>
+}
     <div style={{ flex: 1, minWidth: 0 }}>
       <div style={{ fontWeight: 700, fontSize: 14, color: C.txt }}>{recipe.name}</div>
       <div style={{ display: "flex", gap: 8, marginTop: 3, flexWrap: "wrap" }}>
