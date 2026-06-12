@@ -2706,13 +2706,15 @@ function HomeScreen({ user, onNav, onRec, t, lang, recents }) {
       body: JSON.stringify({ type: "get_recipe_cache", recipe_name: recipe.name, servings: s })
     });
     const cacheData = await cacheRes.json();
-    if (Array.isArray(cacheData) && cacheData.length > 0) {
+   if (Array.isArray(cacheData) && cacheData.length > 0) {
       const cached = JSON.parse(cacheData[0].recipe_data);
       if (cached?.steps?.length > 0) {
+        console.log("CACHE HIT - loading from DB");
         setDetail(cached); setMode("cooking"); setCur(0);
         setLoading(false); return;
       }
     }
+    console.log("CACHE MISS - calling Groq"); 
     // Groq se full recipe lo
     const prompt = `Full recipe for "${recipe.name}" for ${s} people. Return ONLY this JSON object:
 {"name":"${recipe.name}","emoji":"🍽️","description":"brief description","time":"30 min","diff":"Medium","servings":${s},"ingredients":[{"item":"ingredient","amount":"1","unit":"cup"}],"steps":[{"num":1,"title":"Step title","desc":"Step description","timerMin":5,"tip":"helpful tip"}],"cookTips":["tip1","tip2"],"nutrition":{"calories":300,"protein":"15g","carbs":"30g","fat":"10g","fiber":"5g"}}`;
