@@ -2726,6 +2726,7 @@ console.log("Groq reply:", reply);
           setDetail(d); LS.addRecent(recipe);
          if (SB.ok()) SB.saveRecipe(d).catch(() => { });
 // Cache save karo
+console.log("Saving to cache:", recipe.name, s, d);
 await fetch("/api/supabase", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
