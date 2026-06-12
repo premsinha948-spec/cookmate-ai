@@ -2003,7 +2003,7 @@ const Groq = {
     try {
       const res = await fetch("/api/groq", {
         method: "POST",
-      body: JSON.stringify({ type, model: CFG.GROQ_MODEL, max_tokens: 1000, messages: [{ role: "system", content: sys }, ...messages] }),
+      body: JSON.stringify({ type, model: CFG.GROQ_MODEL, max_tokens: 2000, messages: [{ role: "system", content: sys }, ...messages] }),
         headers: { "Content-Type": "application/json" },
       });
       const d = await res.json();
