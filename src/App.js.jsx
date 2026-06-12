@@ -2333,8 +2333,8 @@ function AuthScreen({ onLogin }) {
         <button onClick={() => { setMode("email"); setErr(""); }} style={{ ...mkBtn("out", "lg"), justifyContent: "center", gap: 12 }}>
           <span style={{ fontSize: 20 }}>✉️</span> Login with Email OTP
         </button>
-       <p style={{ color: C.muted, marginTop: 8, fontSize: 14 }}>Turn Ingredients Into Delicious Meals. 🍳✨</p>
-<p style={{ color: C.muted, marginTop: 4, fontSize: 12 }}>Cook Smarter. Waste Less.</p> 
+       <p style={{ background: grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginTop: 8, fontSize: 15, fontWeight: 700, textAlign: "center", textShadow: "0 2px 8px rgba(255,107,53,0.3)" }}>Turn Ingredients Into Delicious Meals. 🍳✨</p>
+       <p style={{ background: grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginTop: 6, fontSize: 18, fontWeight: 800, textAlign: "center", textShadow: "0 2px 8px rgba(255,107,53,0.3)", letterSpacing: 0.5 }}>Cook Smarter. Waste Less.</p>
       </div>}
       {mode === "email" && !otpSent && <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <p style={{ color: C.muted, fontSize: 14 }}>Email pe OTP aayega</p>
