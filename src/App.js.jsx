@@ -2509,7 +2509,7 @@ function HomeScreen({ user, onNav, onRec, t, lang, recents }) {
     const [err, setErr] = useState("");
     const [status, setStatus] = useState("");
     const fref = useRef();
-
+    const camRef = useRef();
     const handleFile = async e => {
       const file = e.target.files?.[0]; if (!file) return;
       const url = URL.createObjectURL(file); setPreview(url);
@@ -2615,12 +2615,13 @@ function HomeScreen({ user, onNav, onRec, t, lang, recents }) {
       <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 3 }}>📷 {t.scanIngredients}</h2>
       <p style={{ color: C.muted, fontSize: 13, marginBottom: 14 }}>{SB.ok() ? "DB search first → AI fallback" : "Claude Vision → AI recipes"}</p>
       {step === "cap" && !scanning && <>
-        <div style={{ ...ST.card, textAlign: "center", padding: "32px 16px", border: `2px dashed ${C.border}`, cursor: "pointer", marginBottom: 10 }} onClick={() => fref.current?.click()}>
+       <div style={{ ...ST.card, textAlign: "center", padding: "32px 16px", border: `2px dashed ${C.border}`, cursor: "pointer", marginBottom: 10 }} onClick={() => camRef.current?.click()}> 
           <div style={{ fontSize: 44, marginBottom: 10 }}>📸</div>
           <div style={{ fontWeight: 700, fontSize: 15 }}>{t.tapPhoto}</div>
           <div style={{ color: C.muted, fontSize: 12, marginTop: 4 }}>Claude Vision only reports what it sees</div>
         </div>
-        <input ref={fref} type="file" accept="image/jpeg,image/png,image/webp" capture="environment" style={{ display: "none" }} onChange={handleFile} />
+        <input ref={fref} type="file" accept="image/jpeg,image/png,image/webp" style={{ display: "none" }} onChange={handleFile} />
+<input ref={camRef} type="file" accept="image/jpeg,image/png,image/webp" capture="environment" style={{ display: "none" }} onChange={handleFile} />
         <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
           <button onClick={() => fref.current?.click()} style={{ ...mkBtn("out"), flex: 1, borderRadius: 12, fontSize: 13 }}>📁 {t.uploadPhoto}</button>
         </div>
