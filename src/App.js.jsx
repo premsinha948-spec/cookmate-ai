@@ -2321,7 +2321,10 @@ function AuthScreen({ onLogin }) {
   return <div style={{ minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24 }}>
     <div style={{ width: "100%", maxWidth: 360 }}>
       <div style={{ textAlign: "center", marginBottom: 36 }}>
-        <div style={{ fontSize: 60, marginBottom: 8 }}>🍳</div>
+        <img src="/logo512.png" style={{width:100,height:100,borderRadius:20,marginBottom:8,objectFit:"cover"}} alt="CookMate AI"/>
+<div style={{border:"2px solid #FFD700",borderRadius:16,padding:8,marginBottom:16,boxShadow:"0 0 15px rgba(255,215,0,0.3)"}}>
+  <img src="/banner.png" style={{width:"100%",borderRadius:10,display:"block"}} alt="CookMate Features"/>
+</div>
         <div style={{ ...ST.logo, fontSize: 28, display: "inline-block" }}>CookMate AI</div>
         <p style={{ color: C.muted, marginTop: 8, fontSize: 14 }}>Your AI Kitchen Assistant</p>
       </div>
