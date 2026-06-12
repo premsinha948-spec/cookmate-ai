@@ -1974,7 +1974,7 @@ const Claude = {
     const msg = [{ role: "user", content: `I have: ${ingredients.join(", ")}. Suggest 10 recipes. Return JSON array:[{name,emoji,time,diff,cal,protein,tags,usesIngredients:[]}]` }];
     try { return await Groq.callJSON(msg); } catch { return await Claude.callJSON(msg, "Cooking assistant. Return ONLY valid JSON array.", 2000); }
   },
- getNutrition: (name) => Groq.callJSON([{ role: "user", content: `Nutritional info for ${name} per serving. Return ONLY this JSON object with no extra text: {"calories":300,"protein":"15g","carbs":"30g","fat":"10g","fiber":"5g","dietType":"vegetarian"}` }]),
+ getNutrition: (name) => Groq.callJSON([{ role: "user", content: `Give accurate nutritional information for "${name}" per serving. If this is not a food item, return null. Return ONLY valid JSON: {"calories":0,"protein":"0g","carbs":"0g","fat":"0g","fiber":"0g","dietType":""}` }]),
 };
 
 // ── GROQ CHATBOT SERVICE ──────────────────────────────────────
@@ -3217,7 +3217,39 @@ setMode("cooking"); setCur(0);
     const todayCal = log.reduce((s, e) => s + (parseInt(e.calories) || 0), 0);
     const remaining = goal - todayCal;
     const pct = Math.min(100, (todayCal / goal) * 100);
-    const doSearch = async () => { if (!search.trim()) return; setSearching(true); setResult(null); try { const d = await Claude.getNutrition(search); setResult(d); } catch { } setSearching(false); };
+    const doSearch = async () => {
+  if (!search.trim()) return;
+  setSearching(true); setResult(null);
+  try {
+    // Cache check karo
+    const cacheRes = await fetch("/api/supabase", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "get_nutrition_cache", recipe_name: search.trim().toLowerCase() })
+    });
+    const cacheData = await cacheRes.json();
+    if (Array.isArray(cacheData) && cacheData.length > 0) {
+      console.log("NUTRITION CACHE HIT");
+      setResult(JSON.parse(cacheData[0].nutrition_data));
+      setSearching(false);
+      return;
+    }
+    console.log("NUTRITION CACHE MISS - calling Groq");
+    const d = await Claude.getNutrition(search);
+    if (d && d.calories !== undefined) {
+      setResult(d);
+      // Cache save karo
+      await fetch("/api/supabase", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "save_nutrition_cache", recipe_name: search.trim().toLowerCase(), recipes: d })
+      });
+    } else {
+      setResult(null);
+    }
+  } catch { }
+  setSearching(false);
+};
     const logMeal = () => { if (!result) return; LS.addNutrLog({ name: search, calories: result.calories || 0, protein: result.protein || "0g", carbs: result.carbs || "0g", fat: result.fat || "0g" }); setLog(LS.getTodayLog()); setSearch(""); setResult(null); };
     return <div style={ST.scr}>
       <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 3 }}>📊 {t.nutritionTracker}</h2>
