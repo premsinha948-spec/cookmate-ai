@@ -3356,6 +3356,7 @@ setMode("cooking"); setCur(0);
     const [recipe, setRecipe] = useState(null);
     const [lang, setLangState] = useState(() => LS.get("lang", "en"));
     const [recents, setRecents] = useState([]);
+    const [showSplash, setShowSplash] = useState(false);
     const [theme, setThemeState] = useState(() => LS.get("theme", "dark"));
 
     useEffect(() => {
@@ -3373,7 +3374,12 @@ setMode("cooking"); setCur(0);
       Object.assign(C, THEMES[newTheme]);
       window.location.reload();
     };
-    const handleLogin = u => { setUser(u); LS.set("user", u); };
+    const handleLogin = u => { 
+  setUser(u); 
+  LS.set("user", u);
+  setShowSplash(true);
+  setTimeout(() => setShowSplash(false), 2500);
+};
     const handleSignOut = async () => {
       await supabase.auth.signOut();
       try { localStorage.clear(); } catch { }
@@ -3385,7 +3391,12 @@ setMode("cooking"); setCur(0);
     const onRec = r => { setRecipe(r); LS.addRecent(r); };
     const onBack = () => { setRecipe(null); setRecents(LS.getRecent()); };
     const userId = user?.id || null;
-
+    if (showSplash) return <div style={{position:"fixed",inset:0,background:"#0F1117",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",zIndex:9999,padding:24}}>
+  <img src="/logo512.png" style={{width:120,height:120,borderRadius:24,marginBottom:20}} alt="CookMate AI"/>
+  <div style={{border:"2px solid #FFD700",borderRadius:16,padding:8,boxShadow:"0 0 20px rgba(255,215,0,0.3)",width:"100%",maxWidth:360}}>
+    <img src="/banner.jpg" style={{width:"100%",borderRadius:10,display:"block"}} alt="CookMate Features"/>
+  </div>
+</div>;
     if (!user) return <div style={ST.app}><style>{CSS}</style><AuthScreen onLogin={handleLogin} /></div>;
 
     if (recipe) return <div style={ST.app}>
