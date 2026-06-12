@@ -1858,7 +1858,7 @@ const SB = {
         const score = rIngs.length > 0 ? hits.length / rIngs.length : 0;
         return { ...recipe, matchScore: score };
       }).filter(r => r.matchScore >= 0.3).sort((a, b) => b.matchScore - a.matchScore).slice(0, 6)
-        .map(r => ({ ...r, source: "db", emoji: r.emoji || "🍽️", time: r.minutes ? r.minutes + " min" : r.time || "30 min", diff: r.difficulty || r.diff || "Medium", cal: r.nutrition?.calories || r.cal || 320, protein: r.nutrition?.protein || r.protein || "12g" }));
+      .map(r => ({ ...r, source: "db", emoji: r.emoji || "🍽️", time: r.minutes ? r.minutes + " min" : r.time || "30 min", diff: r.difficulty || r.diff || "Medium", cal: r.nutrition?.calories || r.cal || 320, protein: r.nutrition?.protein || r.protein || "12g", thumbnail: r.thumbnail || null })); 
     } catch (e) { console.error("SB search:", e); return []; }
   },
   // Auto-save AI-generated recipe for future DB hits
