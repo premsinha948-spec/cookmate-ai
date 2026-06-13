@@ -56,10 +56,11 @@
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <script>
-  window.addEventListener('load', function() {
+ window.addEventListener('load', function() {
         var splash = document.getElementById('splash');
         if (splash) {
-          splash.remove();
+          splash.style.opacity = '0';
+          setTimeout(function() { splash.remove(); }, 100);
         }
       });
     </script>
