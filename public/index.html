@@ -13,7 +13,7 @@
       #splash {
         position: fixed;
         inset: 0;
-        background: #0F1117;
+        background: #170f0f;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -57,13 +57,11 @@
     <div id="root"></div>
     <script>
       window.addEventListener('load', function() {
-        setTimeout(function() {
-          var splash = document.getElementById('splash');
-          if (splash) {
-            splash.style.opacity = '0';
-            setTimeout(function() { splash.remove(); }, 500);
-          }
-        }, 2500);
+        var splash = document.getElementById('splash');
+        if (splash) {
+          splash.style.opacity = '0';
+          setTimeout(function() { splash.remove(); }, 100);
+        }
       });
     </script>
   </body>
