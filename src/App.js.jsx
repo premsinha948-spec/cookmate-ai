@@ -3429,7 +3429,10 @@ setMode("cooking"); setCur(0);
     return <div style={ST.app}>
       <style>{CSS}</style>
       <header style={ST.hdr}>
-        <div style={ST.logo}>🍳 CookMate AI</div>
+        <div style={{...ST.logo, display:"flex", alignItems:"center", gap:8}}>
+  <img src="/logo192.png" style={{width:28, height:28, borderRadius:6}} alt="logo"/>
+  CookMate AI
+</div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <button onClick={() => setNav("india")} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: nav === "india" ? C.accent : C.muted }}>🗺️</button>
           <button onClick={() => setNav("world")} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, color: nav === "world" ? "#3498DB" : C.muted }}>🌍</button>
