@@ -3391,8 +3391,8 @@ setMode("cooking"); setCur(0);
     const onRec = r => { setRecipe(r); LS.addRecent(r); };
     const onBack = () => { setRecipe(null); setRecents(LS.getRecent()); };
     const userId = user?.id || null;
-    if (showSplash) return <div style={{position:"fixed",inset:0,background:"#0F1117",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",zIndex:9999,padding:24}}>
-  <img src="/logo512.png" style={{width:120,height:120,borderRadius:24,marginBottom:20}} alt="CookMate AI"/>
+   if (showSplash) return <div style={{position:"fixed",inset:0,background:"#0F1117",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",zIndex:9999,padding:24}}>
+  <img src="/logo512.png" style={{width:180,height:180,borderRadius:30,marginBottom:24,boxShadow:"0 0 30px rgba(255,107,53,0.4)"}} alt="CookMate AI"/>
   <div style={{border:"2px solid #FFD700",borderRadius:16,padding:8,boxShadow:"0 0 20px rgba(255,215,0,0.3)",width:"100%",maxWidth:360}}>
     <img src="/banner.jpg" style={{width:"100%",borderRadius:10,display:"block"}} alt="CookMate Features"/>
   </div>
