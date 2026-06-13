@@ -3403,7 +3403,10 @@ setMode("cooking"); setCur(0);
       <style>{CSS}</style>
       <header style={ST.hdr}>
         <button onClick={onBack} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 22, padding: "3px 7px" }}>←</button>
-        <div style={ST.logo}>🍳 CookMate AI</div>
+       <div style={{...ST.logo, display:"flex", alignItems:"center", gap:8}}>
+  <img src="/logo192.png" style={{width:28, height:28, borderRadius:6}} alt="logo"/>
+  CookMate AI
+</div>  
         <HeartBtn recipe={recipe} userId={userId} />
       </header>
       <RecipeDetail recipe={recipe} onBack={onBack} t={t} lang={lang} userId={userId} />
