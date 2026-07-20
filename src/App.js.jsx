@@ -3358,7 +3358,6 @@ setMode("cooking"); setCur(0);
     const [recents, setRecents] = useState([]);
     const [showSplash, setShowSplash] = useState(false);
     const [theme, setThemeState] = useState(() => LS.get("theme", "dark"));
-
     useEffect(() => {
       Voice.init();
       setRecents(LS.getRecent());
