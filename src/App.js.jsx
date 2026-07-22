@@ -2288,7 +2288,6 @@ function FloatingChat({ lang }) {
 function AuthScreen({ onLogin }) {
   const [mode, setMode] = useState("landing");
   const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -2304,25 +2303,13 @@ function AuthScreen({ onLogin }) {
     } catch (e) { setErr(e.message); setLoading(false); }
   };
 
-  
-  const verifyOTP = async () => {
-    if (otp.length !== 6) { setErr("6 digit OTP daalo"); return; }
+  const sendEmailOTP = async () => {
+    if (!email.includes("@")) { setErr("Please enter a valid email"); return; }
     setLoading(true); setErr("");
     try {
-      const { data, error } = await supabase.auth.verifyOtp({
-        email,
-        token: otp,
-        type: 'email'
-      });
+      const { error } = await supabase.auth.signInWithOtp({ email });
       if (error) throw error;
-      if (data?.user) {
-        onLogin({
-          name: data.user.user_metadata?.full_name || data.user.email?.split("@")[0] || "Chef",
-          email: data.user.email,
-          id: data.user.id,
-          method: "supabase"
-        });
-      }
+      setOtpSent(true);
     } catch (e) { setErr(e.message); }
     setLoading(false);
   };
@@ -2353,18 +2340,24 @@ function AuthScreen({ onLogin }) {
           {loading ? <Spin /> : <span style={{ fontSize: 20 }}>🔵</span>} Continue with Google
         </button>
         <button onClick={() => { setMode("email"); setErr(""); }} style={{ ...mkBtn("out", "lg"), justifyContent: "center", gap: 12 }}>
-          <span style={{ fontSize: 20 }}>✉️</span> Login with Email OTP
+          <span style={{ fontSize: 20 }}>✉️</span> Login with Email
         </button>
         <p style={{ background: grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginTop: 8, fontSize: 15, fontWeight: 700, textAlign: "center", textShadow: "0 2px 8px rgba(255,107,53,0.3)" }}>Turn Ingredients Into Delicious Meals. 🍳✨</p>
         <p style={{ background: grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginTop: 6, fontSize: 18, fontWeight: 800, textAlign: "center", textShadow: "0 2px 8px rgba(255,107,53,0.3)", letterSpacing: 0.5 }}>Cook Smarter. Waste Less.</p>
       </div>}
       {mode === "email" && !otpSent && <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <p style={{ color: C.muted, fontSize: 14 }}>Email pe 6-digit OTP aayega</p>
+        <p style={{ color: C.muted, fontSize: 14 }}>Enter your email to receive a login link</p>
         <input style={ST.inp} placeholder="your@email.com" value={email} onChange={e => setEmail(e.target.value)} type="email" />
         <button onClick={sendEmailOTP} disabled={loading || !email.includes("@")} style={{ ...mkBtn("primary", "lg"), opacity: !email.includes("@") ? .5 : 1 }}>
-          {loading ? "Sending..." : "Send OTP →"}
+          {loading ? "Sending..." : "Send Login Link →"}
         </button>
         <button onClick={() => setMode("landing")} style={{ ...mkBtn("ghost"), borderRadius: 12 }}>← Back</button>
+      </div>}
+      {otpSent && <div style={{ textAlign: "center", padding: 20 }}>
+        <div style={{ fontSize: 48, marginBottom: 12 }}>📧</div>
+        <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>Email Sent!</h3>
+        <p style={{ color: C.muted, fontSize: 13 }}>Check your inbox at {email} and click the login link.</p>
+        <button onClick={() => { setOtpSent(false); setMode("landing"); }} style={{ ...mkBtn("ghost"), margin: "16px auto 0" }}>← Back</button>
       </div>}
     </div>
   </div>;
