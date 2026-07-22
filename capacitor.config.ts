@@ -7,11 +7,11 @@ const config: CapacitorConfig = {
   server: {
     url: 'https://cookmate-ai-xi.vercel.app',
     cleartext: true,
-    androidScheme: 'https',
-    hostname: 'cookmate-ai-xi.vercel.app'
+    androidScheme: 'https'
   },
   android: {
-    allowMixedContent: true
+    allowMixedContent: true,
+    webContentsDebuggingEnabled: true
   }
 };
 

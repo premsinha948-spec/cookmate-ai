@@ -6,6 +6,16 @@
 // ╚══════════════════════════════════════════════════════════════╝
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createClient } from '@supabase/supabase-js';
+
+window.showNativeAd = async () => {
+  try {
+    const { registerPlugin } = await import('@capacitor/core');
+    const AdPlugin = registerPlugin('AdPlugin');
+    await AdPlugin.showInterstitial();
+    console.log("Ad shown successfully");
+  } catch(e) { console.log("Ad error:", e); }
+};
+
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL || "",
   process.env.REACT_APP_SUPABASE_KEY || ""
@@ -2385,7 +2395,8 @@ function HomeScreen({ user, onNav, onRec, t, lang, recents }) {
     setLoading(false);
   }, [user]);
 
-  const refreshPicks = useCallback(async () => {
+ const refreshPicks = useCallback(async () => {
+  showNativeAd();
     setLoading(true); setErr("");
     try {
       const histRes = await fetch("/api/supabase", {
@@ -2479,7 +2490,7 @@ function HomeScreen({ user, onNav, onRec, t, lang, recents }) {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
         <h2 style={{ margin: 0, fontSize: 15, fontWeight: 700 }}>✨ {t.aiPicks}</h2>
-        <button onClick={refreshPicks} disabled={loading} style={{ ...mkBtn("ghost", "sm"), borderRadius: 20, fontSize: 11 }}>{loading ? <Spin s={12} /> : "↻"}</button>
+       <button onClick={() => { console.log("Refresh clicked!"); refreshPicks(); }} disabled={loading} style={{ ...mkBtn("ghost", "sm"), borderRadius: 20, fontSize: 11 }}>{loading ? <Spin s={12} /> : "↻"}</button>
       </div>
       <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 8, marginBottom: 10 }}>
         {CATS.map(cat => <button key={cat} onClick={() => setFilter(cat)} style={{ flexShrink: 0, padding: "6px 12px", borderRadius: 20, border: `1px solid ${filter === cat ? C.accent : C.border}`, background: filter === cat ? C.accentS : C.card, color: filter === cat ? C.accent : C.muted, cursor: "pointer", fontWeight: 600, fontSize: 11 }}>{cat}</button>)}
@@ -2801,10 +2812,10 @@ setMode("cooking"); setCur(0);
         <button onClick={() => speak(`Step ${c.num || cur + 1}: ${c.title}. ${c.desc}`)} style={{ ...mkBtn("out"), width: "100%", marginBottom: 8 }}>{speaking ? "🔊 Speaking..." : "🎙 " + t.readStep}</button>
         <div style={{ display: "flex", gap: 8 }}>
           {cur > 0 && <button onClick={() => { setCur(p => p - 1); Voice.stop(); setSpeaking(false); }} style={{ ...mkBtn("out"), flex: 1 }}>{t.prevStep}</button>}
-          {cur < detail.steps.length - 1
+      {cur < detail.steps.length - 1
             ? <button onClick={() => { setCur(p => p + 1); Voice.stop(); setSpeaking(false); if (tRef.current) clearInterval(tRef.current); setTLeft(0); }} style={{ ...mkBtn("primary"), flex: 2 }}>{t.nextStep}</button>
-            : <button onClick={() => { LS.addRecent({ ...recipe, cookedAt: Date.now() }); onBack(); }} style={{ ...mkBtn("primary"), flex: 2 }}>{t.done}</button>}
-        </div>
+            : <button onClick={() => { showNativeAd(); LS.addRecent({ ...recipe, cookedAt: Date.now() }); onBack(); }} style={{ ...mkBtn("primary"), flex: 2 }}>{t.done}</button>}
+        </div> 
         {cur === detail.steps.length - 1 && detail.cookTips?.length > 0 && <div style={{ ...ST.card, marginTop: 12, background: C.okS, borderColor: `${C.ok}44` }}>
           <div style={{ fontWeight: 700, fontSize: 12, color: C.ok, marginBottom: 6 }}>💡 Chef's Tips</div>
           {detail.cookTips.map((tip, i) => <div key={i} style={{ fontSize: 12, color: C.muted, marginBottom: 3 }}>• {tip}</div>)}
@@ -3346,12 +3357,13 @@ setMode("cooking"); setCur(0);
   const NAV = [{ id: "home", ic: "🏠", lb: "home" }, { id: "scan", ic: "📷", lb: "scan" }, { id: "planner", ic: "📅", lb: "planner" }, { id: "leftover", ic: "🥘", lb: "leftover" }, { id: "grocery", ic: "🛒", lb: "grocery" }];
 
   export default function CookMateApp() {
-    useEffect(() => {
-      if (window.location.hash.includes("access_token")) {
-        window.history.replaceState(null, "", window.location.pathname);
-      }
-    }, []);
-    const [user, setUser] = useState(() => LS.get("user"));
+  useEffect(() => {
+  if (window.location.hash.includes("access_token")) {
+    window.history.replaceState(null, "", window.location.pathname);
+  }
+}, []);
+
+const [user, setUser] = useState(() => LS.get("user")); 
     const [nav, setNav] = useState("home");
     const [recipe, setRecipe] = useState(null);
     const [lang, setLangState] = useState(() => LS.get("lang", "en"));
