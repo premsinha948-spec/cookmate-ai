@@ -2288,6 +2288,7 @@ function FloatingChat({ lang }) {
 function AuthScreen({ onLogin }) {
   const [mode, setMode] = useState("landing");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -2310,6 +2311,26 @@ function AuthScreen({ onLogin }) {
       const { error } = await supabase.auth.signInWithOtp({ email });
       if (error) throw error;
       setOtpSent(true);
+    } catch (e) { setErr(e.message); }
+    setLoading(false);
+  };
+
+  const signInWithPassword = async () => {
+    if (!email.includes("@")) { setErr("Please enter a valid email"); return; }
+    if (password.length < 6) { setErr("Password must be at least 6 characters"); return; }
+    setLoading(true); setErr("");
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        // Try sign up if user doesn't exist
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({ email, password });
+        if (signUpError) throw signUpError;
+        if (signUpData?.user) {
+          onLogin({ name: signUpData.user.email?.split("@")[0] || "Chef", email: signUpData.user.email, id: signUpData.user.id, method: "supabase" });
+        }
+      } else if (data?.user) {
+        onLogin({ name: data.user.user_metadata?.full_name || data.user.email?.split("@")[0] || "Chef", email: data.user.email, id: data.user.id, method: "supabase" });
+      }
     } catch (e) { setErr(e.message); }
     setLoading(false);
   };
@@ -2339,11 +2360,23 @@ function AuthScreen({ onLogin }) {
         <button onClick={googleLogin} disabled={loading} style={{ ...mkBtn("out", "lg"), justifyContent: "center", gap: 12 }}>
           {loading ? <Spin /> : <span style={{ fontSize: 20 }}>🔵</span>} Continue with Google
         </button>
-        <button onClick={() => { setMode("email"); setErr(""); }} style={{ ...mkBtn("out", "lg"), justifyContent: "center", gap: 12 }}>
-          <span style={{ fontSize: 20 }}>✉️</span> Login with Email
+        <button onClick={() => { setMode("password"); setErr(""); }} style={{ ...mkBtn("out", "lg"), justifyContent: "center", gap: 12 }}>
+          <span style={{ fontSize: 20 }}>🔒</span> Login with Email & Password
+        </button>
+        <button onClick={() => { setMode("email"); setErr(""); }} style={{ ...mkBtn("ghost"), justifyContent: "center", gap: 12, fontSize: 13 }}>
+          <span style={{ fontSize: 16 }}>✉️</span> Login with Email Link
         </button>
         <p style={{ background: grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginTop: 8, fontSize: 15, fontWeight: 700, textAlign: "center", textShadow: "0 2px 8px rgba(255,107,53,0.3)" }}>Turn Ingredients Into Delicious Meals. 🍳✨</p>
         <p style={{ background: grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginTop: 6, fontSize: 18, fontWeight: 800, textAlign: "center", textShadow: "0 2px 8px rgba(255,107,53,0.3)", letterSpacing: 0.5 }}>Cook Smarter. Waste Less.</p>
+      </div>}
+      {mode === "password" && <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <p style={{ color: C.muted, fontSize: 14 }}>Sign in or create account with email & password</p>
+        <input style={ST.inp} placeholder="your@email.com" value={email} onChange={e => setEmail(e.target.value)} type="email" />
+        <input style={ST.inp} placeholder="Password (min 6 characters)" value={password} onChange={e => setPassword(e.target.value)} type="password" />
+        <button onClick={signInWithPassword} disabled={loading || !email.includes("@") || password.length < 6} style={{ ...mkBtn("primary", "lg"), opacity: (!email.includes("@") || password.length < 6) ? .5 : 1 }}>
+          {loading ? "Please wait..." : "Sign In / Sign Up →"}
+        </button>
+        <button onClick={() => setMode("landing")} style={{ ...mkBtn("ghost"), borderRadius: 12 }}>← Back</button>
       </div>}
       {mode === "email" && !otpSent && <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <p style={{ color: C.muted, fontSize: 14 }}>Enter your email to receive a login link</p>
