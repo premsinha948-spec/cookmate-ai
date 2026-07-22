@@ -2289,6 +2289,7 @@ function AuthScreen({ onLogin }) {
   const [mode, setMode] = useState("landing");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -2372,7 +2373,12 @@ function AuthScreen({ onLogin }) {
       {mode === "password" && <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <p style={{ color: C.muted, fontSize: 14 }}>Sign in or create account with email & password</p>
         <input style={ST.inp} placeholder="your@email.com" value={email} onChange={e => setEmail(e.target.value)} type="email" />
-        <input style={ST.inp} placeholder="Password (min 6 characters)" value={password} onChange={e => setPassword(e.target.value)} type="password" />
+      <div style={{ position: "relative" }}>
+  <input style={{ ...ST.inp, width: "100%", paddingRight: 40 }} placeholder="Password (min 6 characters)" value={password} onChange={e => setPassword(e.target.value)} type={showPassword ? "text" : "password"} />
+  <button onClick={() => setShowPassword(!showPassword)} style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", fontSize: 18, color: C.muted }}>
+    {showPassword ? "🙈" : "👁️"}
+  </button>
+</div>  
         <button onClick={signInWithPassword} disabled={loading || !email.includes("@") || password.length < 6} style={{ ...mkBtn("primary", "lg"), opacity: (!email.includes("@") || password.length < 6) ? .5 : 1 }}>
           {loading ? "Please wait..." : "Sign In / Sign Up →"}
         </button>
