@@ -2288,6 +2288,7 @@ function FloatingChat({ lang }) {
 function AuthScreen({ onLogin }) {
   const [mode, setMode] = useState("landing");
   const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -2307,9 +2308,34 @@ function AuthScreen({ onLogin }) {
     if (!email.includes("@")) { setErr("Valid email daalo"); return; }
     setLoading(true); setErr("");
     try {
-      const { error } = await supabase.auth.signInWithOtp({ email });
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { shouldCreateUser: true }
+      });
       if (error) throw error;
       setOtpSent(true);
+    } catch (e) { setErr(e.message); }
+    setLoading(false);
+  };
+
+  const verifyOTP = async () => {
+    if (otp.length !== 6) { setErr("6 digit OTP daalo"); return; }
+    setLoading(true); setErr("");
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({
+        email,
+        token: otp,
+        type: 'email'
+      });
+      if (error) throw error;
+      if (data?.user) {
+        onLogin({
+          name: data.user.user_metadata?.full_name || data.user.email?.split("@")[0] || "Chef",
+          email: data.user.email,
+          id: data.user.id,
+          method: "supabase"
+        });
+      }
     } catch (e) { setErr(e.message); }
     setLoading(false);
   };
@@ -2331,7 +2357,6 @@ function AuthScreen({ onLogin }) {
   return <div style={{ minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24 }}>
     <div style={{ width: "100%", maxWidth: 360 }}>
       <div style={{ textAlign: "center", marginBottom: 36 }}>
-       
         <div style={{ ...ST.logo, fontSize: 28, display: "inline-block" }}>CookMate AI</div>
         <p style={{ color: C.muted, marginTop: 8, fontSize: 14 }}>Your AI Kitchen Assistant</p>
       </div>
@@ -2343,22 +2368,24 @@ function AuthScreen({ onLogin }) {
         <button onClick={() => { setMode("email"); setErr(""); }} style={{ ...mkBtn("out", "lg"), justifyContent: "center", gap: 12 }}>
           <span style={{ fontSize: 20 }}>✉️</span> Login with Email OTP
         </button>
-       <p style={{ background: grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginTop: 8, fontSize: 15, fontWeight: 700, textAlign: "center", textShadow: "0 2px 8px rgba(255,107,53,0.3)" }}>Turn Ingredients Into Delicious Meals. 🍳✨</p>
-       <p style={{ background: grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginTop: 6, fontSize: 18, fontWeight: 800, textAlign: "center", textShadow: "0 2px 8px rgba(255,107,53,0.3)", letterSpacing: 0.5 }}>Cook Smarter. Waste Less.</p>
+        <p style={{ background: grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginTop: 8, fontSize: 15, fontWeight: 700, textAlign: "center", textShadow: "0 2px 8px rgba(255,107,53,0.3)" }}>Turn Ingredients Into Delicious Meals. 🍳✨</p>
+        <p style={{ background: grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginTop: 6, fontSize: 18, fontWeight: 800, textAlign: "center", textShadow: "0 2px 8px rgba(255,107,53,0.3)", letterSpacing: 0.5 }}>Cook Smarter. Waste Less.</p>
       </div>}
       {mode === "email" && !otpSent && <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <p style={{ color: C.muted, fontSize: 14 }}>Email pe OTP aayega</p>
+        <p style={{ color: C.muted, fontSize: 14 }}>Email pe 6-digit OTP aayega</p>
         <input style={ST.inp} placeholder="your@email.com" value={email} onChange={e => setEmail(e.target.value)} type="email" />
         <button onClick={sendEmailOTP} disabled={loading || !email.includes("@")} style={{ ...mkBtn("primary", "lg"), opacity: !email.includes("@") ? .5 : 1 }}>
           {loading ? "Sending..." : "Send OTP →"}
         </button>
         <button onClick={() => setMode("landing")} style={{ ...mkBtn("ghost"), borderRadius: 12 }}>← Back</button>
       </div>}
-      {otpSent && <div style={{ textAlign: "center", padding: 20 }}>
-        <div style={{ fontSize: 48, marginBottom: 12 }}>📧</div>
-        <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>OTP bhej diya!</h3>
-        <p style={{ color: C.muted, fontSize: 13 }}>{email} pe check karo — link pe click karo</p>
-        <button onClick={() => { setOtpSent(false); setMode("landing"); }} style={{ ...mkBtn("ghost"), margin: "16px auto 0" }}>← Back</button>
+      {otpSent && <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <p style={{ color: C.muted, fontSize: 14 }}>6-digit OTP daalo jo {email} pe aaya</p>
+        <input style={ST.inp} placeholder="000000" value={otp} onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))} type="number" maxLength={6} />
+        <button onClick={verifyOTP} disabled={loading || otp.length !== 6} style={{ ...mkBtn("primary", "lg"), opacity: otp.length !== 6 ? .5 : 1 }}>
+          {loading ? "Verifying..." : "Verify OTP →"}
+        </button>
+        <button onClick={() => { setOtpSent(false); setOtp(""); }} style={{ ...mkBtn("ghost"), borderRadius: 12 }}>← Back</button>
       </div>}
     </div>
   </div>;
