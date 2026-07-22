@@ -2304,20 +2304,7 @@ function AuthScreen({ onLogin }) {
     } catch (e) { setErr(e.message); setLoading(false); }
   };
 
-  const sendEmailOTP = async () => {
-    if (!email.includes("@")) { setErr("Valid email daalo"); return; }
-    setLoading(true); setErr("");
-    try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: { shouldCreateUser: true }
-      });
-      if (error) throw error;
-      setOtpSent(true);
-    } catch (e) { setErr(e.message); }
-    setLoading(false);
-  };
-
+  
   const verifyOTP = async () => {
     if (otp.length !== 6) { setErr("6 digit OTP daalo"); return; }
     setLoading(true); setErr("");
@@ -2378,14 +2365,6 @@ function AuthScreen({ onLogin }) {
           {loading ? "Sending..." : "Send OTP →"}
         </button>
         <button onClick={() => setMode("landing")} style={{ ...mkBtn("ghost"), borderRadius: 12 }}>← Back</button>
-      </div>}
-      {otpSent && <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <p style={{ color: C.muted, fontSize: 14 }}>6-digit OTP daalo jo {email} pe aaya</p>
-        <input style={ST.inp} placeholder="000000" value={otp} onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))} type="number" maxLength={6} />
-        <button onClick={verifyOTP} disabled={loading || otp.length !== 6} style={{ ...mkBtn("primary", "lg"), opacity: otp.length !== 6 ? .5 : 1 }}>
-          {loading ? "Verifying..." : "Verify OTP →"}
-        </button>
-        <button onClick={() => { setOtpSent(false); setOtp(""); }} style={{ ...mkBtn("ghost"), borderRadius: 12 }}>← Back</button>
       </div>}
     </div>
   </div>;
