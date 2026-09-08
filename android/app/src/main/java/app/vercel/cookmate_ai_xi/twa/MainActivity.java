@@ -1,15 +1,13 @@
 package app.vercel.cookmate_ai_xi.twa;
 
-import com.getcapacitor.BridgeActivity;
 import android.os.Bundle;
-import com.google.android.gms.ads.MobileAds;
+
+import com.getcapacitor.BridgeActivity;
 
 public class MainActivity extends BridgeActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        registerPlugin(AdPlugin.class);
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MobileAds.initialize(this, initializationStatus -> {});
     }
 }

@@ -6,19 +6,97 @@
 // ╚══════════════════════════════════════════════════════════════╝
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createClient } from '@supabase/supabase-js';
-
+import { AdMob } from '@capgo/capacitor-admob';
+import { App as CapacitorApp } from '@capacitor/app';
+import { Preferences } from '@capacitor/preferences';
 window.showNativeAd = async () => {
   try {
-    const { registerPlugin } = await import('@capacitor/core');
-    const AdPlugin = registerPlugin('AdPlugin');
-    await AdPlugin.showInterstitial();
-    console.log("Ad shown successfully");
-  } catch(e) { console.log("Ad error:", e); }
-};
+    console.log("CAPGO ADMOB: starting...");
 
+    await AdMob.start();
+
+    console.log("CAPGO ADMOB: creating interstitial...");
+
+    await AdMob.adCreate({
+      id: 1,
+      adUnitId: "ca-app-pub-3940256099942544/1033173712",
+    });
+
+    console.log("CAPGO ADMOB: loading interstitial...");
+
+    await AdMob.adLoad({
+      id: 1,
+    });
+
+    console.log("CAPGO ADMOB: checking loaded state...");
+
+    const loaded = await AdMob.adIsLoaded({
+      id: 1,
+    });
+
+    console.log("CAPGO ADMOB: isLoaded =", loaded);
+
+    if (loaded) {
+      console.log("CAPGO ADMOB: showing interstitial...");
+
+      await AdMob.adShow({
+        id: 1,
+      });
+
+      console.log("CAPGO ADMOB: show requested");
+    } else {
+      console.log("CAPGO ADMOB: ad is not ready");
+    }
+  } catch (error) {
+    console.error("CAPGO ADMOB ERROR:", error);
+  }
+};
+const capacitorStorage = {
+  getItem: async (key) => {
+    try {
+      const { value } = await Preferences.get({ key });
+      return value ?? null;
+    } catch {
+      try {
+        return window.localStorage.getItem(key);
+      } catch {
+        return null;
+      }
+    }
+  },
+
+  setItem: async (key, value) => {
+    try {
+      await Preferences.set({ key, value });
+    } catch {
+      try {
+        window.localStorage.setItem(key, value);
+      } catch {}
+    }
+  },
+
+  removeItem: async (key) => {
+    try {
+      await Preferences.remove({ key });
+    } catch {
+      try {
+        window.localStorage.removeItem(key);
+      } catch {}
+    }
+  },
+};
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL || "",
-  process.env.REACT_APP_SUPABASE_KEY || ""
+  process.env.REACT_APP_SUPABASE_KEY || "",
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      storage: capacitorStorage,
+      storageKey: "cookmate-auth",
+    },
+  }
 );
 const CFG = {
   GEMINI_MODEL: "gemini-3.1-flash-lite",
@@ -1834,15 +1912,72 @@ const LANGS = [
 
 // ── LOCAL STORAGE ─────────────────────────────────────────────
 const LS = {
-  get: (k, d = null) => { try { const v = localStorage.getItem("cm5_" + k); return v ? JSON.parse(v) : d; } catch { return d; } },
-  set: (k, v) => { try { localStorage.setItem("cm5_" + k, JSON.stringify(v)); } catch { } },
-  addRecent: (r) => { const a = LS.get("recent", []); LS.set("recent", [{ ...r, viewedAt: Date.now() }, ...a.filter(x => x.name !== r.name)].slice(0, 30)); },
+  get: (k, d = null) => {
+    try {
+      const v = localStorage.getItem("cm5_" + k);
+      return v ? JSON.parse(v) : d;
+    } catch {
+      return d;
+    }
+  },
+
+  set: (k, v) => {
+    try {
+      localStorage.setItem("cm5_" + k, JSON.stringify(v));
+    } catch {}
+  },
+
+  remove: (k) => {
+    try {
+      localStorage.removeItem("cm5_" + k);
+    } catch {}
+  },
+
+  addRecent: (r) => {
+    const a = LS.get("recent", []);
+    LS.set(
+      "recent",
+      [
+        { ...r, viewedAt: Date.now() },
+        ...a.filter(x => x.name !== r.name)
+      ].slice(0, 30)
+    );
+  },
+
   getRecent: () => LS.get("recent", []),
-  toggleFav: (r) => { const f = LS.get("favs", []); const e = f.some(x => x.name === r.name); LS.set("favs", e ? f.filter(x => x.name !== r.name) : [{ ...r, savedAt: Date.now() }, ...f]); return !e; },
+
+  toggleFav: (r) => {
+    const f = LS.get("favs", []);
+    const e = f.some(x => x.name === r.name);
+
+    LS.set(
+      "favs",
+      e
+        ? f.filter(x => x.name !== r.name)
+        : [{ ...r, savedAt: Date.now() }, ...f]
+    );
+
+    return !e;
+  },
+
   isFav: (name) => LS.get("favs", []).some(r => r.name === name),
+
   getFavs: () => LS.get("favs", []),
-  addNutrLog: (e) => { const l = LS.get("nl", []); const today = new Date().toDateString(); LS.set("nl", [{ ...e, date: today, time: Date.now() }, ...l].slice(0, 200)); },
-  getTodayLog: () => { const t = new Date().toDateString(); return LS.get("nl", []).filter(e => e.date === t); },
+
+  addNutrLog: (e) => {
+    const l = LS.get("nl", []);
+    const today = new Date().toDateString();
+
+    LS.set(
+      "nl",
+      [{ ...e, date: today, time: Date.now() }, ...l].slice(0, 200)
+    );
+  },
+
+  getTodayLog: () => {
+    const t = new Date().toDateString();
+    return LS.get("nl", []).filter(e => e.date === t);
+  },
 };
 
 // ── SUPABASE SERVICE — DB first, AI fallback ──────────────────
@@ -2295,15 +2430,24 @@ function AuthScreen({ onLogin }) {
   const [otpSent, setOtpSent] = useState(false);
 
   const googleLogin = async () => {
-    setLoading(true); setErr("");
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: { redirectTo: "https://cookmate-ai-xi.vercel.app" }
-      });
-      if (error) throw error;
-    } catch (e) { setErr(e.message); setLoading(false); }
-  };
+  setLoading(true);
+  setErr("");
+
+  try {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        
+      },
+    });
+
+    if (error) throw error;
+  } catch (e) {
+    console.error("Google login error:", e);
+    setErr(e.message);
+    setLoading(false);
+  }
+};
 
   const sendEmailOTP = async () => {
     if (!email.includes("@")) { setErr("Please enter a valid email"); return; }
@@ -2336,19 +2480,7 @@ function AuthScreen({ onLogin }) {
     setLoading(false);
   };
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        onLogin({ name: session.user.user_metadata?.full_name || session.user.email?.split("@")[0] || "Chef", email: session.user.email, id: session.user.id, method: "supabase" });
-      }
-    });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
-      if (session?.user) {
-        onLogin({ name: session.user.user_metadata?.full_name || session.user.email?.split("@")[0] || "Chef", email: session.user.email, id: session.user.id, method: "supabase" });
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, []);
+  
 
   return <div style={{ minHeight: "100vh", background: C.bg, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24 }}>
     <div style={{ width: "100%", maxWidth: 360 }}>
@@ -3395,19 +3527,15 @@ setMode("cooking"); setCur(0);
   const NAV = [{ id: "home", ic: "🏠", lb: "home" }, { id: "scan", ic: "📷", lb: "scan" }, { id: "planner", ic: "📅", lb: "planner" }, { id: "leftover", ic: "🥘", lb: "leftover" }, { id: "grocery", ic: "🛒", lb: "grocery" }];
 
   export default function CookMateApp() {
-  useEffect(() => {
-  if (window.location.hash.includes("access_token")) {
-    window.history.replaceState(null, "", window.location.pathname);
-  }
-}, []);
-
-const [user, setUser] = useState(() => LS.get("user")); 
-    const [nav, setNav] = useState("home");
-    const [recipe, setRecipe] = useState(null);
-    const [lang, setLangState] = useState(() => LS.get("lang", "en"));
-    const [recents, setRecents] = useState([]);
-    const [showSplash, setShowSplash] = useState(false);
-    const [theme, setThemeState] = useState(() => LS.get("theme", "dark"));
+  
+ const [user, setUser] = useState(null);
+const [authChecking, setAuthChecking] = useState(true);
+const [nav, setNav] = useState("home");
+const [recipe, setRecipe] = useState(null);
+const [lang, setLangState] = useState(() => LS.get("lang", "en"));
+const [recents, setRecents] = useState([]);
+const [showSplash, setShowSplash] = useState(false);
+const [theme, setThemeState] = useState(() => LS.get("theme", "dark"));
     useEffect(() => {
       Voice.init();
       setRecents(LS.getRecent());
@@ -3423,22 +3551,277 @@ const [user, setUser] = useState(() => LS.get("user"));
       Object.assign(C, THEMES[newTheme]);
       window.location.reload();
     };
-    const handleLogin = u => { 
-  setUser(u); 
+  const AUTH_USER_KEY = "cookmate_logged_in_user";  
+ const handleLogin = async (u) => {
+  console.log("LOGIN: saving user", u);
+
+  setUser(u);
+
+  // Save in localStorage
   LS.set("user", u);
-  setShowSplash(true);
-  setTimeout(() => setShowSplash(false), 2500);
+
+  // Save in Capacitor Preferences
+  try {
+    await Preferences.set({
+      key: AUTH_USER_KEY,
+      value: JSON.stringify(u),
+    });
+
+    console.log("LOGIN: Preferences saved");
+  } catch (e) {
+    console.error("LOGIN: Preferences save failed", e);
+  }
 };
-    const handleSignOut = async () => {
-      await supabase.auth.signOut();
-      try { localStorage.clear(); } catch { }
-      setUser(null);
-      setRecipe(null);
-      setNav("home");
-      window.location.href = "/";
-    };
+useEffect(() => {
+  let mounted = true;
+
+  const restoreAuth = async () => {
+    try {
+      const { data, error } = await supabase.auth.getSession();
+
+      if (error) {
+        console.error("AUTH: getSession failed", error);
+      }
+
+      const sessionUser = data?.session?.user;
+
+      if (sessionUser) {
+        const savedUser = {
+          name:
+            sessionUser.user_metadata?.full_name ||
+            sessionUser.email?.split("@")[0] ||
+            "Chef",
+          email: sessionUser.email,
+          id: sessionUser.id,
+          method: "supabase",
+        };
+
+        console.log("AUTH: Supabase session restored");
+
+        if (mounted) {
+          setUser(savedUser);
+        }
+      } else {
+        console.log("AUTH: No Supabase session");
+
+        // Fallback to our saved user
+        let savedUser = null;
+
+        try {
+          const { value } = await Preferences.get({
+            key: AUTH_USER_KEY,
+          });
+
+          if (value) {
+            savedUser = JSON.parse(value);
+            console.log("AUTH: user restored from Preferences");
+          }
+        } catch (e) {
+          console.error("AUTH: Preferences restore failed", e);
+        }
+
+        if (!savedUser) {
+          savedUser = LS.get("user", null);
+
+          if (savedUser) {
+            console.log("AUTH: user restored from localStorage");
+          }
+        }
+
+        if (mounted) {
+          setUser(savedUser);
+        }
+      }
+    } catch (e) {
+      console.error("AUTH: restore failed", e);
+    } finally {
+      if (mounted) {
+        setAuthChecking(false);
+      }
+    }
+  };
+
+  restoreAuth();
+
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange(async (event, session) => {
+    console.log("AUTH EVENT:", event);
+
+    if (session?.user) {
+      const savedUser = {
+        name:
+          session.user.user_metadata?.full_name ||
+          session.user.email?.split("@")[0] ||
+          "Chef",
+        email: session.user.email,
+        id: session.user.id,
+        method: "supabase",
+      };
+
+      setUser(savedUser);
+
+      LS.set("user", savedUser);
+
+      try {
+        await Preferences.set({
+          key: AUTH_USER_KEY,
+          value: JSON.stringify(savedUser),
+        });
+
+        console.log("AUTH: Preferences saved from auth event");
+      } catch (e) {
+        console.error("AUTH: Preferences save failed", e);
+      }
+    }
+  });
+
+  return () => {
+    mounted = false;
+    subscription.unsubscribe();
+  };
+}, []);
+useEffect(() => {
+  let listener;
+
+  const setupAuthDeepLink = async () => {
+    listener = await CapacitorApp.addListener(
+      "appUrlOpen",
+      async ({ url }) => {
+        console.log("AUTH DEEPLINK:", url);
+
+        try {
+          const parsed = new URL(url);
+
+          // PKCE callback: ?code=...
+          const code = parsed.searchParams.get("code");
+
+          if (code) {
+            console.log("AUTH: exchanging OAuth code");
+
+            const { data, error } =
+              await supabase.auth.exchangeCodeForSession(code);
+
+            if (error) throw error;
+
+            const sessionUser = data?.session?.user;
+
+            if (sessionUser) {
+              const savedUser = {
+                name:
+                  sessionUser.user_metadata?.full_name ||
+                  sessionUser.email?.split("@")[0] ||
+                  "Chef",
+                email: sessionUser.email,
+                id: sessionUser.id,
+                method: "supabase",
+              };
+
+              console.log("AUTH: Google user received");
+
+              await handleLogin(savedUser);
+              setAuthChecking(false);
+            }
+          }
+
+          // Fallback for token/hash callbacks
+          const hash = parsed.hash;
+
+          if (hash.includes("access_token")) {
+            const params = new URLSearchParams(hash.substring(1));
+
+            const access_token = params.get("access_token");
+            const refresh_token = params.get("refresh_token");
+
+            if (access_token && refresh_token) {
+              const { data, error } =
+                await supabase.auth.setSession({
+                  access_token,
+                  refresh_token,
+                });
+
+              if (error) throw error;
+
+              const sessionUser = data?.user;
+
+              if (sessionUser) {
+                const savedUser = {
+                  name:
+                    sessionUser.user_metadata?.full_name ||
+                    sessionUser.email?.split("@")[0] ||
+                    "Chef",
+                  email: sessionUser.email,
+                  id: sessionUser.id,
+                  method: "supabase",
+                };
+
+                console.log("AUTH: Google user received");
+
+                await handleLogin(savedUser);
+                setAuthChecking(false);
+              }
+            }
+          }
+        } catch (e) {
+          console.error("AUTH DEEPLINK ERROR:", e);
+        }
+      }
+    );
+  };
+
+  setupAuthDeepLink();
+
+  return () => {
+    listener?.remove();
+  };
+}, []);
+const handleSignOut = async () => {
+  try {
+    await supabase.auth.signOut();
+  } catch (e) {
+    console.error("Sign out error:", e);
+  }
+
+  // Remove localStorage login
+  LS.remove("user");
+
+  // Remove Preferences login
+  try {
+    await Preferences.remove({
+      key: AUTH_USER_KEY,
+    });
+  } catch (e) {
+    console.error("AUTH: Preferences remove failed", e);
+  }
+
+  setUser(null);
+  setRecipe(null);
+  setNav("home");
+};
+
     const onRec = r => { setRecipe(r); LS.addRecent(r); };
     const onBack = () => { setRecipe(null); setRecents(LS.getRecent()); };
+    useEffect(() => {
+  let backListener;
+
+  const setupBackButton = async () => {
+    backListener = await CapacitorApp.addListener("backButton", () => {
+      if (recipe) {
+        window.dispatchEvent(new Event("cookmate-native-back"));
+      } else if (nav !== "home") {
+        setNav("home");
+      } else {
+        CapacitorApp.exitApp();
+      }
+    });
+  };
+
+  setupBackButton();
+
+  return () => {
+    backListener?.remove();
+  };
+}, [recipe, nav]);
     const userId = user?.id || null;
    if (showSplash) return <div style={{position:"fixed",inset:0,background:"#0F1117",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",zIndex:9999,padding:24}}>
   <img src="/logo512.png" style={{width:180,height:180,borderRadius:30,marginBottom:24,boxShadow:"0 0 30px rgba(255,107,53,0.4)"}} alt="CookMate AI"/>
@@ -3446,21 +3829,98 @@ const [user, setUser] = useState(() => LS.get("user"));
     <img src="/banner.jpg" style={{width:"100%",borderRadius:10,display:"block"}} alt="CookMate Features"/>
   </div>
 </div>;
-    if (!user) return <div style={ST.app}><style>{CSS}</style><AuthScreen onLogin={handleLogin} /></div>;
+if (authChecking) {
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#000",
+        color: "#fff",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <div style={{ textAlign: "center" }}>
+        <div style={{ fontSize: 28, fontWeight: 800 }}>
+          CookMate AI
+        </div>
 
-    if (recipe) return <div style={ST.app}>
+        <div style={{ opacity: 0.65, marginTop: 8 }}>
+          Restoring your session...
+        </div>
+      </div>
+    </div>
+  );
+}
+
+if (!user) {
+  return (
+    <div style={ST.app}>
       <style>{CSS}</style>
+      <AuthScreen onLogin={handleLogin} />
+    </div>
+  );
+}
+ 
+if (recipe) {
+  return (
+    <div style={ST.app}>
+      <style>{CSS}</style>
+
       <header style={ST.hdr}>
-        <button onClick={onBack} style={{ background: "none", border: "none", color: C.muted, cursor: "pointer", fontSize: 22, padding: "3px 7px" }}>←</button>
-       <div style={{...ST.logo, display:"flex", alignItems:"center", gap:8}}>
-  <img src="/logo192.png" style={{width:28, height:28, borderRadius:6}} alt="logo"/>
-  CookMate AI
-</div>  
-        <HeartBtn recipe={recipe} userId={userId} />
+        <button
+          onClick={onBack}
+          style={{
+            background: "none",
+            border: "none",
+            color: C.muted,
+            cursor: "pointer",
+            fontSize: 22,
+            padding: "3px 7px",
+          }}
+        >
+          
+        </button>
+
+        <div
+          style={{
+            ...ST.logo,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          <img
+            src="/logo192.png"
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: 6,
+            }}
+            alt="logo"
+          />
+          CookMate AI
+        </div>
+
+        <HeartBtn
+          recipe={recipe}
+          userId={userId}
+        />
       </header>
-      <RecipeDetail recipe={recipe} onBack={onBack} t={t} lang={lang} userId={userId} />
+
+      <RecipeDetail
+        recipe={recipe}
+        onBack={onBack}
+        t={t}
+        lang={lang}
+        userId={userId}
+      />
+
       <FloatingChat lang={lang} />
-    </div>;
+    </div>
+  );
+}
 
     const screens = {
       home: <HomeScreen user={user} onNav={setNav} onRec={onRec} t={t} lang={lang} recents={recents} />,

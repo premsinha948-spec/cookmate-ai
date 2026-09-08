@@ -11,7 +11,6 @@ module.exports = async function handler(req, res) {
   try {
     const { type, ...body } = req.body;
 
-    // Use the new Groq model for all requests
     body.model = "openai/gpt-oss-120b";
 
     const keyMap = {
@@ -36,8 +35,20 @@ module.exports = async function handler(req, res) {
     );
 
     const data = await response.json();
+
+    console.log("TOKEN USAGE:", data.usage);
+
+    if (data.usage) {
+      console.log("INPUT TOKENS:", data.usage.prompt_tokens);
+      console.log("OUTPUT TOKENS:", data.usage.completion_tokens);
+      console.log("TOTAL TOKENS:", data.usage.total_tokens);
+    }
+
     res.status(200).json(data);
+
   } catch (e) {
+
     res.status(500).json({ error: e.message });
+
   }
 };

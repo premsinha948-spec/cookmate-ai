@@ -1,0 +1,48 @@
+Initialized native services in: C:\Users\PRINCE\.gradle\native
+Initialized jansi services in: C:\Users\PRINCE\.gradle\native
+The client will now receive all logging from the daemon (pid: 12688). The daemon log file: C:\Users\PRINCE\.gradle\daemon\8.14.3\daemon-12688.out.log
+Starting 4th build in daemon [uptime: 2 mins 1.875 secs, performance: 99%, GC rate: 0.00/s, heap usage: 0% of 1.5 GiB]
+Using 8 worker leases.
+Now considering [C:\Users\PRINCE\Desktop\cookmate\myapp\android] as hierarchies to watch
+Watching the file system is configured to be enabled if available
+File system watching is active
+Starting Build
+Settings evaluated using settings file 'C:\Users\PRINCE\Desktop\cookmate\myapp\android\settings.gradle'.
+Projects loaded. Root project using build file 'C:\Users\PRINCE\Desktop\cookmate\myapp\android\build.gradle'.
+Included projects: [root project 'android', project ':app', project ':capacitor-android', project ':capacitor-cordova-android-plugins']
+
+> Configure project :
+Evaluating root project 'android' using build file 'C:\Users\PRINCE\Desktop\cookmate\myapp\android\build.gradle'.
+
+> Configure project :app
+Evaluating project ':app' using build file 'C:\Users\PRINCE\Desktop\cookmate\myapp\android\app\build.gradle'.
+Using default execution profile
+google-services.json not found, google-services plugin not applied. Push Notifications won't work
+WARNING: Using flatDir should be avoided because it doesn't support any meta-data formats.
+
+> Configure project :capacitor-android
+Evaluating project ':capacitor-android' using build file 'C:\Users\PRINCE\Desktop\cookmate\myapp\node_modules\@capacitor\android\capacitor\build.gradle'.
+Using default execution profile
+
+> Configure project :capacitor-cordova-android-plugins
+Evaluating project ':capacitor-cordova-android-plugins' using build file 'C:\Users\PRINCE\Desktop\cookmate\myapp\android\capacitor-cordova-android-plugins\build.gradle'.
+Using default execution profile
+WARNING: Using flatDir should be avoided because it doesn't support any meta-data formats.
+All projects evaluated.
+Task name matched 'bundleRelease'
+Selected primary task 'bundleRelease' from project :
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Could not determine the dependencies of task ':capacitor-android:compileReleaseJavaWithJavac'.
+> Cannot query the value of this provider because it has no value available.
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 1s
+Watched directory hierarchies: []
