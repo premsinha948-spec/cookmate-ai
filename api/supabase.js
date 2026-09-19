@@ -10,7 +10,9 @@ module.exports = async function handler(req, res) {
   }
 
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).json({
+      error: "Method not allowed",
+    });
   }
 
   try {
@@ -40,6 +42,7 @@ module.exports = async function handler(req, res) {
       ingredients,
       day,
       mealType,
+      recipesData,
     } = req.body || {};
 
     const headers = {
@@ -74,7 +77,9 @@ module.exports = async function handler(req, res) {
         try {
           data = JSON.parse(text);
         } catch (_) {
-          data = { raw: text };
+          data = {
+            raw: text,
+          };
         }
       }
 
@@ -95,14 +100,19 @@ module.exports = async function handler(req, res) {
     // CATEGORY
     // ------------------------------------------------------------
     if (type === "category") {
-      const safeCategory = String(category || "").trim();
+      const safeCategory = String(
+        category || ""
+      ).trim();
 
       const query =
         `recipes?select=*` +
-        `&category=eq.${encodeURIComponent(safeCategory)}` +
+        `&category=eq.${encodeURIComponent(
+          safeCategory
+        )}` +
         `&limit=30`;
 
-      const data = await supabaseRequest(query);
+      const data =
+        await supabaseRequest(query);
 
       return res.status(200).json({
         result: data,
@@ -114,14 +124,19 @@ module.exports = async function handler(req, res) {
     // STATE
     // ------------------------------------------------------------
     if (type === "state") {
-      const safeState = String(state || "").trim();
+      const safeState = String(
+        state || ""
+      ).trim();
 
       const query =
         `recipes?select=*` +
-        `&state=eq.${encodeURIComponent(safeState)}` +
+        `&state=eq.${encodeURIComponent(
+          safeState
+        )}` +
         `&limit=30`;
 
-      const data = await supabaseRequest(query);
+      const data =
+        await supabaseRequest(query);
 
       return res.status(200).json({
         result: data,
@@ -133,14 +148,19 @@ module.exports = async function handler(req, res) {
     // CUISINE
     // ------------------------------------------------------------
     if (type === "cuisine") {
-      const safeCuisine = String(cuisine || "").trim();
+      const safeCuisine = String(
+        cuisine || ""
+      ).trim();
 
       const query =
         `recipes?select=*` +
-        `&cuisine=eq.${encodeURIComponent(safeCuisine)}` +
+        `&cuisine=eq.${encodeURIComponent(
+          safeCuisine
+        )}` +
         `&limit=30`;
 
-      const data = await supabaseRequest(query);
+      const data =
+        await supabaseRequest(query);
 
       return res.status(200).json({
         result: data,
@@ -154,11 +174,14 @@ module.exports = async function handler(req, res) {
     if (type === "ai_picks") {
       const query =
         `ai_picks?select=*` +
-        `&user_id=eq.${encodeURIComponent(user_id)}` +
+        `&user_id=eq.${encodeURIComponent(
+          user_id
+        )}` +
         `&order=generated_at.desc` +
         `&limit=1`;
 
-      const data = await supabaseRequest(query);
+      const data =
+        await supabaseRequest(query);
 
       return res.status(200).json({
         result: data,
@@ -171,15 +194,21 @@ module.exports = async function handler(req, res) {
     // ------------------------------------------------------------
     if (type === "recipe_history") {
       const fourDaysAgo = new Date(
-        Date.now() - 4 * 24 * 60 * 60 * 1000
+        Date.now() -
+          4 * 24 * 60 * 60 * 1000
       ).toISOString();
 
       const query =
         `user_recipe_history?select=recipe_name` +
-        `&user_id=eq.${encodeURIComponent(user_id)}` +
-        `&shown_at=gte.${encodeURIComponent(fourDaysAgo)}`;
+        `&user_id=eq.${encodeURIComponent(
+          user_id
+        )}` +
+        `&shown_at=gte.${encodeURIComponent(
+          fourDaysAgo
+        )}`;
 
-      const data = await supabaseRequest(query);
+      const data =
+        await supabaseRequest(query);
 
       return res.status(200).json({
         result: data,
@@ -194,9 +223,12 @@ module.exports = async function handler(req, res) {
       const query =
         `recipe_pool?select=*` +
         `&limit=100` +
-        `&offset=${Math.floor(Math.random() * 50)}`;
+        `&offset=${Math.floor(
+          Math.random() * 50
+        )}`;
 
-      const data = await supabaseRequest(query);
+      const data =
+        await supabaseRequest(query);
 
       return res.status(200).json({
         result: data,
@@ -209,22 +241,28 @@ module.exports = async function handler(req, res) {
     // ------------------------------------------------------------
     if (type === "save_picks") {
       await supabaseRequest(
-        `ai_picks?user_id=eq.${encodeURIComponent(user_id)}`,
+        `ai_picks?user_id=eq.${encodeURIComponent(
+          user_id
+        )}`,
         "DELETE"
       );
 
-      const data = await supabaseRequest(
-        "ai_picks",
-        "POST",
-        JSON.stringify({
-          user_id,
-          recipes: JSON.stringify(recipes || []),
-          generated_at: new Date().toISOString(),
-        }),
-        {
-          Prefer: "return=minimal",
-        }
-      );
+      const data =
+        await supabaseRequest(
+          "ai_picks",
+          "POST",
+          JSON.stringify({
+            user_id,
+            recipes: JSON.stringify(
+              recipes || []
+            ),
+            generated_at:
+              new Date().toISOString(),
+          }),
+          {
+            Prefer: "return=minimal",
+          }
+        );
 
       return res.status(200).json({
         result: data,
@@ -236,25 +274,30 @@ module.exports = async function handler(req, res) {
     // SAVE RECIPE POOL
     // ------------------------------------------------------------
     if (type === "save_pool") {
-      const rows = (recipes || []).map((r) => ({
+      const rows = (
+        recipes || []
+      ).map((r) => ({
         name: r.name,
         emoji: r.emoji || "🍽️",
         time: r.time || "30 min",
         diff: r.diff || "Medium",
         cal: r.cal || 320,
-        protein: r.protein || "12g",
+        protein:
+          r.protein || "12g",
         tags: r.tags || [],
-        category: r.category || "General",
+        category:
+          r.category || "General",
       }));
 
-      const data = await supabaseRequest(
-        "recipe_pool",
-        "POST",
-        JSON.stringify(rows),
-        {
-          Prefer: "return=minimal",
-        }
-      );
+      const data =
+        await supabaseRequest(
+          "recipe_pool",
+          "POST",
+          JSON.stringify(rows),
+          {
+            Prefer: "return=minimal",
+          }
+        );
 
       return res.status(200).json({
         result: data,
@@ -266,20 +309,24 @@ module.exports = async function handler(req, res) {
     // SAVE HISTORY
     // ------------------------------------------------------------
     if (type === "save_history") {
-      const rows = (recipes || []).map((r) => ({
+      const rows = (
+        recipes || []
+      ).map((r) => ({
         user_id,
         recipe_name: r.name,
-        shown_at: new Date().toISOString(),
+        shown_at:
+          new Date().toISOString(),
       }));
 
-      const data = await supabaseRequest(
-        "user_recipe_history",
-        "POST",
-        JSON.stringify(rows),
-        {
-          Prefer: "return=minimal",
-        }
-      );
+      const data =
+        await supabaseRequest(
+          "user_recipe_history",
+          "POST",
+          JSON.stringify(rows),
+          {
+            Prefer: "return=minimal",
+          }
+        );
 
       return res.status(200).json({
         result: data,
@@ -291,21 +338,25 @@ module.exports = async function handler(req, res) {
     // RECIPE SEARCH FROM 10K+ SUPABASE RECIPES
     // ------------------------------------------------------------
     if (type === "recipe_search") {
-      const inputIngredients = Array.isArray(ingredients)
-        ? ingredients
-        : [];
+      const inputIngredients =
+        Array.isArray(ingredients)
+          ? ingredients
+          : [];
 
-      const cleanIngredients = inputIngredients
-        .map((item) =>
-          String(item)
-            .replace(/^[^\w]+/g, "")
-            .trim()
-            .toLowerCase()
-        )
-        .filter(Boolean)
-        .slice(0, 15);
+      const cleanIngredients =
+        inputIngredients
+          .map((item) =>
+            String(item)
+              .replace(/^[^\w]+/g, "")
+              .trim()
+              .toLowerCase()
+          )
+          .filter(Boolean)
+          .slice(0, 15);
 
-      if (cleanIngredients.length === 0) {
+      if (
+        cleanIngredients.length === 0
+      ) {
         return res.status(200).json({
           result: [],
           source: "supabase",
@@ -315,9 +366,10 @@ module.exports = async function handler(req, res) {
       const recipeMap = new Map();
 
       for (const ingredient of cleanIngredients) {
-        const encoded = encodeURIComponent(
-          `*${ingredient}*`
-        );
+        const encoded =
+          encodeURIComponent(
+            `*${ingredient}*`
+          );
 
         const query =
           `recipes?select=*` +
@@ -325,11 +377,21 @@ module.exports = async function handler(req, res) {
           `&limit=100`;
 
         try {
-          const rows = await supabaseRequest(query);
+          const rows =
+            await supabaseRequest(
+              query
+            );
 
-          for (const row of Array.isArray(rows) ? rows : []) {
+          for (const row of Array.isArray(
+            rows
+          )
+            ? rows
+            : []) {
             if (row?.id != null) {
-              recipeMap.set(String(row.id), row);
+              recipeMap.set(
+                String(row.id),
+                row
+              );
             }
           }
         } catch (_) {
@@ -358,16 +420,19 @@ module.exports = async function handler(req, res) {
           ).toLowerCase();
 
           for (const ingredient of cleanIngredients) {
-            if (name.includes(ingredient)) {
+            if (
+              name.includes(ingredient)
+            ) {
               hits++;
             }
           }
         }
 
         const score =
-          hits / cleanIngredients.length;
+          hits /
+          cleanIngredients.length;
 
-        if (score >= 0.30) {
+        if (score >= 0.3) {
           scored.push({
             recipe,
             score,
@@ -395,36 +460,37 @@ module.exports = async function handler(req, res) {
     }
 
     // ------------------------------------------------------------
-    // MEAL PLANNER FROM SUPABASE RECIPES
+    // MEAL PLANNER
     //
-    // Flutter UI has only:
-    // Breakfast
-    // Lunch
-    // Dinner
-    // Snacks
+    // Flow:
     //
-    // Database categories used:
-    // Breakfast
-    // Main Course
-    // Snack
-    // Starter
-    // Dessert
-    // Side
-    // Beverage
-    //
-    // Old lowercase duplicates are also supported.
+    // 1. Supabase recipes table
+    // 2. planner_cache if DB has no result
+    // 3. Flutter calls Groq if both miss
     // ------------------------------------------------------------
     if (type === "planner") {
-      const meal = String(
-        mealType || ""
-      ).trim().toLowerCase();
+      const cleanDay =
+        String(
+          day || "Monday"
+        ).trim();
+
+      const cleanMeal =
+        String(
+          mealType || "Breakfast"
+        ).trim();
+
+      const meal =
+        cleanMeal.toLowerCase();
+
+      const cacheKey =
+        `${cleanDay}|${cleanMeal}`.toLowerCase();
 
       let categoryGroups = [];
 
-      // -------------------------
       // BREAKFAST
-      // -------------------------
-      if (meal.includes("breakfast")) {
+      if (
+        meal.includes("breakfast")
+      ) {
         categoryGroups = [
           {
             categories: [
@@ -443,9 +509,7 @@ module.exports = async function handler(req, res) {
         ];
       }
 
-      // -------------------------
       // SNACKS
-      // -------------------------
       else if (
         meal.includes("snack") ||
         meal.includes("evening")
@@ -468,9 +532,7 @@ module.exports = async function handler(req, res) {
         ];
       }
 
-      // -------------------------
       // LUNCH / DINNER
-      // -------------------------
       else {
         categoryGroups = [
           {
@@ -511,11 +573,12 @@ module.exports = async function handler(req, res) {
         ];
       }
 
+      // ----------------------------------------------------------
+      // 1. FIRST: GET RECIPES FROM MAIN RECIPES TABLE
+      // ----------------------------------------------------------
+
       const rows = [];
 
-      // Fetch each category separately.
-      // This avoids problems with mixed/case-sensitive
-      // category names in Supabase.
       for (const group of categoryGroups) {
         for (const categoryValue of group.categories) {
           const query =
@@ -527,21 +590,25 @@ module.exports = async function handler(req, res) {
 
           try {
             const data =
-              await supabaseRequest(query);
+              await supabaseRequest(
+                query
+              );
 
-            if (Array.isArray(data)) {
+            if (
+              Array.isArray(data)
+            ) {
               rows.push(...data);
             }
           } catch (_) {
-            // Ignore one category failure.
-            // Other categories can still provide results.
+            // Continue with next category.
           }
         }
       }
 
-      // -------------------------
+      // ----------------------------------------------------------
       // REMOVE DUPLICATES
-      // -------------------------
+      // ----------------------------------------------------------
+
       const unique = new Map();
 
       for (const row of rows) {
@@ -553,26 +620,81 @@ module.exports = async function handler(req, res) {
         }
       }
 
-      // -------------------------
-      // RANDOMIZE
-      // -------------------------
-      let result = Array.from(
-        unique.values()
-      );
+      let result =
+        Array.from(
+          unique.values()
+        );
 
-      result.sort(
-        () => Math.random() - 0.5
-      );
+      // ----------------------------------------------------------
+      // IF MAIN RECIPES FOUND
+      // ----------------------------------------------------------
 
-      // Maximum 10 recipes returned
-      // to Flutter.
-      result = result.slice(0, 10);
+      if (result.length > 0) {
+        result.sort(
+          () => Math.random() - 0.5
+        );
+
+        result =
+          result.slice(0, 10);
+
+        return res.status(200).json({
+          result,
+          source: "supabase",
+          day: cleanDay,
+          mealType: cleanMeal,
+        });
+      }
+
+      // ----------------------------------------------------------
+      // 2. MAIN DB EMPTY → CHECK PLANNER CACHE
+      // ----------------------------------------------------------
+
+      try {
+        const cacheQuery =
+          `planner_cache?select=*` +
+          `&cache_key=eq.${encodeURIComponent(
+            cacheKey
+          )}` +
+          `&limit=1`;
+
+        const cacheData =
+          await supabaseRequest(
+            cacheQuery
+          );
+
+        if (
+          Array.isArray(
+            cacheData
+          ) &&
+          cacheData.length > 0 &&
+          Array.isArray(
+            cacheData[0]
+              .recipes_data
+          )
+        ) {
+          return res.status(200).json({
+            result:
+              cacheData[0]
+                .recipes_data,
+            source: "cache",
+            day: cleanDay,
+            mealType: cleanMeal,
+          });
+        }
+      } catch (_) {
+        // Cache failure should not break planner.
+      }
+
+      // ----------------------------------------------------------
+      // 3. EVERYTHING MISSED
+      // Flutter will call Groq AI.
+      // ----------------------------------------------------------
 
       return res.status(200).json({
-        result,
-        source: "supabase",
-        day: day || null,
-        mealType: mealType || null,
+        result: [],
+        source: "miss",
+        day: cleanDay,
+        mealType: cleanMeal,
       });
     }
 
@@ -586,7 +708,9 @@ module.exports = async function handler(req, res) {
         `&limit=1000`;
 
       const data =
-        await supabaseRequest(query);
+        await supabaseRequest(
+          query
+        );
 
       return res.status(200).json({
         result: data,
@@ -597,7 +721,9 @@ module.exports = async function handler(req, res) {
     // ------------------------------------------------------------
     // RECIPE CACHE
     // ------------------------------------------------------------
-    if (type === "get_recipe_cache") {
+    if (
+      type === "get_recipe_cache"
+    ) {
       const query =
         `recipe_cache?recipe_name=eq.${encodeURIComponent(
           recipe_name
@@ -608,7 +734,9 @@ module.exports = async function handler(req, res) {
         `&limit=1`;
 
       const data =
-        await supabaseRequest(query);
+        await supabaseRequest(
+          query
+        );
 
       return res.status(200).json({
         result: data,
@@ -616,7 +744,9 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    if (type === "save_recipe_cache") {
+    if (
+      type === "save_recipe_cache"
+    ) {
       const data =
         await supabaseRequest(
           "recipe_cache",
@@ -647,7 +777,9 @@ module.exports = async function handler(req, res) {
     // ------------------------------------------------------------
     // GROCERY CACHE
     // ------------------------------------------------------------
-    if (type === "get_grocery_cache") {
+    if (
+      type === "get_grocery_cache"
+    ) {
       const query =
         `grocery_cache?recipe_name=eq.${encodeURIComponent(
           recipe_name
@@ -655,7 +787,9 @@ module.exports = async function handler(req, res) {
         `&limit=1`;
 
       const data =
-        await supabaseRequest(query);
+        await supabaseRequest(
+          query
+        );
 
       return res.status(200).json({
         result: data,
@@ -663,7 +797,9 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    if (type === "save_grocery_cache") {
+    if (
+      type === "save_grocery_cache"
+    ) {
       const data =
         await supabaseRequest(
           "grocery_cache",
@@ -690,7 +826,9 @@ module.exports = async function handler(req, res) {
     // ------------------------------------------------------------
     // LEFTOVER CACHE
     // ------------------------------------------------------------
-    if (type === "get_leftover_cache") {
+    if (
+      type === "get_leftover_cache"
+    ) {
       const query =
         `leftover_cache?ingredients_key=eq.${encodeURIComponent(
           recipe_name
@@ -698,7 +836,9 @@ module.exports = async function handler(req, res) {
         `&limit=1`;
 
       const data =
-        await supabaseRequest(query);
+        await supabaseRequest(
+          query
+        );
 
       return res.status(200).json({
         result: data,
@@ -706,7 +846,9 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    if (type === "save_leftover_cache") {
+    if (
+      type === "save_leftover_cache"
+    ) {
       const data =
         await supabaseRequest(
           "leftover_cache",
@@ -734,7 +876,9 @@ module.exports = async function handler(req, res) {
     // ------------------------------------------------------------
     // NUTRITION CACHE
     // ------------------------------------------------------------
-    if (type === "get_nutrition_cache") {
+    if (
+      type === "get_nutrition_cache"
+    ) {
       const query =
         `nutrition_cache?food_name=eq.${encodeURIComponent(
           recipe_name
@@ -742,7 +886,9 @@ module.exports = async function handler(req, res) {
         `&limit=1`;
 
       const data =
-        await supabaseRequest(query);
+        await supabaseRequest(
+          query
+        );
 
       return res.status(200).json({
         result: data,
@@ -750,13 +896,16 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    if (type === "save_nutrition_cache") {
+    if (
+      type === "save_nutrition_cache"
+    ) {
       const data =
         await supabaseRequest(
           "nutrition_cache",
           "POST",
           JSON.stringify({
-            food_name: recipe_name,
+            food_name:
+              recipe_name,
             nutrition_data:
               JSON.stringify(
                 recipes || []
@@ -774,6 +923,115 @@ module.exports = async function handler(req, res) {
       });
     }
 
+    // ------------------------------------------------------------
+    // PLANNER CACHE - GET
+    // ------------------------------------------------------------
+    if (
+      type === "get_planner_cache"
+    ) {
+      const cleanDay =
+        String(
+          day || "Monday"
+        ).trim();
+
+      const cleanMeal =
+        String(
+          mealType || "Breakfast"
+        ).trim();
+
+      const cacheKey =
+        `${cleanDay}|${cleanMeal}`.toLowerCase();
+
+      const query =
+        `planner_cache?select=*` +
+        `&cache_key=eq.${encodeURIComponent(
+          cacheKey
+        )}` +
+        `&limit=1`;
+
+      const data =
+        await supabaseRequest(
+          query
+        );
+
+      return res.status(200).json({
+        result:
+          Array.isArray(data) &&
+          data.length > 0
+            ? data[0]
+            : null,
+        source:
+          "supabase_cache",
+      });
+    }
+
+    // ------------------------------------------------------------
+    // PLANNER CACHE - SAVE
+    // ------------------------------------------------------------
+    if (
+      type === "save_planner_cache"
+    ) {
+      const cleanDay =
+        String(
+          day || "Monday"
+        ).trim();
+
+      const cleanMeal =
+        String(
+          mealType || "Breakfast"
+        ).trim();
+
+      const cacheKey =
+        `${cleanDay}|${cleanMeal}`.toLowerCase();
+
+      const cacheRecipes =
+        Array.isArray(
+          recipesData
+        )
+          ? recipesData
+          : [];
+
+      if (
+        cacheRecipes.length === 0
+      ) {
+        return res.status(200).json({
+          result: null,
+          ok: false,
+          source:
+            "supabase_cache",
+        });
+      }
+
+      const data =
+        await supabaseRequest(
+          `planner_cache?on_conflict=cache_key`,
+          "POST",
+          JSON.stringify({
+            cache_key:
+              cacheKey,
+            day: cleanDay,
+            meal_type:
+              cleanMeal,
+            recipes_data:
+              cacheRecipes,
+          }),
+          {
+            Prefer:
+              "resolution=merge-duplicates,return=minimal",
+          }
+        );
+
+      return res.status(200).json({
+        result: data,
+        ok: true,
+        source:
+          "supabase_cache",
+      });
+    }
+
+    // ------------------------------------------------------------
+    // UNKNOWN OPERATION
+    // ------------------------------------------------------------
     return res.status(400).json({
       error:
         `Unknown Supabase operation: ${
